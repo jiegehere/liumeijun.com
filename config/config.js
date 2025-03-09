@@ -17,55 +17,56 @@ const config = {
     },
     // 主要地点
     mainLocations: {
-        // 嘉应学院
-        jyu: {
-            address: '广东省梅州市梅江区嘉应学院',
-            lng: 116.135018,
-            lat: 24.33438,
-            title: '嘉应学院',
-            description: '起点'
-        },
-        // 广外艺
-        gtc: {
+        // 广外艺 -- 作者所在城市
+        authorLocation: {
             address: '广东省广州市天河区广东技术师范大学',
             lng: 113.345774,
             lat: 23.153356,
             title: '广外艺',
             description: '终点'
         },
-        // 广州市
+        // 嘉应学院 -- 对方所在城市
+        dearLocation: {
+            address: '广东省梅州市梅江区嘉应学院',
+            lng: 116.135018,
+            lat: 24.33438,
+            title: '嘉应学院',
+            description: '起点'
+        },
+        // 河源市 -- 二人地理位置中间的城市
+        towMiddleLocation: {
+            address: '广东省河源市',
+            lng: 114.701682,
+            lat: 23.754195,
+            title: '河源市'
+        },
+
+        // 广州市 -- 大概游玩的地方的城市
         guangzhou: {
             address: '广东省广州市',
             lng: 113.256838,
             lat: 23.157309,
             title: '广州市'
-        },
-        // 河源市
-        heyuan: {
-            address: '广东省河源市',
-            lng: 114.701682,
-            lat: 23.754195,
-            title: '河源市'
         }
     },
     // 路线信息
     routeInfo: [
         {
             title: '梅州 → 广州',
-            content: '426 km.',
-            point: 'jyu'
+            content: '5 hours by train.',
+            point: 'authorLocation'
         },
         {
             title: '梅州 → 广州',
-            content: '5 hours by train.',
-            point: 'gtc'
+            content: '426 km.',
+            point: 'dearLocation'
         },
         {
             title: '变得是距离，不变的是坚持；',
             image: {
                 path: "./images/ticket.jpg"
             },
-            point: 'jyu'
+            point: 'dearLocation'
         }
     ],
 

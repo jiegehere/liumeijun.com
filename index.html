@@ -171,10 +171,11 @@
         // 从配置文件中获取地图中心点和其他位置信息
         var MP_CEN = config.mapCenter;
         var CN_CEN = config.chinaCenter;
-        var MZ_JYU = config.mainLocations.jyu;
-        var GZ_GTC = config.mainLocations.gtc;
+        var AUTHOR_LOCATION = config.mainLocations.authorLocation;
+        var DEAR_LOCATION = config.mainLocations.dearLocation;
+        var TWO_MIDDLE_LOCATION = config.mainLocations.towMiddleLocation;
         var GD_GZS = config.mainLocations.guangzhou;
-        var GD_HYS = config.mainLocations.heyuan;
+       
         // 背景音乐
         var MUSIC;
 
@@ -253,24 +254,24 @@
 
         // 广外艺
         function panZoom_GTC() {
-            map.panTo(new BMap.Point(GZ_GTC.lng, GZ_GTC.lat));
+            map.panTo(new BMap.Point(AUTHOR_LOCATION.lng, AUTHOR_LOCATION.lat));
             setTimeout(function () {
                 zoomTo(18, 800, function () {
-                    var marker = new BMap.Marker(GZ_GTC);
+                    var marker = new BMap.Marker(AUTHOR_LOCATION);
                     map.addOverlay(marker);
                     marker.setAnimation(BMAP_ANIMATION_BOUNCE);
                     setTimeout(panZoom_JYU, 1000);
-                }, GZ_GTC);
+                }, AUTHOR_LOCATION);
             }, 800);
         }
 
         // 嘉应学院
         function panZoom_JYU() {
             zoomTo(8, 1000, function () {
-                map.panTo(new BMap.Point(MZ_JYU.lng, MZ_JYU.lat));
+                map.panTo(new BMap.Point(DEAR_LOCATION.lng, DEAR_LOCATION.lat));
                 setTimeout(function () {
                     zoomTo(16, 800, function () {
-                        var marker = new BMap.Marker(MZ_JYU);
+                        var marker = new BMap.Marker(DEAR_LOCATION);
                         map.addOverlay(marker);
                         marker.setAnimation(BMAP_ANIMATION_BOUNCE);
                         setTimeout(panZoom_HEY, 1000);
@@ -282,11 +283,11 @@
         // 河源市
         function panZoom_HEY() {
             zoomTo(9, 1000, function () {
-                map.panTo(new BMap.Point(GD_HYS.lng, GD_HYS.lat));
+                map.panTo(new BMap.Point(TWO_MIDDLE_LOCATION.lng, TWO_MIDDLE_LOCATION.lat));
                 setTimeout(function () {
                     // 嘉应 和 广州 之间的路线
-                    var start = new BMap.Point(MZ_JYU.lng, MZ_JYU.lat);
-                    var end = new BMap.Point(GZ_GTC.lng, GZ_GTC.lat);
+                    var start = new BMap.Point(DEAR_LOCATION.lng, DEAR_LOCATION.lat);
+                    var end = new BMap.Point(AUTHOR_LOCATION.lng, AUTHOR_LOCATION.lat);
                     var driving2 = new BMap.DrivingRoute(map, { renderOptions: { map: map, autoViewport: false } });
                     driving2.search(start, end);
                     setTimeout(function () {
@@ -543,7 +544,7 @@
             map.clearOverlays();
             map.reset();
             MUSIC.play();
-            map.panTo(new BMap.Point(GZ_GTC.lng, GZ_GTC.lat));
+            map.panTo(new BMap.Point(AUTHOR_LOCATION.lng, AUTHOR_LOCATION.lat));
             panZoom_GTC();
         }
 
@@ -561,11 +562,10 @@
         window.onload = function () {
             // 设置页面标题
             document.title = "给亲爱的" + config.common.dearName;
-            // 分享文案
+            
             $("#wsContent").val("送给亲爱的" + config.common.dearName +
                 "，纪念我们经历的一切，也是送给所有异地恋人的礼物「变得是距离，不变的是坚持」。 via @"
                 + config.common.authorName);
-            // 分享链接
             $("#wsUrl").val(config.common.shareUrl);
             soundManager.setup({
                 url: './sm/',
