@@ -171,7 +171,6 @@
         // 从配置文件中获取地图中心点和其他位置信息
         var MP_CEN = config.mapCenter;
         var CN_CEN = config.chinaCenter;
-        var AUTHOR_LOCATION = config.mainLocations.authorLocation;
         var DEAR_LOCATION = config.mainLocations.dearLocation;
         var TWO_MIDDLE_LOCATION = config.mainLocations.towMiddleLocation;
         var GD_GZS = config.mainLocations.guangzhou;
@@ -254,14 +253,14 @@
 
         // 广外艺
         function panZoom_GTC() {
-            map.panTo(new BMap.Point(AUTHOR_LOCATION.lng, AUTHOR_LOCATION.lat));
+            map.panTo(new BMap.Point(config.mainLocations.authorLocation.point.lng, config.mainLocations.authorLocation.point.lat));
             setTimeout(function () {
                 zoomTo(18, 800, function () {
-                    var marker = new BMap.Marker(AUTHOR_LOCATION);
+                    var marker = new BMap.Marker(config.mainLocations.authorLocation.point);
                     map.addOverlay(marker);
                     marker.setAnimation(BMAP_ANIMATION_BOUNCE);
                     setTimeout(panZoom_JYU, 1000);
-                }, AUTHOR_LOCATION);
+                }, config.mainLocations.authorLocation.point);
             }, 800);
         }
 
@@ -287,7 +286,7 @@
                 setTimeout(function () {
                     // 嘉应 和 广州 之间的路线
                     var start = new BMap.Point(DEAR_LOCATION.lng, DEAR_LOCATION.lat);
-                    var end = new BMap.Point(AUTHOR_LOCATION.lng, AUTHOR_LOCATION.lat);
+                    var end = new BMap.Point(config.mainLocations.authorLocation.point.lng, config.mainLocations.authorLocation.point.lat);
                     var driving2 = new BMap.DrivingRoute(map, { renderOptions: { map: map, autoViewport: false } });
                     driving2.search(start, end);
                     setTimeout(function () {
@@ -511,7 +510,10 @@
                         }
                     }
                 }
-
+                // 处理地址
+                for (let i = 0; i < config.routeInfo.length; i++) {
+                    await geocodeAddress(config.routeInfo[i]);
+                }
                 // 处理照片展示中的地址
                 for (let i = 0; i < config.photos.length; i++) {
                     await geocodeAddress(config.photos[i]);
@@ -544,7 +546,7 @@
             map.clearOverlays();
             map.reset();
             MUSIC.play();
-            map.panTo(new BMap.Point(AUTHOR_LOCATION.lng, AUTHOR_LOCATION.lat));
+            map.panTo(new BMap.Point(config.mainLocations.authorLocation.point.lng, config.mainLocations.authorLocation.point.lat));
             panZoom_GTC();
         }
 

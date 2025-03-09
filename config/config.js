@@ -4,7 +4,30 @@ const config = {
         dearName: "梁婕",
         shareUrl: "https://www.baidu.com"
     },
-    // 地图中心点
+    addressMap: {
+        "作者城市": {
+            address: '广东省广州市天河区',
+            lng: 113.345774,
+            lat: 23.153356
+        },
+        "对方城市": {
+            address: '广东省梅州市',
+            lng: 116.135018,
+            lat: 24.33438
+        },
+        "中间位置城市": {
+            address: '广东省河源市',
+            lng: 114.701682,
+            lat: 23.754195
+        },
+        "游玩城市": {
+            address: '广东省广州市',
+            lng: 113.256838,
+            lat: 23.157309
+        }
+    },
+
+    // 地图中心点，没啥用
     mapCenter: {
         lng: 3.894763,
         lat: 44.529534
@@ -19,33 +42,37 @@ const config = {
     mainLocations: {
         // 广外艺 -- 作者所在城市
         authorLocation: {
-            address: '广东省广州市天河区广东技术师范大学',
-            lng: 113.345774,
-            lat: 23.153356,
+            address: '作者城市',
+            point:{
+                lng: 113.345774,
+                lat: 23.153356
+            },
             title: '广外艺',
             description: '终点'
         },
         // 嘉应学院 -- 对方所在城市
         dearLocation: {
-            address: '广东省梅州市梅江区嘉应学院',
-            lng: 116.135018,
-            lat: 24.33438,
+            address: '对方城市',
+            point: {
+                lng: 116.135018,
+                lat: 24.33438
+            },
             title: '嘉应学院',
             description: '起点'
         },
         // 河源市 -- 二人地理位置中间的城市
         towMiddleLocation: {
-            address: '广东省河源市',
-            lng: 114.701682,
-            lat: 23.754195,
+            address: '中间位置城市',
+            point: {
+                lng: 114.701682,
+                lat: 23.754195
+            },
             title: '河源市'
         },
 
-        // 广州市 -- 大概游玩的地方的城市
+        // 广州市 -- 大概游玩的地方的开始城市
         guangzhou: {
-            address: '广东省广州市',
-            lng: 113.256838,
-            lat: 23.157309,
+            address: '游玩城市', 
             title: '广州市'
         }
     },
@@ -54,19 +81,19 @@ const config = {
         {
             title: '梅州 → 广州',
             content: '5 hours by train.',
-            point: 'authorLocation'
+            address: '作者城市'
         },
         {
             title: '梅州 → 广州',
             content: '426 km.',
-            point: 'dearLocation'
+            address: '对方城市'
         },
         {
             title: '变得是距离，不变的是坚持；',
             image: {
                 path: "./images/ticket.jpg"
             },
-            point: 'dearLocation'
+            address: '对方城市'
         }
     ],
 
