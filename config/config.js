@@ -1,4 +1,9 @@
-const config = { 
+const config = {
+    common: {
+        authorName: "梁英杰",
+        dearName: "梁婕",
+        shareUrl: "https://www.baidu.com"
+    },
     // 地图中心点
     mapCenter: {
         lng: 3.894763,
@@ -72,7 +77,7 @@ const config = {
                 path: "./images/jiniantang.jpg"
             },
             address: '广东省广州市越秀区人民北路319号',
-            point: {lng: 113.271147, lat: 23.139616}
+            point: { lng: 113.271147, lat: 23.139616 }
         },
         {
             title: '陈家祠',
@@ -80,7 +85,7 @@ const config = {
                 path: "./images/chenjiaci.jpg"
             },
             address: '广东省广州市荔湾区中山七路',
-            point: {lng: 113.252764, lat: 23.131838}
+            point: { lng: 113.252764, lat: 23.131838 }
         },
         {
             title: '看电影',
@@ -88,7 +93,7 @@ const config = {
                 path: "./images/dianying.jpg"
             },
             address: '广东省广州市天河区天河路228号正佳广场',
-            point: {lng: 113.268865, lat: 23.200458}
+            point: { lng: 113.268865, lat: 23.200458 }
         },
         {
             title: '',
@@ -96,7 +101,7 @@ const config = {
                 path: "./images/chenjiaci1.jpg"
             },
             address: '广东省广州市荔湾区中山七路',
-            point: {lng: 113.252764, lat: 23.131838}
+            point: { lng: 113.252764, lat: 23.131838 }
         },
         {
             title: '吃货',
@@ -104,7 +109,7 @@ const config = {
                 path: "./images/beijingroad.jpg"
             },
             address: '广东省广州市越秀区北京路步行街',
-            point: {lng: 113.275619, lat: 23.127547}
+            point: { lng: 113.275619, lat: 23.127547 }
         },
         {
             title: '',
@@ -112,7 +117,7 @@ const config = {
                 path: "./images/chenjiaci2.jpg"
             },
             address: '广东省广州市荔湾区中山七路',
-            point: {lng: 113.252764, lat: 23.131838}
+            point: { lng: 113.252764, lat: 23.131838 }
         },
         {
             title: '臭美中...',
@@ -120,7 +125,7 @@ const config = {
                 path: "./images/dress1.jpg"
             },
             address: '广东省广州市越秀区北京路步行街',
-            point: {lng: 113.275619, lat: 23.127547}
+            point: { lng: 113.275619, lat: 23.127547 }
         },
         {
             title: '臭美中...',
@@ -128,7 +133,7 @@ const config = {
                 path: "./images/dress2.jpg"
             },
             address: '广东省广州市越秀区上下九步行街',
-            point: {lng: 113.248583, lat: 23.123725}
+            point: { lng: 113.248583, lat: 23.123725 }
         },
         {
             title: '',
@@ -136,7 +141,7 @@ const config = {
                 path: "./images/you.jpg"
             },
             address: '广东省广州市天河区天河路228号正佳广场',
-            point: {lng: 113.340995, lat: 23.106222}
+            point: { lng: 113.340995, lat: 23.106222 }
         },
         {
             title: '又是离开，又是不舍...',
@@ -144,7 +149,7 @@ const config = {
                 path: "./images/leave.jpg"
             },
             address: '广东省广州市天河区天河路228号正佳广场',
-            point: {lng: 113.358452, lat: 23.158306}
+            point: { lng: 113.358452, lat: 23.158306 }
         },
         {
             title: '红海湾',
@@ -152,7 +157,7 @@ const config = {
                 path: "./images/sea.jpg"
             },
             address: '广东省汕尾市红海湾',
-            point: {lng: 115.573511, lat: 22.712665}
+            point: { lng: 115.573511, lat: 22.712665 }
         },
         {
             title: '后山',
@@ -160,7 +165,7 @@ const config = {
                 path: "./images/s.jpg"
             },
             address: '广东省梅州市梅江区嘉应学院后山',
-            point: {lng: 115.622433, lat: 23.184734}
+            point: { lng: 115.622433, lat: 23.184734 }
         }
     ],
     // 想去的地方
@@ -169,7 +174,7 @@ const config = {
             title: '',
             content: '地图标上想去的地方，有一天，带着你去流浪。',
             address: '中国',
-            point: {lng: 103.758427, lat: 36.172333}
+            point: { lng: 103.758427, lat: 36.172333 }
         },
         {
             title: '厦门',
@@ -177,7 +182,7 @@ const config = {
                 path: "./images/wannato/xiamen.jpg"
             },
             address: '福建省厦门市',
-            point: {lng: 118.148154, lat: 24.497912}
+            point: { lng: 118.148154, lat: 24.497912 }
         },
         {
             title: '凤凰古镇',
@@ -185,7 +190,7 @@ const config = {
                 path: "./images/wannato/fenghuang.jpg"
             },
             address: '湖南省湘西土家族苗族自治州凤凰县',
-            point: {lng: 100.21191, lat: 26.928061}
+            point: { lng: 100.21191, lat: 26.928061 }
         },
         {
             title: '桂林阳朔',
@@ -193,7 +198,7 @@ const config = {
                 path: "./images/wannato/guilin.jpg"
             },
             address: '广西壮族自治区桂林市阳朔县',
-            point: {lng: 110.503626, lat: 24.780932}
+            point: { lng: 110.503626, lat: 24.780932 }
         },
         {
             title: '西藏',
@@ -201,7 +206,7 @@ const config = {
                 path: "./images/wannato/xizang.jpg"
             },
             address: '西藏自治区拉萨市',
-            point: {lng: 91.115691, lat: 29.687083}
+            point: { lng: 91.115691, lat: 29.687083 }
         },
         {
             title: '杭州西湖',
@@ -209,8 +214,7 @@ const config = {
                 path: "./images/wannato/xihu.jpg"
             },
             address: '浙江省杭州市西湖区',
-            point: {lng: 120.151946, lat: 30.250472}
+            point: { lng: 120.151946, lat: 30.250472 }
         }
     ]
 };
- 
