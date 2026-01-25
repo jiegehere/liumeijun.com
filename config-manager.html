@@ -424,8 +424,8 @@
                 if (window.ConfigManager) {
                     currentConfig = window.ConfigManager.getConfig();
                 } else {
-                    // 备用方案：直接使用CONFIG对象
-                    currentConfig = CONFIG;
+                    showMessage('加载配置失败：' + error.message, 'error');
+                    return;
                 }
                 
                 // 加载基本配置

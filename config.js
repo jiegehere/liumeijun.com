@@ -410,8 +410,6 @@ const DEFAULT_CONFIG = {
   }
 };
 
-console.log(JSON.stringify(DEFAULT_CONFIG));
-
 // 从后端API获取配置
 async function loadConfigFromApi() {
   try {
@@ -477,6 +475,7 @@ async function initConfig() {
       CONFIG = apiConfig;
     }
   } catch (error) {
+    alert('初始化配置失败：' + error.message);
     console.error('Error initializing config:', error);
   }
 }
@@ -486,25 +485,12 @@ if (typeof window !== 'undefined') {
   window.ConfigManager = {
     getConfig: function () {
       return CONFIG;
-    },
-    getDefaultConfig: function () {
-      return DEFAULT_CONFIG;
-    },
+    }, 
     async saveConfig(config) {
       const success = await saveConfigToApi(config);
       if (success) {
         // 更新本地CONFIG对象
         CONFIG = config;
-        // 重新加载页面以应用新配置
-        window.location.reload();
-      }
-      return success;
-    },
-    async resetConfig() {
-      const success = await saveConfigToApi(DEFAULT_CONFIG);
-      if (success) {
-        // 更新本地CONFIG对象
-        CONFIG = { ...DEFAULT_CONFIG };
         // 重新加载页面以应用新配置
         window.location.reload();
       }
