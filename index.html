@@ -170,7 +170,7 @@
     <script type="text/javascript">
 
         // 从配置文件获取配置
-        const { COORDS, LOCATIONS, ROUTE, PHOTOS, WANNATO, MARKER_TEXT, AUDIO, IMAGES, TEXT, ANIMATION } = CONFIG;
+        const { COORDS, LOCATIONS, ROUTE_INFO, PHOTOS, WANNATO, MARKER_TEXT, AUDIO, IMAGES, TEXT, ANIMATION } = CONFIG;
         
         // 背景音乐
         let MUSIC;
@@ -209,12 +209,20 @@
                     return false;
                 }
 
+                // 根据contentType处理内容
+                let content = loopList[i].content;
+                if (loopList[i].contentType === 'image') {
+                    // 构造图片HTML，限制最大宽度为600像素
+                    content = `<img src="${content}" style="width: 100%; max-width: 600px; min-width: 400px; height: auto;" alt="${loopList[i].title || 'Image'}" />`;
+                    //content = `<img src="${content}" style="width: 500px; height: auto;" alt="${loopList[i].title || 'Image'}" />`;
+                }
+
                 const opts = {
                     title: loopList[i].title,
                     maxWidth: 600,
                     height: 0
                 };
-                const infoWindow = new BMap.InfoWindow(loopList[i].content, opts);
+                const infoWindow = new BMap.InfoWindow(content, opts);
                 map.openInfoWindow(infoWindow, new BMap.Point(loopList[i].point.lng, loopList[i].point.lat));
                 infoWindow.redraw();
                 i++;
@@ -329,7 +337,7 @@
                     
                     // 显示路线信息
                     setTimeout(() => {
-                        loopWin(ROUTE.INFO, 2000, showPhotos);
+                        loopWin(ROUTE_INFO, 2000, showPhotos);
                     }, 2000);
                 }, 1000);
             });
@@ -448,7 +456,14 @@
                     id: 'mp3',
                     url: AUDIO.src,
                     onload: () => {
-                        preLoadImages(IMAGES.PRELOAD, () => {
+                        // 遍历这几个数组ROUTE_INFO、PHOTOS、WANNATO，加载contentType = image 的图片
+                        // 过滤出 contentType 为 image 的项
+                        const imagesToLoad = [...ROUTE_INFO, ...PHOTOS, ...WANNATO]
+                            .filter(item => item.contentType === 'image')
+                            .map(item => item.content);
+                        console.log(imagesToLoad);
+
+                        preLoadImages(imagesToLoad, () => {
                             setTimeout(() => {
                                 const loading = document.getElementById('loading');
                                 loading.style.cursor = 'pointer';

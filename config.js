@@ -13,7 +13,7 @@ const DEFAULT_CONFIG = {
     // 想去的地方-中国中心
     WANT_TO_CN_CEN: { lng: 103.758427, lat: 36.172333 }
   },
-  
+
   /**
    * 位置配置
    * 用于展示男方、女方位置和中间城市
@@ -40,105 +40,102 @@ const DEFAULT_CONFIG = {
       coords: { lng: 113.256838, lat: 23.157309 }
     }
   },
-  
+
   /**
    * 路线信息配置
    * 用于展示路线和距离
    */
-  ROUTE: {
-    // 路线信息
-    INFO: [
-      {
-        title: '梅州 → 广州',
-        content: '426 km.',
-        point: { lng: 116.135018, lat: 24.33438 }
-      },
-      {
-        title: '梅州 → 广州',
-        content: '5 hours by train.',
-        point: { lng: 113.345774, lat: 23.153356 }
-      },
-      {
-        title: '变得是距离，不变的是坚持；',
-        content: '<img src="./images/ticket.jpg" width="200" height="149" alt="ticket" />',
-        point: { lng: 116.135018, lat: 24.33438 }
-      }
-    ]
-  },
-
-  /**
-   * 分享配置
-   * 用于社交媒体分享
-   */
-  SHARE: {
-    // 分享内容
-    CONTENT: '一个送给美君的生日礼物，也是送给所有异地恋人的礼物「变得是距离，不变的是坚持」。 via @LOO2K',
-    // 分享链接
-    URL: 'http://liumeijun.com/',
-    // 分享图片
-    PIC: './social.png'
-  },
+  ROUTE_INFO: [
+    {
+      title: '梅州 → 广州',
+      content: '426 km.',
+      point: { lng: 116.135018, lat: 24.33438 }
+    },
+    {
+      title: '梅州 → 广州',
+      content: '5 hours by train.',
+      point: { lng: 113.345774, lat: 23.153356 }
+    },
+    {
+      title: '变得是距离，不变的是坚持；',
+      contentType: 'image',
+      content: './images/ticket.jpg',
+      point: { lng: 116.135018, lat: 24.33438 }
+    }
+  ],
 
   // 照片数据配置
   PHOTOS: [
     {
       title: '纪念堂',
-      content: '<img src="./images/jiniantang.jpg" width="500" height="373" alt="纪念堂" />',
+      contentType: 'image',
+      content: './images/jiniantang.jpg',
       point: { lng: 113.271147, lat: 23.139616 }
     },
     {
       title: '陈家祠',
-      content: '<img src="./images/chenjiaci.jpg" width="500" height="373" alt="陈家祠" />',
+      contentType: 'image',
+      content: './images/chenjiaci.jpg',
       point: { lng: 113.252764, lat: 23.131838 }
     },
     {
       title: '看电影',
-      content: '<img src="./images/dianying.jpg" width="500" height="373" alt="看电影" />',
+      contentType: 'image',
+      content: './images/dianying.jpg',
       point: { lng: 113.268865, lat: 23.200458 }
     },
     {
       title: '',
-      content: '<img src="./images/chenjiaci1.jpg" width="500" height="373" alt="陈家祠" />',
+      contentType: 'image',
+      content: './images/chenjiaci1.jpg',
       point: { lng: 113.252764, lat: 23.131838 }
     },
     {
       title: '吃货',
-      content: '<img src="./images/beijingroad.jpg" width="280" height="375" alt="吃货" />',
+      contentType: 'image',
+      content: './images/beijingroad.jpg',
       point: { lng: 113.275619, lat: 23.127547 }
     },
     {
       title: '',
-      content: '<img src="./images/chenjiaci2.jpg" width="500" height="375" alt="陈家祠" />',
+      contentType: 'image',
+      content: './images/chenjiaci2.jpg',
       point: { lng: 113.252764, lat: 23.131838 }
     },
     {
       title: '臭美中...',
-      content: '<img src="./images/dress1.jpg" width="280" height="375" alt="臭美" />',
+      contentType: 'image',
+      content: './images/dress1.jpg',
       point: { lng: 113.275619, lat: 23.127547 }
     },
     {
       title: '臭美中...',
-      content: '<img src="./images/dress2.jpg" width="280" height="375" alt="臭美" />',
+      contentType: 'image',
+      content: './images/dress2.jpg',
       point: { lng: 113.248583, lat: 23.123725 }
     },
     {
       title: '',
-      content: '<img src="./images/you.jpg" width="499" height="373" alt="You" />',
+      contentType: 'image',
+      content: './images/you.jpg',
       point: { lng: 113.340995, lat: 23.106222 }
     },
     {
       title: '又是离开，又是不舍...',
-      content: '<img src="./images/leave.jpg" width="500" height="375" alt="离开" />',
+      contentType: 'image',
+      content: './images/leave.jpg',
       point: { lng: 113.358452, lat: 23.158306 }
     },
     {
       title: '红海湾',
-      content: '<img src="./images/sea.jpg" width="500" height="375" alt="红海湾" />',
+      contentType: 'image',
+      content: './images/sea.jpg',
       point: { lng: 115.573511, lat: 22.712665 }
     },
     {
       title: '后山',
-      content: '<img src="./images/s.jpg" width="500" height="375" alt="后山" />',
+      contentType: 'image',
+      content: './images/s.jpg',
       point: { lng: 115.622433, lat: 23.184734 }
     }
   ],
@@ -147,37 +144,43 @@ const DEFAULT_CONFIG = {
   WANNATO: [
     {
       title: '',
+      contentType: 'text',
       content: '地图标上想去的地方，有一天，带着你去流浪。',
       point: { lng: 103.758427, lat: 36.172333 }
     },
     {
       title: '厦门',
-      content: '<img src="./images/wannato/xiamen.jpg" width="500" height="338" alt="wannaTo" />',
+      contentType: 'image',
+      content: './images/wannato/xiamen.jpg',
       point: { lng: 118.148154, lat: 24.497912 }
     },
     {
       title: '凤凰古镇',
-      content: '<img src="./images/wannato/fenghuang.jpg" width="500" height="337" alt="wannaTo" />',
+      contentType: 'image',
+      content: './images/wannato/fenghuang.jpg',
       point: { lng: 100.21191, lat: 26.928061 }
     },
     {
       title: '桂林阳朔',
-      content: '<img src="./images/wannato/guilin.jpg" width="499" height="399" alt="wannaTo" />',
+      contentType: 'image',
+      content: './images/wannato/guilin.jpg',
       point: { lng: 110.503626, lat: 24.780932 }
     },
     {
       title: '西藏',
-      content: '<img src="./images/wannato/xizang.jpg" width="500" height="400" alt="wannaTo" />',
+      contentType: 'image',
+      content: './images/wannato/xizang.jpg',
       point: { lng: 91.115691, lat: 29.687083 }
     },
     {
       title: '杭州西湖',
-      content: '<img src="./images/wannato/xihu.jpg" width="500" height="327" alt="wannaTo" />',
+      contentType: 'image',
+      content: './images/wannato/xihu.jpg',
       point: { lng: 120.151946, lat: 30.250472 }
     }
   ],
 
-  // 标记点数据
+  // 生日快乐标记点数据
   MARKER_TEXT: [
     { lng: 80.050373, lat: 39.924749 },
     { lng: 80.064171, lat: 39.832612 },
@@ -357,27 +360,6 @@ const DEFAULT_CONFIG = {
 
   // 图片配置
   IMAGES: {
-    // 预加载图片列表
-    PRELOAD: [
-      './images/ticket.jpg',
-      './images/beijingroad.jpg',
-      './images/chenjiaci.jpg',
-      './images/chenjiaci1.jpg',
-      './images/chenjiaci2.jpg',
-      './images/dianying.jpg',
-      './images/dress1.jpg',
-      './images/dress2.jpg',
-      './images/jiniantang.jpg',
-      './images/leave.jpg',
-      './images/s.jpg',
-      './images/sea.jpg',
-      './images/you.jpg',
-      './images/wannato/fenghuang.jpg',
-      './images/wannato/guilin.jpg',
-      './images/wannato/xiamen.jpg',
-      './images/wannato/xihu.jpg',
-      './images/wannato/xizang.jpg'
-    ],
     // 加载动画图片
     LOADING: './images/site/loading.gif',
     // 分享图片
@@ -410,6 +392,19 @@ const DEFAULT_CONFIG = {
     INFO_WINDOW_TIMEOUT: 2500,
     // 标记点添加间隔
     MARKER_INTERVAL: 200
+  },
+
+  /**
+   * 分享配置
+   * 用于社交媒体分享
+   */
+  SHARE: {
+    // 分享内容
+    CONTENT: '一个送给美君的生日礼物，也是送给所有异地恋人的礼物「变得是距离，不变的是坚持」。 via @LOO2K',
+    // 分享链接
+    URL: 'http://liumeijun.com/',
+    // 分享图片
+    PIC: './social.png'
   }
 };
 
