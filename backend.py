@@ -81,7 +81,9 @@ def load_config():
         with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
     except Exception as e:
+        
         print(f"Error loading config: {e}")
+        exit(0)
         return DEFAULT_CONFIG
 
 # 保存配置
