@@ -369,6 +369,8 @@ const DEFAULT_CONFIG = {
   }
 };
 
+console.log(JSON.stringify(DEFAULT_CONFIG));
+
 // 从浏览器存储读取配置
 function loadConfigFromStorage() {
   try {
