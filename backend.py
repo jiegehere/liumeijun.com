@@ -22,69 +22,21 @@ if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
 # 加载默认配置
-DEFAULT_CONFIG = {
-    "COORDS": {
-        "INIT_MP_CEN": {"lng": 3.894763, "lat": 44.529534},
-        "WANT_TO_CN_CEN": {"lng": 103.758427, "lat": 36.172333}
-    },
-    "LOCATIONS": {
-        "BOY": {"name": "嘉应学院", "coords": {"lng": 116.135018, "lat": 24.33438}},
-        "GIRL": {"name": "广外艺", "coords": {"lng": 113.345774, "lat": 23.153356}},
-        "MIDDLE": {"name": "河源市", "coords": {"lng": 114.701682, "lat": 23.754195}},
-        "PHOTO_START_LOC": {"name": "广州市", "coords": {"lng": 113.256838, "lat": 23.157309}}
-    },
-    "ROUTE_INFO": [
-        {"title": "梅州 → 广州", "contentType": "text", "content": "426 km.", "point": {"lng": 116.135018, "lat": 24.33438}},
-        {"title": "梅州 → 广州", "contentType": "text", "content": "5 hours by train.", "point": {"lng": 113.345774, "lat": 23.153356}},
-        {"title": "变得是距离，不变的是坚持；", "contentType": "image", "content": "./images/ticket.jpg", "point": {"lng": 116.135018, "lat": 24.33438}}
-    ],
-    "PHOTOS": [],
-    "WANNATO": [],
-    "MARKER_TEXT": [],
-    "AUDIO": {
-        "src": "./LemonTree.mp3",
-        "fallback": "./LemonTree.ogg"
-    },
-    "IMAGES": {
-        "LOADING": "./images/site/loading.gif",
-        "SHARE": "./social.png"
-    },
-    "TEXT": {
-        "TITLE": "Hello Meijun!",
-        "LOADING": "正在加载...",
-        "START": "点击开始",
-        "BIRTHDAY_WISH": "Happy birthday to my dearest girl :) --by XXX",
-        "SHARE_WEIBO": "分享到微博",
-        "WATCH_AGAIN": "再看一次"
-    },
-    "ANIMATION": {
-        "ZOOM_SPEED": 800,
-        "PAN_DELAY": 800,
-        "INFO_WINDOW_TIMEOUT": 2500,
-        "MARKER_INTERVAL": 200
-    },
-    "SHARE": {
-        "CONTENT": "一个送给小美的生日礼物，也是送给所有异地恋人的礼物「变得是距离，不变的是坚持」。 via @你想念的",
-        "URL": "http://together.xiaofs.cn/",
-        "PIC": "./social.png"
-    }
-}
-
+DEFAULT_CONFIG_FILE = 'defalut_config.json'
 # 加载配置
+file = CONFIG_FILE
 if not os.path.exists(CONFIG_FILE):
-    with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
-        json.dump(DEFAULT_CONFIG, f, ensure_ascii=False, indent=2)
+    file = DEFAULT_CONFIG_FILE
 
 # 读取配置
-def load_config():
+def load_config(file):
+    print(f"Loading config from {file}")
     try:
-        with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+        with open(file, 'r', encoding='utf-8') as f:
             return json.load(f)
     except Exception as e:
-        
         print(f"Error loading config: {e}")
-        exit(0)
-        return DEFAULT_CONFIG
+        return {}
 
 # 保存配置
 def save_config(config):
@@ -128,7 +80,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             self._set_cors_headers()
             self.end_headers()
             
-            config = load_config()
+            config = load_config(file)
             self.wfile.write(json.dumps(config, ensure_ascii=False).encode('utf-8'))
         
         # 静态文件服务

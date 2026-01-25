@@ -416,13 +416,13 @@
         }
         
         // 加载配置
-        function loadConfig() {
+        async function loadConfig() {
             try {
                 // 使用ConfigManager获取配置
                 if (window.ConfigManager) {
-                    currentConfig = window.ConfigManager.getConfig();
+                    currentConfig = await window.ConfigManager.getConfig();
                 } else {
-                    showMessage('加载配置失败：' + error.message, 'error');
+                    showMessage('加载配置失败：配置管理器未初始化', 'error');
                     return;
                 }
                 console.log('xxxxxxx currentConfig', currentConfig);
@@ -906,8 +906,8 @@
         }
         
         // 页面加载时初始化
-        window.onload = function() {
-            loadConfig();
+        window.onload = async function() {
+            await loadConfig();
         };
     </script>
 </body>
