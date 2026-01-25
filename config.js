@@ -9,17 +9,61 @@ const DEFAULT_CONFIG = {
    */
   COORDS: {
     // 初始化地图中心
-    MP_CEN: { lng: 3.894763, lat: 44.529534 },
-    // 中国中心
-    CN_CEN: { lng: 103.758427, lat: 36.172333 },
-    // 嘉应学院
-    MZ_JYU: { lng: 116.135018, lat: 24.33438 },
-    // 广外艺
-    GZ_GTC: { lng: 113.345774, lat: 23.153356 },
-    // 广州市
-    GD_GZS: { lng: 113.256838, lat: 23.157309 },
-    // 河源市
-    GD_HYS: { lng: 114.701682, lat: 23.754195 }
+    INIT_MP_CEN: { lng: 3.894763, lat: 44.529534 },
+    // 想去的地方-中国中心
+    WANT_TO_CN_CEN: { lng: 103.758427, lat: 36.172333 }
+  },
+  
+  /**
+   * 位置配置
+   * 用于展示男方、女方位置和中间城市
+   */
+  LOCATIONS: {
+    // 男方位置
+    BOY: {
+      name: "嘉应学院",
+      coords: { lng: 116.135018, lat: 24.33438 }
+    },
+    // 女方位置
+    GIRL: {
+      name: "广外艺",
+      coords: { lng: 113.345774, lat: 23.153356 }
+    },
+    // 中间城市
+    MIDDLE: {
+      name: "河源市",
+      coords: { lng: 114.701682, lat: 23.754195 }
+    },
+    // 照片展示开始位置
+    PHOTO_START_LOC: {
+      name: "广州市",
+      coords: { lng: 113.256838, lat: 23.157309 }
+    }
+  },
+  
+  /**
+   * 路线信息配置
+   * 用于展示路线和距离
+   */
+  ROUTE: {
+    // 路线信息
+    INFO: [
+      {
+        title: '梅州 → 广州',
+        content: '426 km.',
+        point: { lng: 116.135018, lat: 24.33438 }
+      },
+      {
+        title: '梅州 → 广州',
+        content: '5 hours by train.',
+        point: { lng: 113.345774, lat: 23.153356 }
+      },
+      {
+        title: '变得是距离，不变的是坚持；',
+        content: '<img src="./images/ticket.jpg" width="200" height="149" alt="ticket" />',
+        point: { lng: 116.135018, lat: 24.33438 }
+      }
+    ]
   },
 
   /**
@@ -365,7 +409,7 @@ const DEFAULT_CONFIG = {
     // 信息窗口显示时间
     INFO_WINDOW_TIMEOUT: 2500,
     // 标记点添加间隔
-    MARKER_INTERVAL: 300
+    MARKER_INTERVAL: 200
   }
 };
 

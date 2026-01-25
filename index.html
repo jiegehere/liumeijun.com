@@ -169,221 +169,86 @@
     </script>
     <script type="text/javascript">
 
-        /*
-         * 常用变量
-         * 梅州嘉应学院： 116.135018,24.33438
-         * 广州广外艺：   113.345774,23.153356
-         * 426 KM
-         * 5H
-         */
-        // 从配置文件获取地理坐标
-        var MP_CEN = CONFIG.COORDS.MP_CEN;
-        var CN_CEN = CONFIG.COORDS.CN_CEN;
-        var MZ_JYU = CONFIG.COORDS.MZ_JYU;
-        var GZ_GTC = CONFIG.COORDS.GZ_GTC;
-        var GD_GZS = CONFIG.COORDS.GD_GZS;
-        var GD_HYS = CONFIG.COORDS.GD_HYS;
+        // 从配置文件获取配置
+        const { COORDS, LOCATIONS, ROUTE, PHOTOS, WANNATO, MARKER_TEXT, AUDIO, IMAGES, TEXT, ANIMATION } = CONFIG;
+        
         // 背景音乐
-        var MUSIC;
+        let MUSIC;
 
-        function zoomTo(zoom, time, callback, point) {
-            var time = time || 1000;
-            var callback = callback || function () { };
-            var loop = '';
-            function loopZoom() {
-                var curZoom = map.getZoom();
-                if (curZoom == zoom) {
+        // 工具函数：地图缩放动画
+        const zoomTo = (zoom, time = 1000, callback = () => {}, point = null) => {
+            let loop;
+            const loopZoom = () => {
+                const curZoom = map.getZoom();
+                if (curZoom === zoom) {
                     clearTimeout(loop);
                     callback();
                     return false;
                 }
-                var plus = curZoom > zoom ? -1 : 1;
-                var toZoom = curZoom + plus;
+                const plus = curZoom > zoom ? -1 : 1;
+                const toZoom = curZoom + plus;
                 map.setZoom(toZoom);
                 if (point) {
                     map.setCenter(point);
                 }
-                var center = map.getCenter();
                 loop = setTimeout(loopZoom, time);
-            }
+            };
             loopZoom();
-        }
+        };
 
-        function loopWin(loopList, time, callback) {
-            var i = 0;
-            var len = loopList.length;
-            var callback = callback || function () { };
-            var timeout = '';
+        // 工具函数：信息窗口轮播
+        const loopWin = (loopList, time = 2000, callback = () => {}) => {
+            let i = 0;
+            const len = loopList.length;
+            let timeout;
 
-            function loopWinInner() {
-                if (i == len) {
+            const loopWinInner = () => {
+                if (i === len) {
                     clearTimeout(timeout);
                     setTimeout(callback, 1000);
                     return false;
                 }
 
-                var opts = {
+                const opts = {
                     title: loopList[i].title,
                     maxWidth: 600,
                     height: 0
-                }
-                var infoWindow = new BMap.InfoWindow(loopList[i].content, opts);
+                };
+                const infoWindow = new BMap.InfoWindow(loopList[i].content, opts);
                 map.openInfoWindow(infoWindow, new BMap.Point(loopList[i].point.lng, loopList[i].point.lat));
                 infoWindow.redraw();
                 i++;
-                if (loopList[i]) {
-                    var time = loopList[i].timeout || 2000;
-                } else {
-                    var time = 2000;
-                }
-                timeout = setTimeout(loopWinInner, time);
-            }
+                const nextTime = loopList[i]?.timeout || time;
+                timeout = setTimeout(loopWinInner, nextTime);
+            };
 
             loopWinInner();
-        }
+        };
 
-        function panZoom_GTC() {
-            map.panTo(new BMap.Point(GZ_GTC.lng, GZ_GTC.lat));
-            setTimeout(function () {
-                zoomTo(18, 800, function () {
-                    var marker = new BMap.Marker(GZ_GTC);
-                    map.addOverlay(marker);
-                    marker.setAnimation(BMAP_ANIMATION_BOUNCE);
-                    setTimeout(panZoom_JYU, 1000);
-                }, GZ_GTC);
-            }, 800);
-        }
-
-        function panZoom_JYU() {
-            zoomTo(8, 1000, function () {
-                map.panTo(new BMap.Point(MZ_JYU.lng, MZ_JYU.lat));
-                setTimeout(function () {
-                    zoomTo(16, 800, function () {
-                        var marker = new BMap.Marker(MZ_JYU);
-                        map.addOverlay(marker);
-                        marker.setAnimation(BMAP_ANIMATION_BOUNCE);
-                        setTimeout(panZoom_HEY, 1000);
-                    });
-                }, 1000);
-            });
-        }
-
-        function panZoom_HEY() {
-            zoomTo(9, 1000, function () {
-                map.panTo(new BMap.Point(GD_HYS.lng, GD_HYS.lat));
-                setTimeout(function () {
-                    var start = new BMap.Point(MZ_JYU.lng, MZ_JYU.lat);
-                    var end = new BMap.Point(GZ_GTC.lng, GZ_GTC.lat);
-                    var driving2 = new BMap.DrivingRoute(map, { renderOptions: { map: map, autoViewport: false } });
-                    driving2.search(start, end);
-                    setTimeout(function () {
-                        var between = [
-                            {
-                                title: '梅州 → 广州',
-                                content: '426 km.',
-                                point: MZ_JYU
-                            },
-                            {
-                                title: '梅州 → 广州',
-                                content: '5 hours by train.',
-                                point: GZ_GTC
-                            },
-                            {
-                                title: '变得是距离，不变的是坚持；',
-                                content: '<img src="./images/ticket.jpg" width="200" height="149" alt="ticket" />',
-                                point: MZ_JYU
-                            }
-                        ];
-                        loopWin(between, 2000, showPhotos);
-                    }, 2000);
-                }, 1000);
-            });
-        }
-
-        function showPhotos() {
-            map.clearOverlays();
-            map.panTo(new BMap.Point(GD_GZS.lng, GD_GZS.lat));
-            setTimeout(function () {
-                zoomTo(13, 1000, function () {
-                    var photos = CONFIG.PHOTOS;
-                    loopWin(photos, 2500, wannaTo);
-                });
-            }, 1000);
-        }
-
-        function wannaTo() {
-            map.closeInfoWindow();
-            zoomTo(5, 1000, function () {
-                map.panTo(new BMap.Point(CN_CEN.lng, CN_CEN.lat));
-                map.setMapType(BMAP_HYBRID_MAP);
-                setTimeout(function () {
-                    var wanna = CONFIG.WANNATO;
-                    loopWin(wanna, 1000, showMarkerText);
-                }, 1000);
-            });
-        }
-
-        var markerText = CONFIG.MARKER_TEXT;
-
-        function addMarker(lng, lat) {
-            var marker = new BMap.Marker(new BMap.Point(lng, lat));
+        // 工具函数：添加标记
+        const addMarker = (lng, lat) => {
+            const marker = new BMap.Marker(new BMap.Point(lng, lat));
             marker.setAnimation(BMAP_ANIMATION_DROP);
-            map.addOverlay(marker)
-        }
+            map.addOverlay(marker);
+        };
 
-        if (!Array.prototype.shuffle) {
-            Array.prototype.shuffle = function () {
-                for (var j, x, i = this.length; i; j = parseInt(Math.random() * i), x = this[--i], this[i] = this[j], this[j] = x);
-                return this;
-            };
-        }
-        markerText.shuffle();
-        function loopAddMarker(markers, callback) {
-            var i = 0;
-            var len = markers.length;
-            var callback = callback || function () { };
-            var loop = '';
-            function loopAddMarkerInner() {
-                if (i == len) {
-                    clearTimeout(loop);
-                    callback();
-                    return false;
-                }
-                addMarker(markers[i].lng, markers[i].lat);
-                i++;
-                loop = setTimeout(loopAddMarkerInner, 300);
-            }
-            loopAddMarkerInner();
-        }
+        // 工具函数：添加弹跳标记
+        const addBouncingMarker = (coords) => {
+            const marker = new BMap.Marker(coords);
+            map.addOverlay(marker);
+            marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+        };
 
-        function showMarkerText() {
-            map.closeInfoWindow();
-            map.panTo(new BMap.Point(82.699584, 39.8202));
-            setTimeout(function () {
-                zoomTo(9, 1000, function () {
-                    loopAddMarker(markerText, function () {
-                        setTimeout(function () {
-                            slideDown('theEnd', 1000, function () {
-                                var theEndText = '<div id="theEndText">' + CONFIG.TEXT.BIRTHDAY_WISH + '<br />' +
-                                    '<button data-toggle="wshare" data-type="weibo">' + CONFIG.TEXT.SHARE_WEIBO + '</button>' +
-                                    '<button onclick="window.location.reload();">' + CONFIG.TEXT.WATCH_AGAIN + '</button></div>';
-                                document.getElementById('theEnd').innerHTML = theEndText;
-                            });
-                        }, 5000);
-                    });
-                })
-            }, 1000);
-        }
-
-        function slideDown(id, speed, callback) {
-            var object = document.getElementById(id);
-            var timeout = speed * 0.001;
-            var callback = callback || function () { };
-            var loop = '';
+        // 工具函数：下滑动画
+        const slideDown = (id, speed = 1000, callback = () => {}) => {
+            const object = document.getElementById(id);
+            const timeout = speed * 0.001;
+            let loop;
             object.style.display = 'block';
             object.style.height = '0%';
-            function slideDownInner() {
-                var curHeight = parseFloat(object.style.height) || 0;
+            
+            const slideDownInner = () => {
+                const curHeight = parseFloat(object.style.height) || 0;
                 if (curHeight >= 100) {
                     clearTimeout(loop);
                     callback();
@@ -391,17 +256,19 @@
                 }
                 object.style.height = (curHeight + 0.1) + '%';
                 loop = setTimeout(slideDownInner, timeout);
-            }
+            };
+            
             slideDownInner();
-        }
+        };
 
-        function preLoadImages(imagesList, callback) {
-            var len = imagesList.length;
-            var i = 0;
-            var images = {};
-            var callback = callback || function () { };
-            function loadImage() {
-                if (i == len) {
+        // 工具函数：预加载图片
+        const preLoadImages = (imagesList, callback = () => {}) => {
+            const len = imagesList.length;
+            let i = 0;
+            const images = {};
+            
+            const loadImage = () => {
+                if (i === len) {
                     callback();
                     return false;
                 }
@@ -409,70 +276,198 @@
                 images[i].src = imagesList[i];
                 i++;
                 loadImage();
-            }
+            };
+            
             loadImage();
+        };
+
+        // 工具函数：数组随机排序
+        if (!Array.prototype.shuffle) {
+            Array.prototype.shuffle = function () {
+                for (let j, x, i = this.length; i; j = parseInt(Math.random() * i), x = this[--i], this[i] = this[j], this[j] = x);
+                return this;
+            };
         }
 
-        var map;
+        // 展示女方位置
+        const showGirlLocation = () => {
+            const { coords } = LOCATIONS.GIRL;
+            map.panTo(new BMap.Point(coords.lng, coords.lat));
+            setTimeout(() => {
+                zoomTo(18, ANIMATION.ZOOM_SPEED, () => {
+                    addBouncingMarker(coords);
+                    setTimeout(showBoyLocation, 1000);
+                }, coords);
+            }, ANIMATION.PAN_DELAY);
+        };
 
-        function initMap() {
+        // 展示男方位置
+        const showBoyLocation = () => {
+            zoomTo(8, 1000, () => {
+                const { coords } = LOCATIONS.BOY;
+                map.panTo(new BMap.Point(coords.lng, coords.lat));
+                setTimeout(() => {
+                    zoomTo(16, ANIMATION.ZOOM_SPEED, () => {
+                        addBouncingMarker(coords);
+                        setTimeout(showMiddleCity, 1000);
+                    });
+                }, 1000);
+            });
+        };
+
+        // 展示中间城市和路线信息
+        const showMiddleCity = () => {
+            zoomTo(9, 1000, () => {
+                const { coords } = LOCATIONS.MIDDLE;
+                map.panTo(new BMap.Point(coords.lng, coords.lat));
+                setTimeout(() => {
+                    // 绘制路线
+                    const start = new BMap.Point(LOCATIONS.BOY.coords.lng, LOCATIONS.BOY.coords.lat);
+                    const end = new BMap.Point(LOCATIONS.GIRL.coords.lng, LOCATIONS.GIRL.coords.lat);
+                    const driving2 = new BMap.DrivingRoute(map, { renderOptions: { map: map, autoViewport: false } });
+                    driving2.search(start, end);
+                    
+                    // 显示路线信息
+                    setTimeout(() => {
+                        loopWin(ROUTE.INFO, 2000, showPhotos);
+                    }, 2000);
+                }, 1000);
+            });
+        };
+
+        // 展示共同经历的照片
+        const showPhotos = () => {
+            map.clearOverlays();
+            const { coords } = LOCATIONS.PHOTO_START_LOC;
+            map.panTo(new BMap.Point(coords.lng, coords.lat));
+            setTimeout(() => {
+                zoomTo(13, 1000, () => {
+                    // 使用for循环处理多个地点的照片
+                    loopWin(PHOTOS, 2500, showWannaGoPlaces);
+                });
+            }, 1000);
+        };
+
+        // 展示想去的地方
+        const showWannaGoPlaces = () => {
+            map.closeInfoWindow();
+            zoomTo(5, 1000, () => {
+                map.panTo(new BMap.Point(COORDS.WANT_TO_CN_CEN.lng, COORDS.WANT_TO_CN_CEN.lat));
+                map.setMapType(BMAP_HYBRID_MAP);
+                setTimeout(() => {
+                    // 使用for循环处理多个想去的地方
+                    loopWin(WANNATO, 1000, showMarkerAnimation);
+                }, 1000);
+            });
+        };
+
+        // 展示标记点动画
+        const showMarkerAnimation = () => {
+            map.closeInfoWindow();
+            map.panTo(new BMap.Point(82.699584, 39.8202));
+            setTimeout(() => {
+                zoomTo(9, 1000, () => {
+                    // 使用for循环处理多个标记点
+                    const shuffledMarkers = [...MARKER_TEXT].shuffle();
+                    let i = 0;
+                    const len = shuffledMarkers.length;
+                    let loop;
+                    
+                    const loopAddMarker = () => {
+                        if (i === len) {
+                            clearTimeout(loop);
+                            setTimeout(showEndScreen, 5000);
+                            return false;
+                        }
+                        const marker = shuffledMarkers[i];
+                        addMarker(marker.lng, marker.lat);
+                        i++;
+                        loop = setTimeout(loopAddMarker, ANIMATION.MARKER_INTERVAL);
+                    };
+                    
+                    loopAddMarker();
+                });
+            }, 1000);
+        };
+
+        // 显示结束画面
+        const showEndScreen = () => {
+            slideDown('theEnd', 1000, () => {
+                const theEndText = `
+                    <div id="theEndText">
+                        ${TEXT.BIRTHDAY_WISH}<br />
+                        <button data-toggle="wshare" data-type="weibo">${TEXT.SHARE_WEIBO}</button>
+                        <button onclick="window.location.reload();">${TEXT.WATCH_AGAIN}</button>
+                    </div>
+                `;
+                document.getElementById('theEnd').innerHTML = theEndText;
+            });
+        };
+
+        let map;
+
+        // 初始化地图-全屏地图展示开始入口函数
+        const initMap = () => {
             map = new BMap.Map("map");
-            var point = new BMap.Point(MP_CEN.lng, MP_CEN.lat);
+            const point = new BMap.Point(COORDS.INIT_MP_CEN.lng, COORDS.INIT_MP_CEN.lat);
             map.centerAndZoom(point, 4);
             map.disableDragging();
             map.disableDoubleClickZoom();
             init();
-        }
+        };
 
-        function init() {
+        // 初始化应用
+        const init = () => {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('theEnd').style.height = '0';
             document.getElementById('theEnd').innerHTML = '';
             map.setMapType(BMAP_NORMAL_MAP);
-            var point = new BMap.Point(MP_CEN.lng, MP_CEN.lat);
+            const point = new BMap.Point(COORDS.INIT_MP_CEN.lng, COORDS.INIT_MP_CEN.lat);
             map.centerAndZoom(point, 4);
             map.clearOverlays();
             map.reset();
             MUSIC.play();
-            map.panTo(new BMap.Point(GZ_GTC.lng, GZ_GTC.lat));
-            panZoom_GTC();
-        }
+            
+            // 开始展示
+            const { coords } = LOCATIONS.GIRL;
+            map.panTo(new BMap.Point(coords.lng, coords.lat));
+            showGirlLocation();
+        };
 
-        function loadScript() {
-            var script = document.createElement("script");
+        // 加载百度地图脚本
+        const loadScript = () => {
+            const script = document.createElement("script");
             script.src = "https://api.map.baidu.com/api?v=3.0&ak=EXl1klVct9z0GXE7KAkPUkawwDhDN0h9&callback=initMap";
             document.body.appendChild(script);
-        }
+        };
 
-        window.onload = function () {
-            var imglist = CONFIG.IMAGES.PRELOAD;
-
-            soundManager.setup({
-                url: './sm/',
-                onready: initMP3
-            });
-
-            function initMP3() {
-
+        // 页面加载完成后初始化
+        window.onload = () => {
+            const initMP3 = () => {
                 MUSIC = soundManager.createSound({
                     id: 'mp3',
-                    url: CONFIG.AUDIO.src,
-                    onload: function () {
-                        preLoadImages(CONFIG.IMAGES.PRELOAD, function () {
-                            setTimeout(function () {
-                                var loading = document.getElementById('loading');
+                    url: AUDIO.src,
+                    onload: () => {
+                        preLoadImages(IMAGES.PRELOAD, () => {
+                            setTimeout(() => {
+                                const loading = document.getElementById('loading');
                                 loading.style.cursor = 'pointer';
-                                loading.innerHTML = CONFIG.TEXT.START;
-                                loading.onclick = function () {
+                                loading.innerHTML = TEXT.START;
+                                loading.onclick = () => {
                                     screenfull && screenfull.request();
                                     loadScript();
-                                }
+                                };
                             }, 3000);
                         });
                     }
                 });
                 MUSIC.load();
-            }
+            };
+
+            soundManager.setup({
+                url: './sm/',
+                onready: initMP3
+            });
         };
     </script>
     <script>
