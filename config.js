@@ -404,7 +404,7 @@ const DEFAULT_CONFIG = {
     // 分享内容
     CONTENT: '一个送给美君的生日礼物，也是送给所有异地恋人的礼物「变得是距离，不变的是坚持」。 via @LOO2K',
     // 分享链接
-    URL: 'http://liumeijun.com/',
+    URL: 'http://liumeijun.com/xxxxxxxxxxx',
     // 分享图片
     PIC: './social.png'
   }
@@ -412,64 +412,74 @@ const DEFAULT_CONFIG = {
 
 console.log(JSON.stringify(DEFAULT_CONFIG));
 
-// 从浏览器存储读取配置
-function loadConfigFromStorage() {
+// 从后端API获取配置
+async function loadConfigFromApi() {
   try {
-    const storedConfig = localStorage.getItem('siteConfig');
-    if (storedConfig) {
-      return JSON.parse(storedConfig);
+    const response = await fetch('/api/config');
+    if (response.ok) {
+      return await response.json();
     }
   } catch (error) {
-    console.error('Error loading config from storage:', error);
+    console.error('Error loading config from API:', error);
   }
   return null;
 }
 
-// 合并默认配置和存储的配置
-function mergeConfigs(defaultConfig, storedConfig) {
-  if (!storedConfig) {
-    return defaultConfig;
-  }
-
-  const merged = { ...defaultConfig };
-
-  // 递归合并对象
-  function deepMerge(target, source) {
-    for (const key in source) {
-      if (source.hasOwnProperty(key)) {
-        if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
-          if (!target[key]) {
-            target[key] = {};
-          }
-          deepMerge(target[key], source[key]);
-        } else if (Array.isArray(source[key])) {
-          // 对于数组，直接替换
-          target[key] = source[key];
-        } else {
-          // 对于基本类型，直接替换
-          target[key] = source[key];
-        }
-      }
+// 保存配置到后端API
+async function saveConfigToApi(config) {
+  try {
+    const response = await fetch('/api/config', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(config)
+    });
+    if (response.ok) {
+      const result = await response.json();
+      return result.success;
     }
+  } catch (error) {
+    console.error('Error saving config to API:', error);
   }
-
-  deepMerge(merged, storedConfig);
-  return merged;
+  return false;
 }
 
-// 保存配置到浏览器存储
-function saveConfigToStorage(config) {
+// 上传图片到后端API
+async function uploadImageToApi(file) {
   try {
-    localStorage.setItem('siteConfig', JSON.stringify(config));
-    return true;
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      return result;
+    }
   } catch (error) {
-    console.error('Error saving config to storage:', error);
-    return false;
+    console.error('Error uploading image:', error);
   }
+  return { success: false, message: '上传失败' };
 }
 
 // 创建最终的CONFIG对象
-const CONFIG = mergeConfigs(DEFAULT_CONFIG, loadConfigFromStorage());
+let CONFIG = { ...DEFAULT_CONFIG };
+
+// 初始化配置
+async function initConfig() {
+  try {
+    const apiConfig = await loadConfigFromApi();
+    if (apiConfig) {
+      CONFIG = apiConfig;
+    }
+  } catch (error) {
+    console.error('Error initializing config:', error);
+  }
+}
 
 // 导出配置管理函数（用于配置管理页面）
 if (typeof window !== 'undefined') {
@@ -480,17 +490,29 @@ if (typeof window !== 'undefined') {
     getDefaultConfig: function () {
       return DEFAULT_CONFIG;
     },
-    saveConfig: function (config) {
-      const success = saveConfigToStorage(config);
+    async saveConfig(config) {
+      const success = await saveConfigToApi(config);
       if (success) {
+        // 更新本地CONFIG对象
+        CONFIG = config;
         // 重新加载页面以应用新配置
         window.location.reload();
       }
       return success;
     },
-    resetConfig: function () {
-      localStorage.removeItem('siteConfig');
-      window.location.reload();
-    }
+    async resetConfig() {
+      const success = await saveConfigToApi(DEFAULT_CONFIG);
+      if (success) {
+        // 更新本地CONFIG对象
+        CONFIG = { ...DEFAULT_CONFIG };
+        // 重新加载页面以应用新配置
+        window.location.reload();
+      }
+      return success;
+    },
+    uploadImage: uploadImageToApi
   };
+  
+  // 初始化配置
+  initConfig();
 }

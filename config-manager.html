@@ -208,176 +208,169 @@
             <h2>快速操作</h2>
             <button class="btn" onclick="saveAllConfig()">保存所有配置</button>
             <button class="btn btn-secondary" onclick="loadConfig()">刷新配置</button>
-            <button class="btn btn-danger" onclick="resetConfig()">重置为默认配置</button>
-            <a href="index.html" class="btn btn-secondary" target="_blank">预览网站</a>
+            <button class="btn btn-secondary" onclick="switchToJson()">JSON编辑</button>
         </div>
         
-        <!-- 标签页 -->
-        <div class="tab-container">
-            <div class="tabs">
-                <div class="tab active" onclick="switchTab('basic')">基本配置</div>
-                <div class="tab" onclick="switchTab('photos')">照片管理</div>
-                <div class="tab" onclick="switchTab('wannato')">想去的地方</div>
-                <div class="tab" onclick="switchTab('advanced')">高级配置</div>
-                <div class="tab" onclick="switchTab('json')">JSON编辑</div>
-            </div>
-            
-            <!-- 基本配置 -->
-            <div id="basic" class="tab-content active">
-                <div class="grid">
-                    <!-- 文本配置 -->
-                    <div class="card">
-                        <div class="card-header">文本配置</div>
-                        <div class="form-group">
-                            <label>页面标题</label>
-                            <input type="text" id="textTitle" placeholder="输入页面标题">
-                        </div>
-                        <div class="form-group">
-                            <label>加载提示</label>
-                            <input type="text" id="textLoading" placeholder="输入加载提示文本">
-                        </div>
-                        <div class="form-group">
-                            <label>开始按钮文本</label>
-                            <input type="text" id="textStart" placeholder="输入开始按钮文本">
-                        </div>
-                        <div class="form-group">
-                            <label>生日祝福</label>
-                            <input type="text" id="textBirthdayWish" placeholder="输入生日祝福文本">
-                        </div>
-                        <div class="form-group">
-                            <label>分享到微博按钮</label>
-                            <input type="text" id="textShareWeibo" placeholder="输入分享按钮文本">
-                        </div>
-                        <div class="form-group">
-                            <label>再看一次按钮</label>
-                            <input type="text" id="textWatchAgain" placeholder="输入再看一次按钮文本">
-                        </div>
+        <!-- 基本配置 -->
+        <div id="basic" class="section">
+            <h2>基本配置</h2>
+            <div class="grid">
+                <!-- 文本配置 -->
+                <div class="card">
+                    <div class="card-header">文本配置</div>
+                    <div class="form-group">
+                        <label>页面标题</label>
+                        <input type="text" id="textTitle" placeholder="输入页面标题">
                     </div>
-                    
-                    <!-- 音频配置 -->
-                    <div class="card">
-                        <div class="card-header">音频配置</div>
-                        <div class="form-group">
-                            <label>音频文件路径</label>
-                            <input type="text" id="audioSrc" placeholder="输入音频文件路径">
-                        </div>
-                        <div class="form-group">
-                            <label>音频文件备选路径</label>
-                            <input type="text" id="audioFallback" placeholder="输入音频文件备选路径">
-                        </div>
+                    <div class="form-group">
+                        <label>加载提示</label>
+                        <input type="text" id="textLoading" placeholder="输入加载提示文本">
                     </div>
-                    
-                    <!-- 分享配置 -->
-                    <div class="card">
-                        <div class="card-header">分享配置</div>
-                        <div class="form-group">
-                            <label>分享内容</label>
-                            <textarea id="shareContent" placeholder="输入分享内容"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>分享链接</label>
-                            <input type="text" id="shareUrl" placeholder="输入分享链接">
-                        </div>
-                        <div class="form-group">
-                            <label>分享图片</label>
-                            <input type="text" id="sharePic" placeholder="输入分享图片路径">
-                        </div>
+                    <div class="form-group">
+                        <label>开始按钮文本</label>
+                        <input type="text" id="textStart" placeholder="输入开始按钮文本">
                     </div>
-                </div>
-            </div>
-            
-            <!-- 照片管理 -->
-            <div id="photos" class="tab-content">
-                <h3>照片列表</h3>
-                <p>点击下方按钮添加新照片，或点击照片项进行编辑和删除。</p>
-                
-                <div id="photosList" class="array-list">
-                    <!-- 照片项将通过JavaScript动态添加 -->
+                    <div class="form-group">
+                        <label>生日祝福</label>
+                        <input type="text" id="textBirthdayWish" placeholder="输入生日祝福文本">
+                    </div>
+                    <div class="form-group">
+                        <label>分享到微博按钮</label>
+                        <input type="text" id="textShareWeibo" placeholder="输入分享按钮文本">
+                    </div>
+                    <div class="form-group">
+                        <label>再看一次按钮</label>
+                        <input type="text" id="textWatchAgain" placeholder="输入再看一次按钮文本">
+                    </div>
                 </div>
                 
-                <button class="btn" onclick="addPhoto()">添加新照片</button>
-            </div>
-            
-            <!-- 想去的地方 -->
-            <div id="wannato" class="tab-content">
-                <h3>想去的地方列表</h3>
-                <p>点击下方按钮添加新地点，或点击地点项进行编辑和删除。</p>
-                
-                <div id="wannatoList" class="array-list">
-                    <!-- 地点项将通过JavaScript动态添加 -->
+                <!-- 音频配置 -->
+                <div class="card">
+                    <div class="card-header">音频配置</div>
+                    <div class="form-group">
+                        <label>音频文件路径</label>
+                        <input type="text" id="audioSrc" placeholder="输入音频文件路径">
+                    </div>
+                    <div class="form-group">
+                        <label>音频文件备选路径</label>
+                        <input type="text" id="audioFallback" placeholder="输入音频文件备选路径">
+                    </div>
                 </div>
                 
-                <button class="btn" onclick="addWannaTo()">添加新地点</button>
-            </div>
-            
-            <!-- 高级配置 -->
-            <div id="advanced" class="tab-content">
-                <div class="grid">
-                    <!-- 地理坐标配置 -->
-                    <div class="card">
-                        <div class="card-header">地理坐标配置</div>
-                        <div class="form-group">
-                            <label>初始化地图中心</label>
-                            <div class="coordinate-inputs">
-                                <input type="text" id="mpCenLng" placeholder="经度">
-                                <input type="text" id="mpCenLat" placeholder="纬度">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>中国中心</label>
-                            <div class="coordinate-inputs">
-                                <input type="text" id="cnCenLng" placeholder="经度">
-                                <input type="text" id="cnCenLat" placeholder="纬度">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>嘉应学院</label>
-                            <div class="coordinate-inputs">
-                                <input type="text" id="mzJyuLng" placeholder="经度">
-                                <input type="text" id="mzJyuLat" placeholder="纬度">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>广外艺</label>
-                            <div class="coordinate-inputs">
-                                <input type="text" id="gzGtcLng" placeholder="经度">
-                                <input type="text" id="gzGtcLat" placeholder="纬度">
-                            </div>
-                        </div>
+                <!-- 分享配置 -->
+                <div class="card">
+                    <div class="card-header">分享配置</div>
+                    <div class="form-group">
+                        <label>分享内容</label>
+                        <textarea id="shareContent" placeholder="输入分享内容"></textarea>
                     </div>
-                    
-                    <!-- 动画配置 -->
-                    <div class="card">
-                        <div class="card-header">动画配置</div>
-                        <div class="form-group">
-                            <label>缩放动画速度</label>
-                            <input type="text" id="animationZoomSpeed" placeholder="输入缩放动画速度">
-                        </div>
-                        <div class="form-group">
-                            <label>平移动画延迟</label>
-                            <input type="text" id="animationPanDelay" placeholder="输入平移动画延迟">
-                        </div>
-                        <div class="form-group">
-                            <label>信息窗口显示时间</label>
-                            <input type="text" id="animationInfoWindowTimeout" placeholder="输入信息窗口显示时间">
-                        </div>
-                        <div class="form-group">
-                            <label>标记点添加间隔</label>
-                            <input type="text" id="animationMarkerInterval" placeholder="输入标记点添加间隔">
-                        </div>
+                    <div class="form-group">
+                        <label>分享链接</label>
+                        <input type="text" id="shareUrl" placeholder="输入分享链接">
+                    </div>
+                    <div class="form-group">
+                        <label>分享图片</label>
+                        <input type="text" id="sharePic" placeholder="输入分享图片路径">
+                        <input type="file" id="sharePicUpload" accept="image/*" style="margin-top: 10px;">
+                        <button class="btn btn-sm" onclick="uploadImage('sharePic')" style="margin-top: 10px;">上传图片</button>
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <!-- 照片管理 -->
+        <div id="photos" class="section">
+            <h2>照片管理</h2>
+            <p>点击下方按钮添加新照片，或点击照片项进行编辑和删除。</p>
             
-            <!-- JSON编辑 -->
-            <div id="json" class="tab-content">
-                <h3>直接编辑 JSON 配置</h3>
-                <p>您可以直接编辑下面的 JSON 配置，然后保存：</p>
-                <textarea id="configJson" class="json-editor" style="width: 100%; height: 500px;"></textarea>
-                <div class="actions">
-                    <button class="btn" onclick="loadConfigToJson()">加载当前配置</button>
-                    <button class="btn" onclick="saveJsonConfig()">保存 JSON 配置</button>
+            <div id="photosList" class="array-list">
+                <!-- 照片项将通过JavaScript动态添加 -->
+            </div>
+            
+            <button class="btn" onclick="addPhoto()">添加新照片</button>
+        </div>
+        
+        <!-- 想去的地方 -->
+        <div id="wannato" class="section">
+            <h2>想去的地方</h2>
+            <p>点击下方按钮添加新地点，或点击地点项进行编辑和删除。</p>
+            
+            <div id="wannatoList" class="array-list">
+                <!-- 地点项将通过JavaScript动态添加 -->
+            </div>
+            
+            <button class="btn" onclick="addWannaTo()">添加新地点</button>
+        </div>
+        
+        <!-- 高级配置 -->
+        <div id="advanced" class="section">
+            <h2>高级配置</h2>
+            <div class="grid">
+                <!-- 地理坐标配置 -->
+                <div class="card">
+                    <div class="card-header">地理坐标配置</div>
+                    <div class="form-group">
+                        <label>初始化地图中心</label>
+                        <div class="coordinate-inputs">
+                            <input type="text" id="mpCenLng" placeholder="经度">
+                            <input type="text" id="mpCenLat" placeholder="纬度">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>中国中心</label>
+                        <div class="coordinate-inputs">
+                            <input type="text" id="cnCenLng" placeholder="经度">
+                            <input type="text" id="cnCenLat" placeholder="纬度">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>嘉应学院</label>
+                        <div class="coordinate-inputs">
+                            <input type="text" id="mzJyuLng" placeholder="经度">
+                            <input type="text" id="mzJyuLat" placeholder="纬度">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>广外艺</label>
+                        <div class="coordinate-inputs">
+                            <input type="text" id="gzGtcLng" placeholder="经度">
+                            <input type="text" id="gzGtcLat" placeholder="纬度">
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- 动画配置 -->
+                <div class="card">
+                    <div class="card-header">动画配置</div>
+                    <div class="form-group">
+                        <label>缩放动画速度</label>
+                        <input type="text" id="animationZoomSpeed" placeholder="输入缩放动画速度">
+                    </div>
+                    <div class="form-group">
+                        <label>平移动画延迟</label>
+                        <input type="text" id="animationPanDelay" placeholder="输入平移动画延迟">
+                    </div>
+                    <div class="form-group">
+                        <label>信息窗口显示时间</label>
+                        <input type="text" id="animationInfoWindowTimeout" placeholder="输入信息窗口显示时间">
+                    </div>
+                    <div class="form-group">
+                        <label>标记点添加间隔</label>
+                        <input type="text" id="animationMarkerInterval" placeholder="输入标记点添加间隔">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- JSON编辑 -->
+        <div id="json" class="section" style="display: none;">
+            <h2>JSON编辑</h2>
+            <p>您可以直接编辑下面的 JSON 配置，然后保存：</p>
+            <textarea id="configJson" class="json-editor" style="width: 100%; height: 500px;"></textarea>
+            <div class="actions">
+                <button class="btn" onclick="loadConfigToJson()">加载当前配置</button>
+                <button class="btn" onclick="saveJsonConfig()">保存 JSON 配置</button>
+                <button class="btn btn-secondary" onclick="switchToBasic()">返回基本配置</button>
             </div>
         </div>
     </div>
@@ -400,25 +393,28 @@
             }, 3000);
         }
         
-        // 切换标签页
-        function switchTab(tabId) {
-            // 隐藏所有标签内容
-            const tabContents = document.querySelectorAll('.tab-content');
-            tabContents.forEach(content => {
-                content.classList.remove('active');
-            });
+        // 切换到JSON编辑页面
+        function switchToJson() {
+            // 隐藏所有配置模块
+            document.getElementById('basic').style.display = 'none';
+            document.getElementById('photos').style.display = 'none';
+            document.getElementById('wannato').style.display = 'none';
+            document.getElementById('advanced').style.display = 'none';
             
-            // 移除所有标签的激活状态
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.classList.remove('active');
-            });
+            // 显示JSON编辑模块
+            document.getElementById('json').style.display = 'block';
+        }
+        
+        // 切换到基本配置页面
+        function switchToBasic() {
+            // 显示所有配置模块
+            document.getElementById('basic').style.display = 'block';
+            document.getElementById('photos').style.display = 'block';
+            document.getElementById('wannato').style.display = 'block';
+            document.getElementById('advanced').style.display = 'block';
             
-            // 显示选中的标签内容
-            document.getElementById(tabId).classList.add('active');
-            
-            // 激活选中的标签
-            event.target.classList.add('active');
+            // 隐藏JSON编辑模块
+            document.getElementById('json').style.display = 'none';
         }
         
         // 加载配置
@@ -523,7 +519,7 @@
         }
         
         // 保存所有配置
-        function saveAllConfig() {
+        async function saveAllConfig() {
             try {
                 // 收集基本配置
                 collectBasicConfig();
@@ -538,7 +534,7 @@
                 collectAdvancedConfig();
                 
                 // 保存配置
-                saveConfig(currentConfig);
+                await saveConfig(currentConfig);
             } catch (error) {
                 console.error('Error saving config:', error);
                 showMessage('保存配置失败：' + error.message, 'error');
@@ -582,16 +578,14 @@
             photoItems.forEach(item => {
                 const title = item.querySelector('input[name="photoTitle"]').value;
                 const image = item.querySelector('input[name="photoImage"]').value;
-                const width = parseInt(item.querySelector('input[name="photoWidth"]').value);
-                const height = parseInt(item.querySelector('input[name="photoHeight"]').value);
                 const lng = parseFloat(item.querySelector('input[name="photoLng"]').value);
                 const lat = parseFloat(item.querySelector('input[name="photoLat"]').value);
                 
                 if (lng && lat) {
-                    const content = generateImageHtml(image, width, height, title);
                     photos.push({
                         title: title,
-                        content: content,
+                        contentType: 'image',
+                        content: image,
                         point: { lng: lng, lat: lat }
                     });
                 }
@@ -607,16 +601,15 @@
             
             placeItems.forEach(item => {
                 const title = item.querySelector('input[name="placeTitle"]').value;
-                const image = item.querySelector('input[name="placeImage"]').value;
-                const width = parseInt(item.querySelector('input[name="placeWidth"]').value);
-                const height = parseInt(item.querySelector('input[name="placeHeight"]').value);
+                const content = item.querySelector('input[name="placeImage"]').value;
+                const contentType = item.querySelector('input[name="placeImage"]').dataset['contentType'];
                 const lng = parseFloat(item.querySelector('input[name="placeLng"]').value);
                 const lat = parseFloat(item.querySelector('input[name="placeLat"]').value);
                 
                 if (lng && lat) {
-                    const content = generateImageHtml(image, width, height, title);
                     places.push({
                         title: title,
+                        contentType: contentType,
                         content: content,
                         point: { lng: lng, lat: lat }
                     });
@@ -660,20 +653,18 @@
         }
         
         // 保存配置
-        function saveConfig(config) {
+        async function saveConfig(config) {
             try {
                 // 使用ConfigManager保存配置
                 if (window.ConfigManager) {
-                    const success = window.ConfigManager.saveConfig(config);
+                    const success = await window.ConfigManager.saveConfig(config);
                     if (success) {
                         showMessage('配置保存成功！', 'success');
                     } else {
                         throw new Error('保存失败');
                     }
                 } else {
-                    // 备用方案：保存到localStorage
-                    localStorage.setItem('siteConfig', JSON.stringify(config));
-                    showMessage('配置保存成功！请刷新页面查看效果。', 'success');
+                    throw new Error('ConfigManager不可用');
                 }
             } catch (error) {
                 console.error('Error saving config:', error);
@@ -681,36 +672,115 @@
             }
         }
         
+        // 上传图片
+        async function uploadImage(inputId) {
+            const fileInput = document.getElementById(inputId + 'Upload');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showMessage('请选择要上传的图片！', 'error');
+                return;
+            }
+            
+            try {
+                showMessage('正在上传图片...', 'info');
+                
+                if (window.ConfigManager && window.ConfigManager.uploadImage) {
+                    const result = await window.ConfigManager.uploadImage(file);
+                    if (result.success) {
+                        document.getElementById(inputId).value = result.url;
+                        showMessage('图片上传成功！', 'success');
+                    } else {
+                        showMessage('图片上传失败：' + result.message, 'error');
+                    }
+                } else {
+                    showMessage('上传功能不可用，请检查配置', 'error');
+                }
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                showMessage('上传失败：' + error.message, 'error');
+            }
+        }
+        
+        // 上传照片模块的图片
+        async function uploadPhotoImage(button) {
+            const item = button.closest('.array-item');
+            const fileInput = item.querySelector('input[name="photoImageUpload"]');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showMessage('请选择要上传的图片！', 'error');
+                return;
+            }
+            
+            try {
+                showMessage('正在上传图片...', 'info');
+                
+                if (window.ConfigManager && window.ConfigManager.uploadImage) {
+                    const result = await window.ConfigManager.uploadImage(file);
+                    if (result.success) {
+                        // 设置下 data-content-type 值为image
+                        item.querySelector('input[name="photoImage"]').dataset['contentType'] = 'image';
+                        item.querySelector('input[name="photoImage"]').value = result.url;
+                        showMessage('图片上传成功！', 'success');
+                    } else {
+                        showMessage('图片上传失败：' + result.message, 'error');
+                    }
+                } else {
+                    showMessage('上传功能不可用，请检查配置', 'error');
+                }
+            } catch (error) {
+                console.error('Error uploading photo image:', error);
+                showMessage('上传失败：' + error.message, 'error');
+            }
+        }
+        
+        // 上传想去的地方模块的图片
+        async function uploadPlaceImage(button) {
+            const item = button.closest('.array-item');
+            const fileInput = item.querySelector('input[name="placeImageUpload"]');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showMessage('请选择要上传的图片！', 'error');
+                return;
+            }
+            
+            try {
+                showMessage('正在上传图片...', 'info');
+                
+                if (window.ConfigManager && window.ConfigManager.uploadImage) {
+                    const result = await window.ConfigManager.uploadImage(file);
+                    if (result.success) {
+                        // 设置下 data-content-type 值为image
+                        item.querySelector('input[name="placeImage"]').dataset['contentType'] = 'image';
+                        item.querySelector('input[name="placeImage"]').value = result.url;
+                        showMessage('图片上传成功！', 'success');
+                    } else {
+                        showMessage('图片上传失败：' + result.message, 'error');
+                    }
+                } else {
+                    showMessage('上传功能不可用，请检查配置', 'error');
+                }
+            } catch (error) {
+                console.error('Error uploading place image:', error);
+                showMessage('上传失败：' + error.message, 'error');
+            }
+        }
+        
         // 保存JSON配置
-        function saveJsonConfig() {
+        async function saveJsonConfig() {
             const configJson = document.getElementById('configJson').value;
             
             try {
                 const config = JSON.parse(configJson);
-                saveConfig(config);
+                await saveConfig(config);
             } catch (error) {
                 showMessage('JSON格式错误：' + error.message, 'error');
             }
         }
         
-        // 重置配置
-        function resetConfig() {
-            if (confirm('确定要重置为默认配置吗？所有修改将被丢失。')) {
-                try {
-                    // 使用ConfigManager重置配置
-                    if (window.ConfigManager) {
-                        window.ConfigManager.resetConfig();
-                    } else {
-                        // 备用方案：清除localStorage
-                        localStorage.removeItem('siteConfig');
-                        location.reload();
-                    }
-                } catch (error) {
-                    console.error('Error resetting config:', error);
-                    showMessage('重置配置失败：' + error.message, 'error');
-                }
-            }
-        }
+ 
         
         // 添加照片项
         function addPhotoItem(photo = {}, index = -1) {
@@ -733,15 +803,9 @@
                 </div>
                 <div class="form-group">
                     <label>图片路径</label>
-                    <input type="text" name="photoImage" value="${extractImageSrc(photo.content || '')}" placeholder="输入图片路径">
-                </div>
-                <div class="form-group">
-                    <label>图片宽度</label>
-                    <input type="number" name="photoWidth" value="${extractImageWidth(photo.content || '') || 500}" placeholder="输入图片宽度">
-                </div>
-                <div class="form-group">
-                    <label>图片高度</label>
-                    <input type="number" name="photoHeight" value="${extractImageHeight(photo.content || '') || 375}" placeholder="输入图片高度">
+                    <input type="text" name="photoImage" value="${photo.content || ''}" placeholder="输入图片路径">
+                    <input type="file" name="photoImageUpload" accept="image/*" style="margin-top: 10px;">
+                    <button class="btn btn-sm" onclick="uploadPhotoImage(this)" style="margin-top: 10px;">上传图片</button>
                 </div>
                 <div class="form-group">
                     <label>坐标</label>
@@ -750,7 +814,7 @@
                         <input type="text" name="photoLat" value="${photo.point?.lat || ''}" placeholder="纬度">
                     </div>
                 </div>
-                ${photo.content?.includes('img') ? `<img class="photo-preview" src="${extractImageSrc(photo.content)}" alt="预览">` : ''}
+                ${photo.contentType === 'image' ? `<img class="photo-preview" src="${photo.content}" alt="预览">` : ''}
             `;
             
             photosList.appendChild(item);
@@ -794,19 +858,13 @@
                 </div>
                 <div class="form-group">
                     <label>标题</label>
-                    <input type="text" name="placeTitle" value="${place.title || ''}" placeholder="输入地点标题">
+                    <input type="text" name="placeTitle" value="${place.title || ''}" placeholder="输入地点">
                 </div>
                 <div class="form-group">
                     <label>图片路径</label>
-                    <input type="text" name="placeImage" value="${extractImageSrc(place.content || '')}" placeholder="输入图片路径">
-                </div>
-                <div class="form-group">
-                    <label>图片宽度</label>
-                    <input type="number" name="placeWidth" value="${extractImageWidth(place.content || '') || 500}" placeholder="输入图片宽度">
-                </div>
-                <div class="form-group">
-                    <label>图片高度</label>
-                    <input type="number" name="placeHeight" value="${extractImageHeight(place.content || '') || 375}" placeholder="输入图片高度">
+                    <input type="text" name="placeImage" data-content-type="${place.contentType || 'text'}" value="${place.content || ''}" placeholder="输入图片路径">
+                    <input type="file" name="placeImageUpload" accept="image/*" style="margin-top: 10px;">
+                    <button class="btn btn-sm" onclick="uploadPlaceImage(this)" style="margin-top: 10px;">上传图片</button>
                 </div>
                 <div class="form-group">
                     <label>坐标</label>
@@ -815,7 +873,7 @@
                         <input type="text" name="placeLat" value="${place.point?.lat || ''}" placeholder="纬度">
                     </div>
                 </div>
-                ${place.content?.includes('img') ? `<img class="photo-preview" src="${extractImageSrc(place.content)}" alt="预览">` : ''}
+                ${place.contentType === 'image' ? `<img class="photo-preview" src="${place.content}" alt="预览">` : ''}
             `;
             
             wannatoList.appendChild(item);
@@ -840,30 +898,6 @@
                 items[index].remove();
                 showMessage('地点删除成功！', 'success');
             }
-        }
-        
-        // 提取图片 src
-        function extractImageSrc(content) {
-            const match = content.match(/src="([^"]+)"/);
-            return match ? match[1] : '';
-        }
-        
-        // 提取图片宽度
-        function extractImageWidth(content) {
-            const match = content.match(/width="([^"]+)"/);
-            return match ? parseInt(match[1]) : null;
-        }
-        
-        // 提取图片高度
-        function extractImageHeight(content) {
-            const match = content.match(/height="([^"]+)"/);
-            return match ? parseInt(match[1]) : null;
-        }
-        
-        // 生成图片HTML
-        function generateImageHtml(src, width, height, alt) {
-            if (!src) return '';
-            return `<img src="${src}" width="${width || 500}" height="${height || 375}" alt="${alt || ''}" />`;
         }
         
         // 页面加载时初始化
