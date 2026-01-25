@@ -1,0 +1,875 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <title>配置管理 - 美君的生日礼物</title>
+    <style type="text/css">
+        body {
+            font-family: 'Microsoft Yahei', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        h2 {
+            color: #555;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        h3 {
+            color: #666;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #666;
+        }
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .array-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            position: relative;
+        }
+        .array-item:hover {
+            border-color: #4CAF50;
+        }
+        .array-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .array-item-title {
+            font-weight: bold;
+            color: #333;
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 8px;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .btn-danger {
+            background-color: #f44336;
+        }
+        .btn-danger:hover {
+            background-color: #da190b;
+        }
+        .btn-secondary {
+            background-color: #666;
+        }
+        .btn-secondary:hover {
+            background-color: #555;
+        }
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+        .message {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        .card-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .actions {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        .tab.active {
+            border-bottom-color: #4CAF50;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .photo-preview {
+            max-width: 200px;
+            max-height: 150px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .coordinate-inputs {
+            display: flex;
+            gap: 10px;
+        }
+        .coordinate-inputs input {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>配置管理</h1>
+        
+        <div id="message" class="message" style="display: none;"></div>
+        
+        <!-- 快速操作 -->
+        <div class="section">
+            <h2>快速操作</h2>
+            <button class="btn" onclick="saveAllConfig()">保存所有配置</button>
+            <button class="btn btn-secondary" onclick="loadConfig()">刷新配置</button>
+            <button class="btn btn-danger" onclick="resetConfig()">重置为默认配置</button>
+            <a href="index.html" class="btn btn-secondary" target="_blank">预览网站</a>
+        </div>
+        
+        <!-- 标签页 -->
+        <div class="tab-container">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('basic')">基本配置</div>
+                <div class="tab" onclick="switchTab('photos')">照片管理</div>
+                <div class="tab" onclick="switchTab('wannato')">想去的地方</div>
+                <div class="tab" onclick="switchTab('advanced')">高级配置</div>
+                <div class="tab" onclick="switchTab('json')">JSON编辑</div>
+            </div>
+            
+            <!-- 基本配置 -->
+            <div id="basic" class="tab-content active">
+                <div class="grid">
+                    <!-- 文本配置 -->
+                    <div class="card">
+                        <div class="card-header">文本配置</div>
+                        <div class="form-group">
+                            <label>页面标题</label>
+                            <input type="text" id="textTitle" placeholder="输入页面标题">
+                        </div>
+                        <div class="form-group">
+                            <label>加载提示</label>
+                            <input type="text" id="textLoading" placeholder="输入加载提示文本">
+                        </div>
+                        <div class="form-group">
+                            <label>开始按钮文本</label>
+                            <input type="text" id="textStart" placeholder="输入开始按钮文本">
+                        </div>
+                        <div class="form-group">
+                            <label>生日祝福</label>
+                            <input type="text" id="textBirthdayWish" placeholder="输入生日祝福文本">
+                        </div>
+                        <div class="form-group">
+                            <label>分享到微博按钮</label>
+                            <input type="text" id="textShareWeibo" placeholder="输入分享按钮文本">
+                        </div>
+                        <div class="form-group">
+                            <label>再看一次按钮</label>
+                            <input type="text" id="textWatchAgain" placeholder="输入再看一次按钮文本">
+                        </div>
+                    </div>
+                    
+                    <!-- 音频配置 -->
+                    <div class="card">
+                        <div class="card-header">音频配置</div>
+                        <div class="form-group">
+                            <label>音频文件路径</label>
+                            <input type="text" id="audioSrc" placeholder="输入音频文件路径">
+                        </div>
+                        <div class="form-group">
+                            <label>音频文件备选路径</label>
+                            <input type="text" id="audioFallback" placeholder="输入音频文件备选路径">
+                        </div>
+                    </div>
+                    
+                    <!-- 分享配置 -->
+                    <div class="card">
+                        <div class="card-header">分享配置</div>
+                        <div class="form-group">
+                            <label>分享内容</label>
+                            <textarea id="shareContent" placeholder="输入分享内容"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>分享链接</label>
+                            <input type="text" id="shareUrl" placeholder="输入分享链接">
+                        </div>
+                        <div class="form-group">
+                            <label>分享图片</label>
+                            <input type="text" id="sharePic" placeholder="输入分享图片路径">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 照片管理 -->
+            <div id="photos" class="tab-content">
+                <h3>照片列表</h3>
+                <p>点击下方按钮添加新照片，或点击照片项进行编辑和删除。</p>
+                
+                <div id="photosList" class="array-list">
+                    <!-- 照片项将通过JavaScript动态添加 -->
+                </div>
+                
+                <button class="btn" onclick="addPhoto()">添加新照片</button>
+            </div>
+            
+            <!-- 想去的地方 -->
+            <div id="wannato" class="tab-content">
+                <h3>想去的地方列表</h3>
+                <p>点击下方按钮添加新地点，或点击地点项进行编辑和删除。</p>
+                
+                <div id="wannatoList" class="array-list">
+                    <!-- 地点项将通过JavaScript动态添加 -->
+                </div>
+                
+                <button class="btn" onclick="addWannaTo()">添加新地点</button>
+            </div>
+            
+            <!-- 高级配置 -->
+            <div id="advanced" class="tab-content">
+                <div class="grid">
+                    <!-- 地理坐标配置 -->
+                    <div class="card">
+                        <div class="card-header">地理坐标配置</div>
+                        <div class="form-group">
+                            <label>初始化地图中心</label>
+                            <div class="coordinate-inputs">
+                                <input type="text" id="mpCenLng" placeholder="经度">
+                                <input type="text" id="mpCenLat" placeholder="纬度">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>中国中心</label>
+                            <div class="coordinate-inputs">
+                                <input type="text" id="cnCenLng" placeholder="经度">
+                                <input type="text" id="cnCenLat" placeholder="纬度">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>嘉应学院</label>
+                            <div class="coordinate-inputs">
+                                <input type="text" id="mzJyuLng" placeholder="经度">
+                                <input type="text" id="mzJyuLat" placeholder="纬度">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>广外艺</label>
+                            <div class="coordinate-inputs">
+                                <input type="text" id="gzGtcLng" placeholder="经度">
+                                <input type="text" id="gzGtcLat" placeholder="纬度">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 动画配置 -->
+                    <div class="card">
+                        <div class="card-header">动画配置</div>
+                        <div class="form-group">
+                            <label>缩放动画速度</label>
+                            <input type="text" id="animationZoomSpeed" placeholder="输入缩放动画速度">
+                        </div>
+                        <div class="form-group">
+                            <label>平移动画延迟</label>
+                            <input type="text" id="animationPanDelay" placeholder="输入平移动画延迟">
+                        </div>
+                        <div class="form-group">
+                            <label>信息窗口显示时间</label>
+                            <input type="text" id="animationInfoWindowTimeout" placeholder="输入信息窗口显示时间">
+                        </div>
+                        <div class="form-group">
+                            <label>标记点添加间隔</label>
+                            <input type="text" id="animationMarkerInterval" placeholder="输入标记点添加间隔">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- JSON编辑 -->
+            <div id="json" class="tab-content">
+                <h3>直接编辑 JSON 配置</h3>
+                <p>您可以直接编辑下面的 JSON 配置，然后保存：</p>
+                <textarea id="configJson" class="json-editor" style="width: 100%; height: 500px;"></textarea>
+                <div class="actions">
+                    <button class="btn" onclick="loadConfigToJson()">加载当前配置</button>
+                    <button class="btn" onclick="saveJsonConfig()">保存 JSON 配置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="./config.js"></script>
+    <script type="text/javascript">
+        // 当前配置
+        let currentConfig = {};
+        
+        // 显示消息
+        function showMessage(text, type) {
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = text;
+            messageElement.className = 'message ' + type;
+            messageElement.style.display = 'block';
+            
+            // 3秒后自动隐藏
+            setTimeout(() => {
+                messageElement.style.display = 'none';
+            }, 3000);
+        }
+        
+        // 切换标签页
+        function switchTab(tabId) {
+            // 隐藏所有标签内容
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 移除所有标签的激活状态
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 显示选中的标签内容
+            document.getElementById(tabId).classList.add('active');
+            
+            // 激活选中的标签
+            event.target.classList.add('active');
+        }
+        
+        // 加载配置
+        function loadConfig() {
+            try {
+                // 使用ConfigManager获取配置
+                if (window.ConfigManager) {
+                    currentConfig = window.ConfigManager.getConfig();
+                } else {
+                    // 备用方案：直接使用CONFIG对象
+                    currentConfig = CONFIG;
+                }
+                
+                // 加载基本配置
+                loadBasicConfig();
+                
+                // 加载照片配置
+                loadPhotosConfig();
+                
+                // 加载想去的地方配置
+                loadWannaToConfig();
+                
+                // 加载高级配置
+                loadAdvancedConfig();
+                
+                // 加载JSON配置
+                loadConfigToJson();
+                
+                showMessage('配置加载成功！', 'success');
+            } catch (error) {
+                console.error('Error loading config:', error);
+                showMessage('加载配置失败：' + error.message, 'error');
+            }
+        }
+        
+        // 加载基本配置
+        function loadBasicConfig() {
+            // 文本配置
+            document.getElementById('textTitle').value = currentConfig.TEXT?.TITLE || '';
+            document.getElementById('textLoading').value = currentConfig.TEXT?.LOADING || '';
+            document.getElementById('textStart').value = currentConfig.TEXT?.START || '';
+            document.getElementById('textBirthdayWish').value = currentConfig.TEXT?.BIRTHDAY_WISH || '';
+            document.getElementById('textShareWeibo').value = currentConfig.TEXT?.SHARE_WEIBO || '';
+            document.getElementById('textWatchAgain').value = currentConfig.TEXT?.WATCH_AGAIN || '';
+            
+            // 音频配置
+            document.getElementById('audioSrc').value = currentConfig.AUDIO?.src || '';
+            document.getElementById('audioFallback').value = currentConfig.AUDIO?.fallback || '';
+            
+            // 分享配置
+            document.getElementById('shareContent').value = currentConfig.SHARE?.CONTENT || '';
+            document.getElementById('shareUrl').value = currentConfig.SHARE?.URL || '';
+            document.getElementById('sharePic').value = currentConfig.SHARE?.PIC || '';
+        }
+        
+        // 加载照片配置
+        function loadPhotosConfig() {
+            const photosList = document.getElementById('photosList');
+            photosList.innerHTML = '';
+            
+            if (currentConfig.PHOTOS && Array.isArray(currentConfig.PHOTOS)) {
+                currentConfig.PHOTOS.forEach((photo, index) => {
+                    addPhotoItem(photo, index);
+                });
+            }
+        }
+        
+        // 加载想去的地方配置
+        function loadWannaToConfig() {
+            const wannatoList = document.getElementById('wannatoList');
+            wannatoList.innerHTML = '';
+            
+            if (currentConfig.WANNATO && Array.isArray(currentConfig.WANNATO)) {
+                currentConfig.WANNATO.forEach((place, index) => {
+                    addWannaToItem(place, index);
+                });
+            }
+        }
+        
+        // 加载高级配置
+        function loadAdvancedConfig() {
+            // 地理坐标配置
+            document.getElementById('mpCenLng').value = currentConfig.COORDS?.MP_CEN?.lng || '';
+            document.getElementById('mpCenLat').value = currentConfig.COORDS?.MP_CEN?.lat || '';
+            document.getElementById('cnCenLng').value = currentConfig.COORDS?.CN_CEN?.lng || '';
+            document.getElementById('cnCenLat').value = currentConfig.COORDS?.CN_CEN?.lat || '';
+            document.getElementById('mzJyuLng').value = currentConfig.COORDS?.MZ_JYU?.lng || '';
+            document.getElementById('mzJyuLat').value = currentConfig.COORDS?.MZ_JYU?.lat || '';
+            document.getElementById('gzGtcLng').value = currentConfig.COORDS?.GZ_GTC?.lng || '';
+            document.getElementById('gzGtcLat').value = currentConfig.COORDS?.GZ_GTC?.lat || '';
+            
+            // 动画配置
+            document.getElementById('animationZoomSpeed').value = currentConfig.ANIMATION?.ZOOM_SPEED || '';
+            document.getElementById('animationPanDelay').value = currentConfig.ANIMATION?.PAN_DELAY || '';
+            document.getElementById('animationInfoWindowTimeout').value = currentConfig.ANIMATION?.INFO_WINDOW_TIMEOUT || '';
+            document.getElementById('animationMarkerInterval').value = currentConfig.ANIMATION?.MARKER_INTERVAL || '';
+        }
+        
+        // 加载配置到JSON编辑器
+        function loadConfigToJson() {
+            document.getElementById('configJson').value = JSON.stringify(currentConfig, null, 2);
+        }
+        
+        // 保存所有配置
+        function saveAllConfig() {
+            try {
+                // 收集基本配置
+                collectBasicConfig();
+                
+                // 收集照片配置
+                collectPhotosConfig();
+                
+                // 收集想去的地方配置
+                collectWannaToConfig();
+                
+                // 收集高级配置
+                collectAdvancedConfig();
+                
+                // 保存配置
+                saveConfig(currentConfig);
+            } catch (error) {
+                console.error('Error saving config:', error);
+                showMessage('保存配置失败：' + error.message, 'error');
+            }
+        }
+        
+        // 收集基本配置
+        function collectBasicConfig() {
+            // 文本配置
+            if (!currentConfig.TEXT) {
+                currentConfig.TEXT = {};
+            }
+            currentConfig.TEXT.TITLE = document.getElementById('textTitle').value;
+            currentConfig.TEXT.LOADING = document.getElementById('textLoading').value;
+            currentConfig.TEXT.START = document.getElementById('textStart').value;
+            currentConfig.TEXT.BIRTHDAY_WISH = document.getElementById('textBirthdayWish').value;
+            currentConfig.TEXT.SHARE_WEIBO = document.getElementById('textShareWeibo').value;
+            currentConfig.TEXT.WATCH_AGAIN = document.getElementById('textWatchAgain').value;
+            
+            // 音频配置
+            if (!currentConfig.AUDIO) {
+                currentConfig.AUDIO = {};
+            }
+            currentConfig.AUDIO.src = document.getElementById('audioSrc').value;
+            currentConfig.AUDIO.fallback = document.getElementById('audioFallback').value;
+            
+            // 分享配置
+            if (!currentConfig.SHARE) {
+                currentConfig.SHARE = {};
+            }
+            currentConfig.SHARE.CONTENT = document.getElementById('shareContent').value;
+            currentConfig.SHARE.URL = document.getElementById('shareUrl').value;
+            currentConfig.SHARE.PIC = document.getElementById('sharePic').value;
+        }
+        
+        // 收集照片配置
+        function collectPhotosConfig() {
+            const photos = [];
+            const photoItems = document.querySelectorAll('#photosList .array-item');
+            
+            photoItems.forEach(item => {
+                const title = item.querySelector('input[name="photoTitle"]').value;
+                const image = item.querySelector('input[name="photoImage"]').value;
+                const width = parseInt(item.querySelector('input[name="photoWidth"]').value);
+                const height = parseInt(item.querySelector('input[name="photoHeight"]').value);
+                const lng = parseFloat(item.querySelector('input[name="photoLng"]').value);
+                const lat = parseFloat(item.querySelector('input[name="photoLat"]').value);
+                
+                if (lng && lat) {
+                    const content = generateImageHtml(image, width, height, title);
+                    photos.push({
+                        title: title,
+                        content: content,
+                        point: { lng: lng, lat: lat }
+                    });
+                }
+            });
+            
+            currentConfig.PHOTOS = photos;
+        }
+        
+        // 收集想去的地方配置
+        function collectWannaToConfig() {
+            const places = [];
+            const placeItems = document.querySelectorAll('#wannatoList .array-item');
+            
+            placeItems.forEach(item => {
+                const title = item.querySelector('input[name="placeTitle"]').value;
+                const image = item.querySelector('input[name="placeImage"]').value;
+                const width = parseInt(item.querySelector('input[name="placeWidth"]').value);
+                const height = parseInt(item.querySelector('input[name="placeHeight"]').value);
+                const lng = parseFloat(item.querySelector('input[name="placeLng"]').value);
+                const lat = parseFloat(item.querySelector('input[name="placeLat"]').value);
+                
+                if (lng && lat) {
+                    const content = generateImageHtml(image, width, height, title);
+                    places.push({
+                        title: title,
+                        content: content,
+                        point: { lng: lng, lat: lat }
+                    });
+                }
+            });
+            
+            currentConfig.WANNATO = places;
+        }
+        
+        // 收集高级配置
+        function collectAdvancedConfig() {
+            // 地理坐标配置
+            if (!currentConfig.COORDS) {
+                currentConfig.COORDS = {};
+            }
+            currentConfig.COORDS.MP_CEN = {
+                lng: parseFloat(document.getElementById('mpCenLng').value),
+                lat: parseFloat(document.getElementById('mpCenLat').value)
+            };
+            currentConfig.COORDS.CN_CEN = {
+                lng: parseFloat(document.getElementById('cnCenLng').value),
+                lat: parseFloat(document.getElementById('cnCenLat').value)
+            };
+            currentConfig.COORDS.MZ_JYU = {
+                lng: parseFloat(document.getElementById('mzJyuLng').value),
+                lat: parseFloat(document.getElementById('mzJyuLat').value)
+            };
+            currentConfig.COORDS.GZ_GTC = {
+                lng: parseFloat(document.getElementById('gzGtcLng').value),
+                lat: parseFloat(document.getElementById('gzGtcLat').value)
+            };
+            
+            // 动画配置
+            if (!currentConfig.ANIMATION) {
+                currentConfig.ANIMATION = {};
+            }
+            currentConfig.ANIMATION.ZOOM_SPEED = parseInt(document.getElementById('animationZoomSpeed').value);
+            currentConfig.ANIMATION.PAN_DELAY = parseInt(document.getElementById('animationPanDelay').value);
+            currentConfig.ANIMATION.INFO_WINDOW_TIMEOUT = parseInt(document.getElementById('animationInfoWindowTimeout').value);
+            currentConfig.ANIMATION.MARKER_INTERVAL = parseInt(document.getElementById('animationMarkerInterval').value);
+        }
+        
+        // 保存配置
+        function saveConfig(config) {
+            try {
+                // 使用ConfigManager保存配置
+                if (window.ConfigManager) {
+                    const success = window.ConfigManager.saveConfig(config);
+                    if (success) {
+                        showMessage('配置保存成功！', 'success');
+                    } else {
+                        throw new Error('保存失败');
+                    }
+                } else {
+                    // 备用方案：保存到localStorage
+                    localStorage.setItem('siteConfig', JSON.stringify(config));
+                    showMessage('配置保存成功！请刷新页面查看效果。', 'success');
+                }
+            } catch (error) {
+                console.error('Error saving config:', error);
+                showMessage('保存配置失败：' + error.message, 'error');
+            }
+        }
+        
+        // 保存JSON配置
+        function saveJsonConfig() {
+            const configJson = document.getElementById('configJson').value;
+            
+            try {
+                const config = JSON.parse(configJson);
+                saveConfig(config);
+            } catch (error) {
+                showMessage('JSON格式错误：' + error.message, 'error');
+            }
+        }
+        
+        // 重置配置
+        function resetConfig() {
+            if (confirm('确定要重置为默认配置吗？所有修改将被丢失。')) {
+                try {
+                    // 使用ConfigManager重置配置
+                    if (window.ConfigManager) {
+                        window.ConfigManager.resetConfig();
+                    } else {
+                        // 备用方案：清除localStorage
+                        localStorage.removeItem('siteConfig');
+                        location.reload();
+                    }
+                } catch (error) {
+                    console.error('Error resetting config:', error);
+                    showMessage('重置配置失败：' + error.message, 'error');
+                }
+            }
+        }
+        
+        // 添加照片项
+        function addPhotoItem(photo = {}, index = -1) {
+            const photosList = document.getElementById('photosList');
+            const itemId = index >= 0 ? index : Date.now();
+            
+            const item = document.createElement('div');
+            item.className = 'array-item';
+            item.innerHTML = `
+                <div class="array-item-header">
+                    <div class="array-item-title">照片 ${index >= 0 ? index + 1 : '新'}</div>
+                    <div>
+                        <button class="btn btn-sm" onclick="editPhoto(${itemId})">编辑</button>
+                        <button class="btn btn-sm btn-danger" onclick="deletePhoto(${itemId})">删除</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>标题</label>
+                    <input type="text" name="photoTitle" value="${photo.title || ''}" placeholder="输入照片标题">
+                </div>
+                <div class="form-group">
+                    <label>图片路径</label>
+                    <input type="text" name="photoImage" value="${extractImageSrc(photo.content || '')}" placeholder="输入图片路径">
+                </div>
+                <div class="form-group">
+                    <label>图片宽度</label>
+                    <input type="number" name="photoWidth" value="${extractImageWidth(photo.content || '') || 500}" placeholder="输入图片宽度">
+                </div>
+                <div class="form-group">
+                    <label>图片高度</label>
+                    <input type="number" name="photoHeight" value="${extractImageHeight(photo.content || '') || 375}" placeholder="输入图片高度">
+                </div>
+                <div class="form-group">
+                    <label>坐标</label>
+                    <div class="coordinate-inputs">
+                        <input type="text" name="photoLng" value="${photo.point?.lng || ''}" placeholder="经度">
+                        <input type="text" name="photoLat" value="${photo.point?.lat || ''}" placeholder="纬度">
+                    </div>
+                </div>
+                ${photo.content?.includes('img') ? `<img class="photo-preview" src="${extractImageSrc(photo.content)}" alt="预览">` : ''}
+            `;
+            
+            photosList.appendChild(item);
+        }
+        
+        // 添加新照片
+        function addPhoto() {
+            addPhotoItem();
+        }
+        
+        // 编辑照片
+        function editPhoto(index) {
+            // 这里可以实现更复杂的编辑逻辑，比如弹出模态框
+            showMessage('点击照片项中的输入框即可编辑', 'info');
+        }
+        
+        // 删除照片
+        function deletePhoto(index) {
+            const photosList = document.getElementById('photosList');
+            const items = photosList.querySelectorAll('.array-item');
+            if (items[index]) {
+                items[index].remove();
+                showMessage('照片删除成功！', 'success');
+            }
+        }
+        
+        // 添加想去的地方项
+        function addWannaToItem(place = {}, index = -1) {
+            const wannatoList = document.getElementById('wannatoList');
+            const itemId = index >= 0 ? index : Date.now();
+            
+            const item = document.createElement('div');
+            item.className = 'array-item';
+            item.innerHTML = `
+                <div class="array-item-header">
+                    <div class="array-item-title">地点 ${index >= 0 ? index + 1 : '新'}</div>
+                    <div>
+                        <button class="btn btn-sm" onclick="editWannaTo(${itemId})">编辑</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteWannaTo(${itemId})">删除</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>标题</label>
+                    <input type="text" name="placeTitle" value="${place.title || ''}" placeholder="输入地点标题">
+                </div>
+                <div class="form-group">
+                    <label>图片路径</label>
+                    <input type="text" name="placeImage" value="${extractImageSrc(place.content || '')}" placeholder="输入图片路径">
+                </div>
+                <div class="form-group">
+                    <label>图片宽度</label>
+                    <input type="number" name="placeWidth" value="${extractImageWidth(place.content || '') || 500}" placeholder="输入图片宽度">
+                </div>
+                <div class="form-group">
+                    <label>图片高度</label>
+                    <input type="number" name="placeHeight" value="${extractImageHeight(place.content || '') || 375}" placeholder="输入图片高度">
+                </div>
+                <div class="form-group">
+                    <label>坐标</label>
+                    <div class="coordinate-inputs">
+                        <input type="text" name="placeLng" value="${place.point?.lng || ''}" placeholder="经度">
+                        <input type="text" name="placeLat" value="${place.point?.lat || ''}" placeholder="纬度">
+                    </div>
+                </div>
+                ${place.content?.includes('img') ? `<img class="photo-preview" src="${extractImageSrc(place.content)}" alt="预览">` : ''}
+            `;
+            
+            wannatoList.appendChild(item);
+        }
+        
+        // 添加新地点
+        function addWannaTo() {
+            addWannaToItem();
+        }
+        
+        // 编辑地点
+        function editWannaTo(index) {
+            // 这里可以实现更复杂的编辑逻辑，比如弹出模态框
+            showMessage('点击地点项中的输入框即可编辑', 'info');
+        }
+        
+        // 删除地点
+        function deleteWannaTo(index) {
+            const wannatoList = document.getElementById('wannatoList');
+            const items = wannatoList.querySelectorAll('.array-item');
+            if (items[index]) {
+                items[index].remove();
+                showMessage('地点删除成功！', 'success');
+            }
+        }
+        
+        // 提取图片 src
+        function extractImageSrc(content) {
+            const match = content.match(/src="([^"]+)"/);
+            return match ? match[1] : '';
+        }
+        
+        // 提取图片宽度
+        function extractImageWidth(content) {
+            const match = content.match(/width="([^"]+)"/);
+            return match ? parseInt(match[1]) : null;
+        }
+        
+        // 提取图片高度
+        function extractImageHeight(content) {
+            const match = content.match(/height="([^"]+)"/);
+            return match ? parseInt(match[1]) : null;
+        }
+        
+        // 生成图片HTML
+        function generateImageHtml(src, width, height, alt) {
+            if (!src) return '';
+            return `<img src="${src}" width="${width || 500}" height="${height || 375}" alt="${alt || ''}" />`;
+        }
+        
+        // 页面加载时初始化
+        window.onload = function() {
+            loadConfig();
+        };
+    </script>
+</body>
+</html>

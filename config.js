@@ -1,6 +1,8 @@
 // 配置文件 - 所有可配置内容集中管理
 // 说明：修改以下配置项可以自定义网站的各种内容和行为
-const CONFIG = {
+
+// 默认配置
+const DEFAULT_CONFIG = {
   /**
    * 地理坐标配置
    * 用于地图定位和标记
@@ -366,3 +368,86 @@ const CONFIG = {
     MARKER_INTERVAL: 300
   }
 };
+
+// 从浏览器存储读取配置
+function loadConfigFromStorage() {
+    try {
+        const storedConfig = localStorage.getItem('siteConfig');
+        if (storedConfig) {
+            return JSON.parse(storedConfig);
+        }
+    } catch (error) {
+        console.error('Error loading config from storage:', error);
+    }
+    return null;
+}
+
+// 合并默认配置和存储的配置
+function mergeConfigs(defaultConfig, storedConfig) {
+    if (!storedConfig) {
+        return defaultConfig;
+    }
+    
+    const merged = { ...defaultConfig };
+    
+    // 递归合并对象
+    function deepMerge(target, source) {
+        for (const key in source) {
+            if (source.hasOwnProperty(key)) {
+                if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
+                    if (!target[key]) {
+                        target[key] = {};
+                    }
+                    deepMerge(target[key], source[key]);
+                } else if (Array.isArray(source[key])) {
+                    // 对于数组，直接替换
+                    target[key] = source[key];
+                } else {
+                    // 对于基本类型，直接替换
+                    target[key] = source[key];
+                }
+            }
+        }
+    }
+    
+    deepMerge(merged, storedConfig);
+    return merged;
+}
+
+// 保存配置到浏览器存储
+function saveConfigToStorage(config) {
+    try {
+        localStorage.setItem('siteConfig', JSON.stringify(config));
+        return true;
+    } catch (error) {
+        console.error('Error saving config to storage:', error);
+        return false;
+    }
+}
+
+// 创建最终的CONFIG对象
+const CONFIG = mergeConfigs(DEFAULT_CONFIG, loadConfigFromStorage());
+
+// 导出配置管理函数（用于配置管理页面）
+if (typeof window !== 'undefined') {
+    window.ConfigManager = {
+        getConfig: function() {
+            return CONFIG;
+        },
+        getDefaultConfig: function() {
+            return DEFAULT_CONFIG;
+        },
+        saveConfig: function(config) {
+            const success = saveConfigToStorage(config);
+            if (success) {
+                // 重新加载页面以应用新配置
+                window.location.reload();
+            }
+            return success;
+        },
+        resetConfig: function() {
+            localStorage.removeItem('siteConfig');
+            window.location.reload();
+        }
+    };
+}
