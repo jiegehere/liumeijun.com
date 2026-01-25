@@ -48,11 +48,13 @@ const DEFAULT_CONFIG = {
   ROUTE_INFO: [
     {
       title: '梅州 → 广州',
+      contentType: 'text',
       content: '426 km.',
       point: { lng: 116.135018, lat: 24.33438 }
     },
     {
       title: '梅州 → 广州',
+      contentType: 'text',
       content: '5 hours by train.',
       point: { lng: 113.345774, lat: 23.153356 }
     },
