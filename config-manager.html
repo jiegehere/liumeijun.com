@@ -301,6 +301,18 @@
             <button class="btn" onclick="addWannaTo()">添加新地点</button>
         </div>
         
+        <!-- 路线信息 -->
+        <div id="route" class="section">
+            <h2>路线信息</h2>
+            <p>点击下方按钮添加新路线信息，或点击信息项进行编辑和删除。</p>
+            
+            <div id="routeList" class="array-list">
+                <!-- 路线信息项将通过JavaScript动态添加 -->
+            </div>
+            
+            <button class="btn" onclick="addRoute()">添加新路线信息</button>
+        </div>
+        
         <!-- 高级配置 -->
         <div id="advanced" class="section">
             <h2>高级配置</h2>
@@ -320,20 +332,6 @@
                         <div class="coordinate-inputs">
                             <input type="text" id="cnCenLng" placeholder="经度">
                             <input type="text" id="cnCenLat" placeholder="纬度">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>嘉应学院</label>
-                        <div class="coordinate-inputs">
-                            <input type="text" id="mzJyuLng" placeholder="经度">
-                            <input type="text" id="mzJyuLat" placeholder="纬度">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>广外艺</label>
-                        <div class="coordinate-inputs">
-                            <input type="text" id="gzGtcLng" placeholder="经度">
-                            <input type="text" id="gzGtcLat" placeholder="纬度">
                         </div>
                     </div>
                 </div>
@@ -436,6 +434,9 @@
                 // 加载想去的地方配置
                 loadWannaToConfig();
                 
+                // 加载路线信息配置
+                loadRouteConfig();
+                
                 // 加载高级配置
                 loadAdvancedConfig();
                 
@@ -500,10 +501,6 @@
             document.getElementById('mpCenLat').value = currentConfig.COORDS?.MP_CEN?.lat || '';
             document.getElementById('cnCenLng').value = currentConfig.COORDS?.CN_CEN?.lng || '';
             document.getElementById('cnCenLat').value = currentConfig.COORDS?.CN_CEN?.lat || '';
-            document.getElementById('mzJyuLng').value = currentConfig.COORDS?.MZ_JYU?.lng || '';
-            document.getElementById('mzJyuLat').value = currentConfig.COORDS?.MZ_JYU?.lat || '';
-            document.getElementById('gzGtcLng').value = currentConfig.COORDS?.GZ_GTC?.lng || '';
-            document.getElementById('gzGtcLat').value = currentConfig.COORDS?.GZ_GTC?.lat || '';
             
             // 动画配置
             document.getElementById('animationZoomSpeed').value = currentConfig.ANIMATION?.ZOOM_SPEED || '';
@@ -527,10 +524,13 @@
                 collectPhotosConfig();
                 
                 // 收集想去的地方配置
-                collectWannaToConfig();
-                
-                // 收集高级配置
-                collectAdvancedConfig();
+            collectWannaToConfig();
+            
+            // 收集路线信息配置
+            collectRouteConfig();
+            
+            // 收集高级配置
+            collectAdvancedConfig();
                 
                 // 保存配置
                 await saveConfig(currentConfig);
@@ -632,14 +632,6 @@
                 lng: parseFloat(document.getElementById('cnCenLng').value),
                 lat: parseFloat(document.getElementById('cnCenLat').value)
             };
-            currentConfig.COORDS.MZ_JYU = {
-                lng: parseFloat(document.getElementById('mzJyuLng').value),
-                lat: parseFloat(document.getElementById('mzJyuLat').value)
-            };
-            currentConfig.COORDS.GZ_GTC = {
-                lng: parseFloat(document.getElementById('gzGtcLng').value),
-                lat: parseFloat(document.getElementById('gzGtcLat').value)
-            };
             
             // 动画配置
             if (!currentConfig.ANIMATION) {
@@ -660,6 +652,8 @@
                     const success = await window.ConfigManager.saveConfig(config);
                     if (success) {
                         showMessage('配置保存成功！', 'success');
+                        //刷新页面
+                        window.location.reload();
                     } else {
                         throw new Error('保存失败');
                     }
@@ -902,6 +896,135 @@
             if (items[index]) {
                 items[index].remove();
                 showMessage('地点删除成功！', 'success');
+            }
+        }
+        
+        // 加载路线信息配置
+        function loadRouteConfig() {
+            const routeList = document.getElementById('routeList');
+            routeList.innerHTML = '';
+            
+            if (currentConfig.ROUTE_INFO && Array.isArray(currentConfig.ROUTE_INFO)) {
+                currentConfig.ROUTE_INFO.forEach((route, index) => {
+                    addRouteItem(route, index);
+                });
+            }
+        }
+        
+        // 收集路线信息配置
+        function collectRouteConfig() {
+            const routeList = document.getElementById('routeList');
+            const routeItems = routeList.querySelectorAll('.array-item');
+            const routes = [];
+            
+            routeItems.forEach(item => {
+                const title = item.querySelector('input[name="routeTitle"]').value;
+                const content = item.querySelector('input[name="routeContent"]').value;
+                const contentType = item.querySelector('input[name="routeContent"]').dataset['contentType'] || 'text';
+                const lng = parseFloat(item.querySelector('input[name="routeLng"]').value);
+                const lat = parseFloat(item.querySelector('input[name="routeLat"]').value);
+                
+                if (lng && lat) {
+                    routes.push({
+                        title: title,
+                        contentType: contentType,
+                        content: content,
+                        point: { lng: lng, lat: lat }
+                    });
+                }
+            });
+            
+            currentConfig.ROUTE_INFO = routes;
+        }
+        
+        // 添加路线信息项
+        function addRouteItem(route = {}, index = -1) {
+            const routeList = document.getElementById('routeList');
+            const itemId = index >= 0 ? index : Date.now();
+            
+            const item = document.createElement('div');
+            item.className = 'array-item';
+            item.innerHTML = `
+                <div class="array-item-header">
+                    <div class="array-item-title">路线信息 ${index >= 0 ? index + 1 : '新'}</div>
+                    <div>
+                        <button class="btn btn-sm" onclick="editRoute(${itemId})">编辑</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteRoute(${itemId})">删除</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>标题</label>
+                    <input type="text" name="routeTitle" value="${route.title || ''}" placeholder="输入路线标题">
+                </div>
+                <div class="form-group">
+                    <label>内容</label>
+                    <input type="text" name="routeContent" data-content-type="${route.contentType || 'text'}" value="${route.content || ''}" placeholder="输入路线内容">
+                    <input type="file" name="routeContentUpload" accept="image/*" style="margin-top: 10px;">
+                    <button class="btn btn-sm" onclick="uploadRouteImage(this)" style="margin-top: 10px;">上传图片</button>
+                </div>
+                <div class="form-group">
+                    <label>坐标</label>
+                    <div class="coordinate-inputs">
+                        <input type="text" name="routeLng" value="${route.point?.lng || ''}" placeholder="经度">
+                        <input type="text" name="routeLat" value="${route.point?.lat || ''}" placeholder="纬度">
+                    </div>
+                </div>
+                ${route.contentType === 'image' ? `<img class="photo-preview" src="${route.content}" alt="预览">` : ''}
+            `;
+            
+            routeList.appendChild(item);
+        }
+        
+        // 添加新路线信息
+        function addRoute() {
+            addRouteItem();
+        }
+        
+        // 编辑路线信息
+        function editRoute(index) {
+            showMessage('点击路线信息项中的输入框即可编辑', 'info');
+        }
+        
+        // 删除路线信息
+        function deleteRoute(index) {
+            const routeList = document.getElementById('routeList');
+            const items = routeList.querySelectorAll('.array-item');
+            if (items[index]) {
+                items[index].remove();
+                showMessage('路线信息删除成功！', 'success');
+            }
+        }
+        
+        // 上传路线信息模块的图片
+        async function uploadRouteImage(button) {
+            const item = button.closest('.array-item');
+            const fileInput = item.querySelector('input[name="routeContentUpload"]');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showMessage('请选择要上传的图片！', 'error');
+                return;
+            }
+            
+            try {
+                showMessage('正在上传图片...', 'info');
+                
+                if (window.ConfigManager && window.ConfigManager.uploadImage) {
+                    const result = await window.ConfigManager.uploadImage(file);
+                    if (result.success) {
+                        // 设置下 data-content-type 值为image
+                        item.querySelector('input[name="routeContent"]').dataset['contentType'] = 'image';
+                        item.querySelector('input[name="routeContent"]').value = result.url;
+                        showMessage('图片上传成功！', 'success');
+                    } else {
+                        showMessage('图片上传失败：' + result.message, 'error');
+                    }
+                } else {
+                    showMessage('上传功能不可用，请检查配置', 'error');
+                }
+            } catch (error) {
+                console.error('Error uploading route image:', error);
+                showMessage('上传失败：' + error.message, 'error');
             }
         }
         

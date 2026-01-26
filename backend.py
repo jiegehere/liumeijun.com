@@ -26,6 +26,7 @@ DEFAULT_CONFIG_FILE = 'defalut_config.json'
 # 加载配置
 file = CONFIG_FILE
 if not os.path.exists(CONFIG_FILE):
+    print(f"Config file {CONFIG_FILE} not found, using default config")
     file = DEFAULT_CONFIG_FILE
 
 # 读取配置
