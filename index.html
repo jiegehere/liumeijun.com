@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
-    <title>Hello Meijun!</title>
+    <title>Hello My Dear!</title>
     <style type="text/css">
         body,
         div,
@@ -154,9 +154,9 @@
     <div id="map"></div>
 
     <!-- 指定全局的分享内容 -->
-    <input id="wsContent" type="hidden" value="一个送给美君的生日礼物，也是送给所有异地恋人的礼物「变得是距离，不变的是坚持」。 via @LOO2K">
+    <input id="wsContent" type="hidden" value="">
     <!-- 指定全局的分享链接 -->
-    <input id="wsUrl" type="hidden" value="http://liumeijun.com/">
+    <input id="wsUrl" type="hidden" value="">
     <!-- 指定全局的分享图片 -->
     <input id="wsPic" type="hidden" value="./social.png">
 
@@ -170,7 +170,7 @@
     <script type="text/javascript">
 
         // 从配置文件获取配置
-        const { COORDS, LOCATIONS, ROUTE_INFO, PHOTOS, WANNATO, MARKER_TEXT, AUDIO, IMAGES, TEXT, ANIMATION } = CONFIG;
+        const { COORDS, LOCATIONS, ROUTE_INFO, PHOTOS, WANNATO, MARKER_TEXT, AUDIO, IMAGES, TEXT, ANIMATION, SHARE} = CONFIG;
         
         // 背景音乐
         let MUSIC;
@@ -426,6 +426,9 @@
 
         // 初始化应用
         const init = () => {
+            document.getElementById('wsContent').value = SHARE.CONTENT;
+            document.getElementById('wsUrl').value = SHARE.URL;
+            document.getElementById('wsPic').value = SHARE.PIC;
             document.getElementById('loading').style.display = 'none';
             document.getElementById('theEnd').style.height = '0';
             document.getElementById('theEnd').innerHTML = '';
