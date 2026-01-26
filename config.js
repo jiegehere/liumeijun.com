@@ -508,7 +508,4 @@ if (typeof window !== 'undefined') {
     },
     uploadImage: uploadImageToApi
   };
-  
-  // 初始化配置
-  initConfig();
 }
