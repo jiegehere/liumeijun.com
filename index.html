@@ -168,15 +168,23 @@
         (function (a, b) { "use strict"; var c = function () { var a = [["requestFullscreen", "exitFullscreen", "fullscreenchange", "fullscreen", "fullscreenElement"], ["webkitRequestFullScreen", "webkitCancelFullScreen", "webkitfullscreenchange", "webkitIsFullScreen", "webkitCurrentFullScreenElement"], ["mozRequestFullScreen", "mozCancelFullScreen", "mozfullscreenchange", "mozFullScreen", "mozFullScreenElement"]]; for (var c = 0, d = a.length; c < d; c++) { var e = a[c]; if (e[1] in b) return e } }(); if (!c) return a.screenfull = !1; var d = "ALLOW_KEYBOARD_INPUT" in Element, e = { init: function () { return b.addEventListener(c[2], function (a) { e.isFullscreen = b[c[3]], e.element = b[c[4]], e.onchange(a) }), this }, isFullscreen: b[c[3]], element: b[c[4]], request: function (a) { a = a || b.documentElement, a[c[0]](d && Element.ALLOW_KEYBOARD_INPUT), b.isFullscreen || a[c[0]]() }, exit: function () { b[c[1]]() }, toggle: function (a) { this.isFullscreen ? this.exit() : this.request(a) }, onchange: function () { } }; a.screenfull = e.init() })(window, document)
     </script>
     <script type="text/javascript">
+        let COORDS = null;
+        let LOCATIONS = null;
+        let ROUTE_INFO = null;
+        let PHOTOS = null;
+        let WANNATO = null;
+        let MARKER_TEXT = null;
+        let AUDIO = null;
+        let IMAGES = null;
+        let TEXT = null;
+        let ANIMATION = null;
+        let SHARE = null;
 
-        // 从配置文件获取配置
-        const { COORDS, LOCATIONS, ROUTE_INFO, PHOTOS, WANNATO, MARKER_TEXT, AUDIO, IMAGES, TEXT, ANIMATION, SHARE} = CONFIG;
-        
         // 背景音乐
         let MUSIC;
 
         // 工具函数：地图缩放动画
-        const zoomTo = (zoom, time = 1000, callback = () => {}, point = null) => {
+        const zoomTo = (zoom, time = 1000, callback = () => { }, point = null) => {
             let loop;
             const loopZoom = () => {
                 const curZoom = map.getZoom();
@@ -197,7 +205,7 @@
         };
 
         // 工具函数：信息窗口轮播
-        const loopWin = (loopList, time = 2000, callback = () => {}) => {
+        const loopWin = (loopList, time = 2000, callback = () => { }) => {
             let i = 0;
             const len = loopList.length;
             let timeout;
@@ -248,13 +256,13 @@
         };
 
         // 工具函数：下滑动画
-        const slideDown = (id, speed = 1000, callback = () => {}) => {
+        const slideDown = (id, speed = 1000, callback = () => { }) => {
             const object = document.getElementById(id);
             const timeout = speed * 0.001;
             let loop;
             object.style.display = 'block';
             object.style.height = '0%';
-            
+
             const slideDownInner = () => {
                 const curHeight = parseFloat(object.style.height) || 0;
                 if (curHeight >= 100) {
@@ -265,16 +273,16 @@
                 object.style.height = (curHeight + 0.1) + '%';
                 loop = setTimeout(slideDownInner, timeout);
             };
-            
+
             slideDownInner();
         };
 
         // 工具函数：预加载图片
-        const preLoadImages = (imagesList, callback = () => {}) => {
+        const preLoadImages = (imagesList, callback = () => { }) => {
             const len = imagesList.length;
             let i = 0;
             const images = {};
-            
+
             const loadImage = () => {
                 if (i === len) {
                     callback();
@@ -285,7 +293,7 @@
                 i++;
                 loadImage();
             };
-            
+
             loadImage();
         };
 
@@ -334,7 +342,7 @@
                     const end = new BMap.Point(LOCATIONS.GIRL.coords.lng, LOCATIONS.GIRL.coords.lat);
                     const driving2 = new BMap.DrivingRoute(map, { renderOptions: { map: map, autoViewport: false } });
                     driving2.search(start, end);
-                    
+
                     // 显示路线信息
                     setTimeout(() => {
                         loopWin(ROUTE_INFO, 2000, showPhotos);
@@ -380,7 +388,7 @@
                     let i = 0;
                     const len = shuffledMarkers.length;
                     let loop;
-                    
+
                     const loopAddMarker = () => {
                         if (i === len) {
                             clearTimeout(loop);
@@ -392,7 +400,7 @@
                         i++;
                         loop = setTimeout(loopAddMarker, ANIMATION.MARKER_INTERVAL);
                     };
-                    
+
                     loopAddMarker();
                 });
             }, 1000);
@@ -438,7 +446,7 @@
             map.clearOverlays();
             map.reset();
             MUSIC.play();
-            
+
             // 开始展示
             const { coords } = LOCATIONS.GIRL;
             map.panTo(new BMap.Point(coords.lng, coords.lat));
@@ -455,31 +463,48 @@
         // 页面加载完成后初始化
         window.onload = () => {
             const initMP3 = () => {
-                MUSIC = soundManager.createSound({
-                    id: 'mp3',
-                    url: AUDIO.src,
-                    onload: () => {
-                        // 遍历这几个数组ROUTE_INFO、PHOTOS、WANNATO，加载contentType = image 的图片
-                        // 过滤出 contentType 为 image 的项
-                        const imagesToLoad = [...ROUTE_INFO, ...PHOTOS, ...WANNATO]
-                            .filter(item => item.contentType === 'image')
-                            .map(item => item.content);
-                        console.log(imagesToLoad);
+                // 从配置文件获取配置
+                window.ConfigManager.getConfig().then(config => {
+                    COORDS = config.COORDS;
+                    LOCATIONS = config.LOCATIONS;
+                    ROUTE_INFO = config.ROUTE_INFO;
+                    PHOTOS = config.PHOTOS;
+                    WANNATO = config.WANNATO;
+                    MARKER_TEXT = config.MARKER_TEXT;
+                    AUDIO = config.AUDIO;
+                    IMAGES = config.IMAGES;
+                    TEXT = config.TEXT;
+                    ANIMATION = config.ANIMATION;
+                    SHARE = config.SHARE;
 
-                        preLoadImages(imagesToLoad, () => {
-                            setTimeout(() => {
-                                const loading = document.getElementById('loading');
-                                loading.style.cursor = 'pointer';
-                                loading.innerHTML = TEXT.START;
-                                loading.onclick = () => {
-                                    screenfull && screenfull.request();
-                                    loadScript();
-                                };
-                            }, 3000);
-                        });
-                    }
+                    MUSIC = soundManager.createSound({
+                        id: 'mp3',
+                        url: AUDIO.src,
+                        onload: () => {
+                            // 遍历这几个数组ROUTE_INFO、PHOTOS、WANNATO，加载contentType = image 的图片
+                            // 过滤出 contentType 为 image 的项
+                            const imagesToLoad = [...ROUTE_INFO, ...PHOTOS, ...WANNATO]
+                                .filter(item => item.contentType === 'image')
+                                .map(item => item.content);
+                            console.log(imagesToLoad);
+
+                            preLoadImages(imagesToLoad, () => {
+                                setTimeout(() => {
+                                    const loading = document.getElementById('loading');
+                                    loading.style.cursor = 'pointer';
+                                    loading.innerHTML = TEXT.START;
+                                    loading.onclick = () => {
+                                        screenfull && screenfull.request();
+                                        loadScript();
+                                    };
+                                }, 3000);
+                            });
+                        }
+                    });
+                    MUSIC.load();
                 });
-                MUSIC.load();
+
+
             };
 
             soundManager.setup({
