@@ -253,123 +253,281 @@
 
         // 广外艺
         function panZoom_GTC() {
-            map.panTo(new BMap.Point(config.mainLocations.authorLocation.point.lng, config.mainLocations.authorLocation.point.lat));
-            setTimeout(function () {
-                zoomTo(18, 800, function () {
-                    var marker = new BMap.Marker(config.mainLocations.authorLocation.point);
-                    map.addOverlay(marker);
-                    marker.setAnimation(BMAP_ANIMATION_BOUNCE);
-                    setTimeout(panZoom_JYU, 1000);
-                }, config.mainLocations.authorLocation.point);
-            }, 800);
+            try {
+                // 检查配置
+                if (!config.mainLocations.authorLocation || !config.mainLocations.authorLocation.point) {
+                    throw new Error('缺少作者位置配置');
+                }
+                
+                map.panTo(new BMap.Point(config.mainLocations.authorLocation.point.lng, config.mainLocations.authorLocation.point.lat));
+                setTimeout(function () {
+                    try {
+                        zoomTo(18, 800, function () {
+                            try {
+                                var marker = new BMap.Marker(config.mainLocations.authorLocation.point);
+                                map.addOverlay(marker);
+                                marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+                                setTimeout(panZoom_JYU, 1000);
+                            } catch (error) {
+                                alert('错误：' + error.message);
+                            }
+                        }, config.mainLocations.authorLocation.point);
+                    } catch (error) {
+                        alert('错误：' + error.message);
+                    }
+                }, 800);
+            } catch (error) {
+                alert('错误：' + error.message);
+            }
         }
 
         // 嘉应学院
         function panZoom_JYU() {
-            zoomTo(8, 1000, function () {
-                map.panTo(new BMap.Point(DEAR_LOCATION.lng, DEAR_LOCATION.lat));
-                setTimeout(function () {
-                    zoomTo(16, 800, function () {
-                        var marker = new BMap.Marker(DEAR_LOCATION);
-                        map.addOverlay(marker);
-                        marker.setAnimation(BMAP_ANIMATION_BOUNCE);
-                        setTimeout(panZoom_HEY, 1000);
-                    });
-                }, 1000);
-            });
+            try {
+                // 检查配置
+                if (!DEAR_LOCATION || !DEAR_LOCATION.point) {
+                    throw new Error('缺少对方位置配置');
+                }
+                
+                zoomTo(8, 1000, function () {
+                    try {
+                        map.panTo(new BMap.Point(DEAR_LOCATION.point.lng, DEAR_LOCATION.point.lat));
+                        setTimeout(function () {
+                            try {
+                                zoomTo(16, 800, function () {
+                                    try {
+                                        var marker = new BMap.Marker(DEAR_LOCATION.point);
+                                        map.addOverlay(marker);
+                                        marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+                                        setTimeout(panZoom_HEY, 1000);
+                                    } catch (error) {
+                                        alert('错误：' + error.message);
+                                    }
+                                });
+                            } catch (error) {
+                                alert('错误：' + error.message);
+                            }
+                        }, 1000);
+                    } catch (error) {
+                        alert('错误：' + error.message);
+                    }
+                });
+            } catch (error) {
+                alert('错误：' + error.message);
+            }
         }
 
         // 河源市
         function panZoom_HEY() {
-            zoomTo(9, 1000, function () {
-                map.panTo(new BMap.Point(TWO_MIDDLE_LOCATION.lng, TWO_MIDDLE_LOCATION.lat));
-                setTimeout(function () {
-                    // 嘉应 和 广州 之间的路线
-                    var start = new BMap.Point(DEAR_LOCATION.lng, DEAR_LOCATION.lat);
-                    var end = new BMap.Point(config.mainLocations.authorLocation.point.lng, config.mainLocations.authorLocation.point.lat);
-                    var driving2 = new BMap.DrivingRoute(map, { renderOptions: { map: map, autoViewport: false } });
-                    driving2.search(start, end);
-                    setTimeout(function () {
-                        loopWin(config.routeInfo, 2000, showPhotos);
-                    }, 2000);
-                }, 1000);
-            });
+            try {
+                // 检查配置
+                if (!config.mainLocations.towMiddleLocation || !config.mainLocations.towMiddleLocation.point) {
+                    throw new Error('缺少中间位置配置');
+                }
+                
+                if (!DEAR_LOCATION || !DEAR_LOCATION.point) {
+                    throw new Error('缺少对方位置配置');
+                }
+                
+                if (!config.mainLocations.authorLocation || !config.mainLocations.authorLocation.point) {
+                    throw new Error('缺少作者位置配置');
+                }
+                
+                zoomTo(9, 1000, function () {
+                    try {
+                        map.panTo(new BMap.Point(config.mainLocations.towMiddleLocation.point.lng, config.mainLocations.towMiddleLocation.point.lat));
+                        setTimeout(function () {
+                            try {
+                                // 嘉应 和 广州 之间的路线
+                                var start = new BMap.Point(DEAR_LOCATION.point.lng, DEAR_LOCATION.point.lat);
+                                var end = new BMap.Point(config.mainLocations.authorLocation.point.lng, config.mainLocations.authorLocation.point.lat);
+                                var driving2 = new BMap.DrivingRoute(map, { renderOptions: { map: map, autoViewport: false } });
+                                driving2.search(start, end);
+                                setTimeout(function () {
+                                    try {
+                                        if (!config.routeInfo) {
+                                            throw new Error('缺少路线信息配置');
+                                        }
+                                        loopWin(config.routeInfo, 2000, showPhotos);
+                                    } catch (error) {
+                                        alert('错误：' + error.message);
+                                    }
+                                }, 2000);
+                            } catch (error) {
+                                alert('错误：' + error.message);
+                            }
+                        }, 1000);
+                    } catch (error) {
+                        alert('错误：' + error.message);
+                    }
+                });
+            } catch (error) {
+                alert('错误：' + error.message);
+            }
         }
 
         // 展示游历图片信息
         function showPhotos() {
-            map.clearOverlays();
-            map.panTo(new BMap.Point(GD_GZS.lng, GD_GZS.lat));
-            setTimeout(function () {
-                zoomTo(13, 1000, function () {
-                    loopWin(config.photos, 2500, wannaTo);
-                });
-            }, 1000);
+            try {
+                map.clearOverlays();
+                
+                // 检查 GD_GZS 配置
+                if (!GD_GZS || !GD_GZS.lng || !GD_GZS.lat) {
+                    throw new Error('缺少广州位置配置');
+                }
+                
+                map.panTo(new BMap.Point(GD_GZS.lng, GD_GZS.lat));
+                setTimeout(function () {
+                    try {
+                        zoomTo(13, 1000, function () {
+                            try {
+                                if (!config.photos) {
+                                    throw new Error('缺少照片配置');
+                                }
+                                loopWin(config.photos, 2500, wannaTo);
+                            } catch (error) {
+                                alert('错误：' + error.message);
+                            }
+                        });
+                    } catch (error) {
+                        alert('错误：' + error.message);
+                    }
+                }, 1000);
+            } catch (error) {
+                alert('错误：' + error.message);
+            }
         }
 
         // 展示想去的地方
         function wannaTo() {
-            map.closeInfoWindow();
-            zoomTo(5, 1000, function () {
-                map.panTo(new BMap.Point(CN_CEN.lng, CN_CEN.lat));
-                map.setMapType(BMAP_HYBRID_MAP);
-                setTimeout(function () {
-                    loopWin(config.wannaToLocations.map(item => ({
-                        ...item,
-                        point: item.point === 'chinaCenter' ? CN_CEN : item.point
-                    })), 1000, showMarkerText);
-                }, 1000);
-            });
+            try {
+                map.closeInfoWindow();
+                zoomTo(5, 1000, function () {
+                    try {
+                        if (!CN_CEN || !CN_CEN.lng || !CN_CEN.lat) {
+                            throw new Error('缺少中国中心配置');
+                        }
+                        
+                        map.panTo(new BMap.Point(CN_CEN.lng, CN_CEN.lat));
+                        map.setMapType(BMAP_HYBRID_MAP);
+                        setTimeout(function () {
+                            try {
+                                if (!config.wannaToLocations) {
+                                    throw new Error('缺少想去的地方配置');
+                                }
+                                loopWin(config.wannaToLocations.map(item => ({
+                                    ...item,
+                                    point: item.point === 'chinaCenter' ? CN_CEN : item.point
+                                })), 1000, showMarkerText);
+                            } catch (error) {
+                                alert('错误：' + error.message);
+                            }
+                        }, 1000);
+                    } catch (error) {
+                        alert('错误：' + error.message);
+                    }
+                });
+            } catch (error) {
+                alert('错误：' + error.message);
+            }
         }
 
-        var markerText = markerConfig.markerText || [];
-        function addMarker(lng, lat) {
-            var marker = new BMap.Marker(new BMap.Point(lng, lat));
-            marker.setAnimation(BMAP_ANIMATION_DROP);
-            map.addOverlay(marker)
+        var markerText = [];
+        try {
+            markerText = markerConfig.markerText || [];
+        } catch (error) {
+            alert('错误：缺少 markerConfig 配置');
         }
+        
+        function addMarker(lng, lat) {
+            try {
+                var marker = new BMap.Marker(new BMap.Point(lng, lat));
+                marker.setAnimation(BMAP_ANIMATION_DROP);
+                map.addOverlay(marker);
+            } catch (error) {
+                alert('错误：' + error.message);
+            }
+        }
+        
         if (!Array.prototype.shuffle) {
             Array.prototype.shuffle = function () {
                 for (var j, x, i = this.length; i; j = parseInt(Math.random() * i), x = this[--i], this[i] = this[j], this[j] = x);
                 return this;
             };
         }
-        markerText.shuffle();
+        
+        try {
+            markerText.shuffle();
+        } catch (error) {
+            alert('错误：' + error.message);
+        }
+        
         function loopAddMarker(markers, callback) {
-            var i = 0;
-            var len = markers.length;
-            var callback = callback || function () { };
-            var loop = '';
-            function loopAddMarkerInner() {
-                if (i == len) {
-                    clearTimeout(loop);
-                    callback();
-                    return false;
+            try {
+                var i = 0;
+                var len = markers.length;
+                var callback = callback || function () { };
+                var loop = '';
+                function loopAddMarkerInner() {
+                    if (i == len) {
+                        clearTimeout(loop);
+                        callback();
+                        return false;
+                    }
+                    addMarker(markers[i].lng, markers[i].lat);
+                    i++;
+                    loop = setTimeout(loopAddMarkerInner, 300);
                 }
-                addMarker(markers[i].lng, markers[i].lat);
-                i++;
-                loop = setTimeout(loopAddMarkerInner, 300);
+                loopAddMarkerInner();
+            } catch (error) {
+                alert('错误：' + error.message);
             }
-            loopAddMarkerInner();
         }
 
         function showMarkerText() {
-            map.closeInfoWindow();
-            map.panTo(new BMap.Point(82.699584, 39.8202));
-            setTimeout(function () {
-                zoomTo(9, 1000, function () {
-                    loopAddMarker(markerText, function () {
-                        setTimeout(function () {
-                            slideDown('theEnd', 1000, function () {
-                                var theEndText = '<div id="theEndText">致心爱的' + config.common.dearName  + ' :) --by ' + config.common.authorName + '<br />' +
-                                    '<button data-toggle="wshare" data-type="weibo">分享到微博</button>' +
-                                    '<button onclick="window.location.reload();">再看一次</button></div>';
-                                document.getElementById('theEnd').innerHTML = theEndText;
-                            });
-                        }, 5000);
-                    });
-                })
-            }, 1000);
+            try {
+                map.closeInfoWindow();
+                map.panTo(new BMap.Point(82.699584, 39.8202));
+                setTimeout(function () {
+                    try {
+                        zoomTo(9, 1000, function () {
+                            try {
+                                loopAddMarker(markerText, function () {
+                                    try {
+                                        setTimeout(function () {
+                                            try {
+                                                slideDown('theEnd', 1000, function () {
+                                                    try {
+                                                        if (!config.common || !config.common.dearName || !config.common.authorName) {
+                                                            throw new Error('缺少通用配置');
+                                                        }
+                                                        var theEndText = '<div id="theEndText">致心爱的' + config.common.dearName  + ' :) --by ' + config.common.authorName + '<br />' +
+                                                            '<button data-toggle="wshare" data-type="weibo">分享到微博</button>' +
+                                                            '<button onclick="window.location.reload();">再看一次</button></div>';
+                                                        document.getElementById('theEnd').innerHTML = theEndText;
+                                                    } catch (error) {
+                                                        alert('错误：' + error.message);
+                                                    }
+                                                });
+                                            } catch (error) {
+                                                alert('错误：' + error.message);
+                                            }
+                                        }, 5000);
+                                    } catch (error) {
+                                        alert('错误：' + error.message);
+                                    }
+                                });
+                            } catch (error) {
+                                alert('错误：' + error.message);
+                            }
+                        });
+                    } catch (error) {
+                        alert('错误：' + error.message);
+                    }
+                }, 1000);
+            } catch (error) {
+                alert('错误：' + error.message);
+            }
         }
 
         function slideDown(id, speed, callback) {
@@ -470,128 +628,225 @@
 
         // 百度地图初始化
         function initMap() {
-            map = new BMap.Map("map");
-            var point = new BMap.Point(MP_CEN.lng, MP_CEN.lat);
-            map.centerAndZoom(point, 4);
-            map.disableDragging();
-            map.disableDoubleClickZoom();
+            try {
+                map = new BMap.Map("map");
+                var point = new BMap.Point(MP_CEN.lng, MP_CEN.lat);
+                map.centerAndZoom(point, 4);
+                map.disableDragging();
+                map.disableDoubleClickZoom();
 
-            // 创建地址解析器实例
-            var myGeo = new BMap.Geocoder();
+                // 创建地址解析器实例
+                var myGeo = new BMap.Geocoder();
 
-            // 解析所有包含address的点位
-            function geocodeAddress(item) {
-                return new Promise((resolve, reject) => {
-                    if (item.address && (!item.point || (typeof item.point === 'string'))) {
-                        myGeo.getPoint(item.address, function (point) {
-                            console.log("地址解析结果: ", point);
-                            if (point) {
-                                item.point = point;
-                                resolve(item);
-                            } else {
-                                console.error("无法解析地址: " + item.address);
-                                resolve(item);
-                            }
-                        });
-                    } else {
-                        resolve(item);
-                    }
-                });
-            }
-
-            // 处理所有需要地址解析的配置
-            async function processAddresses() {
-                // 处理路线信息中的地址
-                for (let i = 0; i < config.routeInfo.length; i++) {
-                    if (typeof config.routeInfo[i].point === 'string') {
-                        const location = config.mainLocations[config.routeInfo[i].point];
-                        if (location) {
-                            config.routeInfo[i].point = { lng: location.lng, lat: location.lat };
+                // 解析所有包含address的点位
+                function geocodeAddress(item) {
+                    return new Promise((resolve, reject) => {
+                        if (item.address && (!item.point || (typeof item.point === 'string'))) {
+                            myGeo.getPoint(item.address, function (point) {
+                                console.log("地址解析结果: ", point);
+                                if (point) {
+                                    item.point = point;
+                                    resolve(item);
+                                } else {
+                                    console.error("无法解析地址: " + item.address);
+                                    resolve(item);
+                                }
+                            });
+                        } else {
+                            resolve(item);
                         }
-                    }
-                }
-                // 处理地址
-                for (let i = 0; i < config.routeInfo.length; i++) {
-                    await geocodeAddress(config.routeInfo[i]);
-                }
-                // 处理照片展示中的地址
-                for (let i = 0; i < config.photos.length; i++) {
-                    await geocodeAddress(config.photos[i]);
+                    });
                 }
 
-                // 处理想去的地方中的地址
-                for (let i = 0; i < config.wannaToLocations.length; i++) {
-                    if (config.wannaToLocations[i].point === 'chinaCenter') {
-                        config.wannaToLocations[i].point = { lng: CN_CEN.lng, lat: CN_CEN.lat };
-                    } else {
-                        await geocodeAddress(config.wannaToLocations[i]);
+                // 处理所有需要地址解析的配置
+                async function processAddresses() {
+                    try {
+                        // 处理路线信息中的地址
+                        for (let i = 0; i < config.routeInfo.length; i++) {
+                            if (typeof config.routeInfo[i].point === 'string') {
+                                const location = config.mainLocations[config.routeInfo[i].point];
+                                if (location) {
+                                    config.routeInfo[i].point = { lng: location.lng, lat: location.lat };
+                                }
+                            }
+                        }
+                        // 处理地址
+                        for (let i = 0; i < config.routeInfo.length; i++) {
+                            await geocodeAddress(config.routeInfo[i]);
+                        }
+                        // 处理照片展示中的地址
+                        for (let i = 0; i < config.photos.length; i++) {
+                            await geocodeAddress(config.photos[i]);
+                        }
+
+                        // 处理想去的地方中的地址
+                        for (let i = 0; i < config.wannaToLocations.length; i++) {
+                            if (config.wannaToLocations[i].point === 'chinaCenter') {
+                                config.wannaToLocations[i].point = { lng: CN_CEN.lng, lat: CN_CEN.lat };
+                            } else {
+                                await geocodeAddress(config.wannaToLocations[i]);
+                            }
+                        }
+                        console.log("所有地址解析完成, config:", config);
+                        // 所有地址处理完成后，开始初始化
+                        init();
+                    } catch (error) {
+                        alert('错误：' + error.message);
                     }
                 }
-                console.log("所有地址解析完成, config:", config);
-                // 所有地址处理完成后，开始初始化
-                init();
+
+                // 开始处理地址
+                processAddresses();
+            } catch (error) {
+                alert('错误：' + error.message);
             }
-
-            // 开始处理地址
-            processAddresses();
         }
 
         function init() {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('theEnd').style.height = '0';
-            document.getElementById('theEnd').innerHTML = '';
-            map.setMapType(BMAP_NORMAL_MAP);
-            var point = new BMap.Point(MP_CEN.lng, MP_CEN.lat);
-            map.centerAndZoom(point, 4);
-            map.clearOverlays();
-            map.reset();
-            MUSIC.play();
-            map.panTo(new BMap.Point(config.mainLocations.authorLocation.point.lng, config.mainLocations.authorLocation.point.lat));
-            panZoom_GTC();
+            try {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('theEnd').style.height = '0';
+                document.getElementById('theEnd').innerHTML = '';
+                map.setMapType(BMAP_NORMAL_MAP);
+                var point = new BMap.Point(MP_CEN.lng, MP_CEN.lat);
+                map.centerAndZoom(point, 4);
+                map.clearOverlays();
+                map.reset();
+                
+                // 检查 MUSIC 是否存在
+                if (MUSIC) {
+                    MUSIC.play();
+                }
+                
+                // 检查必要的配置
+                if (!config.mainLocations.authorLocation || !config.mainLocations.authorLocation.point) {
+                    throw new Error('缺少作者位置配置');
+                }
+                
+                if (!config.mainLocations.dearLocation || !config.mainLocations.dearLocation.point) {
+                    throw new Error('缺少对方位置配置');
+                }
+                
+                if (!config.mainLocations.towMiddleLocation || !config.mainLocations.towMiddleLocation.point) {
+                    throw new Error('缺少中间位置配置');
+                }
+                
+                map.panTo(new BMap.Point(config.mainLocations.authorLocation.point.lng, config.mainLocations.authorLocation.point.lat));
+                panZoom_GTC();
+            } catch (error) {
+                alert('错误：' + error.message);
+            }
         }
 
         // 加载百度地图，并在加载完成后调用initMap函数
         function loadScript() {
-            var script = document.createElement("script");
-            callbackFuncName = "initMap";
-            script.src = "https://api.map.baidu.com/api?v=3.0&ak=EXl1klVct9z0GXE7KAkPUkawwDhDN0h9&callback=" + callbackFuncName;
-            document.body.appendChild(script);
-            //   script.src = "http://api.map.baidu.com/api?v=1.2&callback=initMap";
-            //   document.body.appendChild(script);
+            try {
+                var script = document.createElement("script");
+                callbackFuncName = "initMap";
+                script.src = "https://api.map.baidu.com/api?v=3.0&ak=EXl1klVct9z0GXE7KAkPUkawwDhDN0h9&callback=" + callbackFuncName;
+                script.onerror = function() {
+                    alert('错误：百度地图脚本加载失败');
+                };
+                document.body.appendChild(script);
+            } catch (error) {
+                alert('错误：' + error.message);
+            }
         }
 
         // 函数在页面加载完成后执行
         window.onload = function () {
-            // 设置页面标题
-            document.title = "给亲爱的" + config.common.dearName;
-            
-            $("#wsContent").val("送给亲爱的" + config.common.dearName +
-                "，纪念我们经历的一切，也是送给所有异地恋人的礼物「变得是距离，不变的是坚持」。 via @"
-                + config.common.authorName);
-            $("#wsUrl").val(config.common.shareUrl);
-            soundManager.setup({
-                url: './sm/',
-                onready: initMP3
-            });
-            function initMP3() {
-                MUSIC = soundManager.createSound({
-                    id: 'mp3',
-                    url: './LemonTree.mp3',
-                    onload: function () {
-                        preLoadImages(function () {
-                            setTimeout(function () {
-                                var loading = document.getElementById('loading');
-                                loading.style.cursor = 'pointer';
-                                loading.innerHTML = '点击开始';
-                                loading.onclick = function () {
-                                    screenfull && screenfull.request();
-                                    loadScript();
-                                }
-                            }, 3000);
-                        });
-                    }
+            try {
+                // 检查配置是否存在
+                if (!config) {
+                    throw new Error('配置文件加载失败');
+                }
+                
+                // 检查必要的配置项
+                if (!config.common || !config.common.dearName) {
+                    throw new Error('缺少必要的配置项：common.dearName');
+                }
+                
+                if (!config.mainLocations || !config.mainLocations.authorLocation || !config.mainLocations.authorLocation.point) {
+                    throw new Error('缺少必要的配置项：mainLocations.authorLocation.point');
+                }
+                
+                if (!config.mainLocations.dearLocation || !config.mainLocations.dearLocation.point) {
+                    throw new Error('缺少必要的配置项：mainLocations.dearLocation.point');
+                }
+                
+                if (!config.mainLocations.towMiddleLocation || !config.mainLocations.towMiddleLocation.point) {
+                    throw new Error('缺少必要的配置项：mainLocations.towMiddleLocation.point');
+                }
+                
+                if (!config.mainLocations.guangzhou) {
+                    throw new Error('缺少必要的配置项：mainLocations.guangzhou');
+                }
+                
+                if (!config.routeInfo) {
+                    throw new Error('缺少必要的配置项：routeInfo');
+                }
+                
+                if (!config.photos) {
+                    throw new Error('缺少必要的配置项：photos');
+                }
+                
+                if (!config.wannaToLocations) {
+                    throw new Error('缺少必要的配置项：wannaToLocations');
+                }
+                
+                if (!config.mapCenter) {
+                    throw new Error('缺少必要的配置项：mapCenter');
+                }
+                
+                if (!config.chinaCenter) {
+                    throw new Error('缺少必要的配置项：chinaCenter');
+                }
+                
+                // 检查 markerConfig
+                if (typeof markerConfig === 'undefined') {
+                    throw new Error('缺少 markerConfig 配置文件');
+                }
+                
+                // 设置页面标题
+                document.title = "给亲爱的" + config.common.dearName;
+                
+                $("#wsContent").val("送给亲爱的" + config.common.dearName +
+                    "，纪念我们经历的一切，也是送给所有异地恋人的礼物「变得是距离，不变的是坚持」。 via @"
+                    + config.common.authorName);
+                $("#wsUrl").val(config.common.shareUrl);
+                soundManager.setup({
+                    url: './sm/',
+                    onready: initMP3
                 });
-                MUSIC.load();
+                function initMP3() {
+                    MUSIC = soundManager.createSound({
+                        id: 'mp3',
+                        url: './LemonTree.mp3',
+                        onload: function () {
+                            preLoadImages(function () {
+                                setTimeout(function () {
+                                    var loading = document.getElementById('loading');
+                                    loading.style.cursor = 'pointer';
+                                    loading.innerHTML = '点击开始';
+                                    loading.onclick = function () {
+                                        try {
+                                            screenfull && screenfull.request();
+                                            loadScript();
+                                        } catch (error) {
+                                            alert('错误：' + error.message);
+                                        }
+                                    }
+                                }, 3000);
+                            });
+                        },
+                        onloaderror: function () {
+                            alert('错误：音频加载失败');
+                        }
+                    });
+                    MUSIC.load();
+                }
+            } catch (error) {
+                alert('错误：' + error.message);
             }
         };
     </script>
