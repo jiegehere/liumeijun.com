@@ -7,6 +7,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
     <title>Hello My Dear!</title>
     <style type="text/css">
+        /* 基础样式重置 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body,
         div,
         dl,
@@ -91,19 +98,27 @@
         html {
             height: 100%;
             width: 100%;
+            overflow: hidden;
+            -webkit-overflow-scrolling: touch;
         }
 
         /* Common 定义基本样式 */
         body {
-            font: 12px/1.8 'Microsoft Yahei', 'Helvetica Neue', Helvetica, Arial, Sans-serif;
+            font: 14px/1.8 'Microsoft Yahei', 'Helvetica Neue', Helvetica, Arial, Sans-serif;
             padding: 0;
             margin: 0;
             color: #333333;
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         #map {
             height: 100%;
             width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
 
         #loading {
@@ -112,12 +127,22 @@
             position: absolute;
             z-index: 999;
             background: url("./images/site/loading.gif") no-repeat center center #FFFAD1;
+            background-size: 60px 60px;
             top: 0;
             left: 0;
             text-align: center;
-            line-height: 300px;
-            font-size: 32px;
+            line-height: 1.5;
+            font-size: 18px;
             color: #666;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         #theEnd {
@@ -139,11 +164,162 @@
             z-index: 9999;
             width: 100%;
             text-align: center;
-            font-size: 26px;
-            line-height: 2;
+            font-size: 20px;
+            line-height: 1.8;
             top: 50%;
             margin-top: -100px;
             height: 200px;
+            padding: 0 20px;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* 响应式样式调整 */
+        @media (max-width: 768px) {
+            #loading {
+                font-size: 16px;
+                background-size: 50px 50px;
+            }
+            
+            #theEndText {
+                font-size: 18px;
+                margin-top: -80px;
+                height: 160px;
+                padding: 0 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #loading {
+                font-size: 14px;
+                background-size: 40px 40px;
+            }
+            
+            #theEndText {
+                font-size: 16px;
+                margin-top: -70px;
+                height: 140px;
+                padding: 0 10px;
+            }
+        }
+        
+        /* 微信内适配 */
+        @media screen and (max-width: 768px) and (min-height: 500px) {
+            /* 调整微信内的加载动画位置，避免被顶部导航栏遮挡 */
+            #loading {
+                padding-top: 60px;
+                box-sizing: border-box;
+            }
+            
+            /* 调整结束页面文本位置 */
+            #theEndText {
+                margin-top: -90px;
+            }
+        }
+        
+        /* 调整信息窗口中的图片样式，使其在移动端适配 */
+        .BMap_pop img {
+            max-width: 100% !important;
+            height: auto !important;
+            min-width: auto !important;
+            max-height: 250px !important;
+            display: block;
+            margin: 0 auto;
+            border-radius: 4px;
+        }
+        
+        /* 调整信息窗口的整体样式 */
+        .BMap_pop {
+            max-width: 90% !important;
+            min-width: 200px !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        /* 调整信息窗口标题样式 */
+        .BMap_bubble_title {
+            font-size: 16px !important;
+            font-weight: bold;
+            padding: 10px 12px !important;
+            border-radius: 8px 8px 0 0 !important;
+            background-color: #f8f8f8 !important;
+            border-bottom: 1px solid #eee !important;
+        }
+        
+        /* 调整信息窗口内容样式 */
+        .BMap_bubble_content {
+            padding: 12px !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+            background-color: white !important;
+        }
+        
+        /* 调整信息窗口关闭按钮样式 */
+        .BMap_pop .BMap_close {
+            width: 24px !important;
+            height: 24px !important;
+            line-height: 24px !important;
+            font-size: 16px !important;
+            right: 5px !important;
+            top: 5px !important;
+            background-color: rgba(255, 255, 255, 0.8) !important;
+            border-radius: 50% !important;
+            text-align: center !important;
+            cursor: pointer !important;
+        }
+        
+        /* 隐藏信息窗口的箭头，避免在移动端显示问题 */
+        .BMap_pop .BMap_top {
+            display: none !important;
+        }
+        
+        /* 调整信息窗口的阴影效果 */
+        .BMap_shadow {
+            display: none !important;
+        }
+        
+        /* 增强移动端的触摸反馈 */
+        #loading:active {
+            opacity: 0.9;
+            transform: scale(0.98);
+        }
+        
+        /* 调整分享按钮样式（如果有） */
+        .share-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        
+        /* 修复iOS上的点击延迟问题 */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* 确保在横屏模式下也能正常显示 */
+        @media screen and (orientation: landscape) and (max-height: 500px) {
+            #loading {
+                font-size: 14px;
+                background-size: 30px 30px;
+            }
+            
+            #theEndText {
+                font-size: 14px;
+                margin-top: -60px;
+                height: 120px;
+                padding: 0 10px;
+            }
         }
     </style>
 </head>
@@ -463,54 +639,142 @@
 
         // 页面加载完成后初始化
         window.onload = () => {
+            // 添加全局初始化完成标志
+            let initComplete = false;
+            
+            // 添加超时机制，防止初始化卡住
+            const initTimeout = setTimeout(() => {
+                if (!initComplete) {
+                    console.warn('初始化超时，跳过音频和图片预加载');
+                    completeInit();
+                }
+            }, 15000); // 15秒超时
+            
+            // 完成初始化的函数
+            const completeInit = () => {
+                if (initComplete) return;
+                initComplete = true;
+                clearTimeout(initTimeout);
+                
+                const loading = document.getElementById('loading');
+                loading.style.cursor = 'pointer';
+                loading.innerHTML = TEXT?.START || '点击开始';
+                loading.onclick = () => {
+                    // 微信内禁用全屏请求
+                    if (screenfull && !/MicroMessenger/.test(navigator.userAgent)) {
+                        screenfull.request();
+                    }
+                    loadScript();
+                };
+            };
+            
+            // 初始化配置
+            const initConfig = async () => {
+                try {
+                    if (window.ConfigManager && window.ConfigManager.getConfig) {
+                        const config = await window.ConfigManager.getConfig();
+                        COORDS = config.COORDS;
+                        LOCATIONS = config.LOCATIONS;
+                        ROUTE_INFO = config.ROUTE_INFO || [];
+                        PHOTOS = config.PHOTOS || [];
+                        WANNATO = config.WANNATO || [];
+                        MARKER_TEXT = config.MARKER_TEXT;
+                        AUDIO = config.AUDIO;
+                        IMAGES = config.IMAGES;
+                        TEXT = config.TEXT;
+                        ANIMATION = config.ANIMATION;
+                        SHARE = config.SHARE;
+                        return true;
+                    } else {
+                        console.warn('ConfigManager 不可用，使用默认配置');
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('获取配置失败:', error);
+                    return false;
+                }
+            };
+            
+            // 预加载图片
+            const preLoadAllImages = () => {
+                try {
+                    const imagesToLoad = [...(ROUTE_INFO || []), ...(PHOTOS || []), ...(WANNATO || [])]
+                        .filter(item => item.contentType === 'image')
+                        .map(item => item.content);
+                    
+                    console.log('需要预加载的图片:', imagesToLoad);
+                    
+                    if (imagesToLoad.length > 0) {
+                        preLoadImages(imagesToLoad, () => {
+                            console.log('图片预加载完成');
+                            // 图片预加载完成后，等待3秒显示开始按钮
+                            setTimeout(() => {
+                                completeInit();
+                            }, 3000);
+                        });
+                    } else {
+                        // 没有需要预加载的图片，直接显示开始按钮
+                        setTimeout(() => {
+                            completeInit();
+                        }, 3000);
+                    }
+                } catch (error) {
+                    console.error('图片预加载失败:', error);
+                    completeInit();
+                }
+            };
+            
             const initMP3 = () => {
-                // 从配置文件获取配置
-                window.ConfigManager.getConfig().then(config => {
-                    COORDS = config.COORDS;
-                    LOCATIONS = config.LOCATIONS;
-                    ROUTE_INFO = config.ROUTE_INFO;
-                    PHOTOS = config.PHOTOS;
-                    WANNATO = config.WANNATO;
-                    MARKER_TEXT = config.MARKER_TEXT;
-                    AUDIO = config.AUDIO;
-                    IMAGES = config.IMAGES;
-                    TEXT = config.TEXT;
-                    ANIMATION = config.ANIMATION;
-                    SHARE = config.SHARE;
-
-                    MUSIC = soundManager.createSound({
-                        id: 'mp3',
-                        url: AUDIO.src,
-                        onload: () => {
-                            // 遍历这几个数组ROUTE_INFO、PHOTOS、WANNATO，加载contentType = image 的图片
-                            // 过滤出 contentType 为 image 的项
-                            const imagesToLoad = [...ROUTE_INFO, ...PHOTOS, ...WANNATO]
-                                .filter(item => item.contentType === 'image')
-                                .map(item => item.content);
-                            console.log(imagesToLoad);
-
-                            preLoadImages(imagesToLoad, () => {
-                                setTimeout(() => {
-                                    const loading = document.getElementById('loading');
-                                    loading.style.cursor = 'pointer';
-                                    loading.innerHTML = TEXT.START;
-                                    loading.onclick = () => {
-                                        screenfull && screenfull.request();
-                                        loadScript();
-                                    };
-                                }, 3000);
+                initConfig().then(configLoaded => {
+                    // 无论配置是否加载成功，都尝试初始化音频
+                    try {
+                        if (AUDIO && AUDIO.src) {
+                            console.log('初始化音频:', AUDIO.src);
+                            
+                            MUSIC = soundManager.createSound({
+                                id: 'mp3',
+                                url: AUDIO.src,
+                                onload: () => {
+                                    console.log('音频加载成功');
+                                    preLoadAllImages();
+                                },
+                                onloaderror: () => {
+                                    console.warn('音频加载失败，跳过音频初始化');
+                                    preLoadAllImages();
+                                }
                             });
+                            
+                            MUSIC.load();
+                        } else {
+                            console.warn('音频配置不存在或无效，跳过音频初始化');
+                            preLoadAllImages();
                         }
-                    });
-                    MUSIC.load();
+                    } catch (error) {
+                        console.error('音频初始化失败:', error);
+                        preLoadAllImages();
+                    }
+                }).catch(error => {
+                    console.error('配置初始化失败:', error);
+                    preLoadAllImages();
                 });
-
-
             };
 
+            // 初始化 soundManager
             soundManager.setup({
                 url: './sm/',
-                onready: initMP3
+                onready: initMP3,
+                ontimeout: () => {
+                    console.warn('soundManager 初始化超时，跳过音频初始化');
+                    initConfig().then(() => {
+                        preLoadAllImages();
+                    }).catch(() => {
+                        completeInit();
+                    });
+                },
+                defaultOptions: {
+                    autoLoad: false,
+                    autoPlay: false
+                }
             });
         };
     </script>
