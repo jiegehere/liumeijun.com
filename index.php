@@ -20,7 +20,6 @@ if (!file_exists(CONFIG_FILE)) {
 
 // 读取配置
 function load_config($file) {
-    echo "Loading config from " . $file . "\n";
     try {
         if (!file_exists($file)) {
             return [];
