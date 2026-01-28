@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
     <title>Hello My Dear!</title>
     <style type="text/css">
@@ -91,6 +91,7 @@
         html {
             height: 100%;
             width: 100%;
+            overflow: hidden;
         }
 
         /* Common 定义基本样式 */
@@ -99,6 +100,10 @@
             padding: 0;
             margin: 0;
             color: #333333;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         #map {
@@ -118,6 +123,27 @@
             line-height: 300px;
             font-size: 32px;
             color: #666;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #startButton {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 24px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #startButton:active {
+            background: #ff5252;
+            transform: scale(0.98);
         }
 
         #theEnd {
@@ -144,6 +170,23 @@
             top: 50%;
             margin-top: -100px;
             height: 200px;
+        }
+
+        #theEndText button {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #theEndText button:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
@@ -183,6 +226,9 @@
         // 背景音乐
         let MUSIC;
 
+        // 检测移动设备
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
         // 工具函数：地图缩放动画
         const zoomTo = (zoom, time = 1000, callback = () => { }, point = null) => {
             let loop;
@@ -220,14 +266,15 @@
                 // 根据contentType处理内容
                 let content = loopList[i].content;
                 if (loopList[i].contentType === 'image') {
-                    // 构造图片HTML，限制最大宽度为600像素
-                    content = `<img src="${content}" style="width: 100%; max-width: 600px; min-width: 400px; height: auto;" alt="${loopList[i].title || 'Image'}" />`;
-                    //content = `<img src="${content}" style="width: 500px; height: auto;" alt="${loopList[i].title || 'Image'}" />`;
+                    // 移动端使用响应式图片尺寸
+                    const maxWidth = isMobile ? '90vw' : '600px';
+                    const minWidth = isMobile ? '80vw' : '400px';
+                    content = `<img src="${content}" style="width: 100%; max-width: ${maxWidth}; min-width: ${minWidth}; height: auto;" alt="${loopList[i].title || 'Image'}" />`;
                 }
 
                 const opts = {
                     title: loopList[i].title,
-                    maxWidth: 600,
+                    maxWidth: isMobile ? 300 : 600,
                     height: 0
                 };
                 const infoWindow = new BMap.InfoWindow(content, opts);
@@ -277,24 +324,37 @@
             slideDownInner();
         };
 
-        // 工具函数：预加载图片
+        // 工具函数：预加载图片（优化版）
         const preLoadImages = (imagesList, callback = () => { }) => {
             const len = imagesList.length;
             let i = 0;
             const images = {};
+            let loadedCount = 0;
+
+            const onImageLoad = () => {
+                loadedCount++;
+                if (loadedCount === len) {
+                    callback();
+                }
+            };
 
             const loadImage = () => {
                 if (i === len) {
-                    callback();
                     return false;
                 }
                 images[i] = new Image();
+                images[i].onload = onImageLoad;
+                images[i].onerror = onImageLoad; // 即使加载失败也继续
                 images[i].src = imagesList[i];
                 i++;
                 loadImage();
             };
 
-            loadImage();
+            if (len === 0) {
+                callback();
+            } else {
+                loadImage();
+            }
         };
 
         // 工具函数：数组随机排序
@@ -358,7 +418,6 @@
             map.panTo(new BMap.Point(coords.lng, coords.lat));
             setTimeout(() => {
                 zoomTo(13, 1000, () => {
-                    // 使用for循环处理多个地点的照片
                     loopWin(PHOTOS, 2500, showWannaGoPlaces);
                 });
             }, 1000);
@@ -371,7 +430,6 @@
                 map.panTo(new BMap.Point(COORDS.WANT_TO_CN_CEN.lng, COORDS.WANT_TO_CN_CEN.lat));
                 map.setMapType(BMAP_HYBRID_MAP);
                 setTimeout(() => {
-                    // 使用for循环处理多个想去的地方
                     loopWin(WANNATO, 1000, showMarkerAnimation);
                 }, 1000);
             });
@@ -383,7 +441,6 @@
             map.panTo(new BMap.Point(82.699584, 39.8202));
             setTimeout(() => {
                 zoomTo(9, 1000, () => {
-                    // 使用for循环处理多个标记点
                     const shuffledMarkers = [...MARKER_TEXT].shuffle();
                     let i = 0;
                     const len = shuffledMarkers.length;
@@ -414,7 +471,7 @@
                         ${TEXT.BIRTHDAY_WISH}<br />
                         <button data-toggle="wshare" data-type="weibo">${TEXT.SHARE_WEIBO}</button>
                         <button onclick="window.location.reload();">${TEXT.WATCH_AGAIN}</button>
-                        <button onclick="window.location.href=\'./config-manager.html\'; target=\'_blank\';">修改配置</button>
+                        <button onclick="window.location.href='./config-manager.html';">修改配置</button>
                     </div>
                 `;
                 document.getElementById('theEnd').innerHTML = theEndText;
@@ -425,12 +482,17 @@
 
         // 初始化地图-全屏地图展示开始入口函数
         const initMap = () => {
-            map = new BMap.Map("map");
-            const point = new BMap.Point(COORDS.INIT_MP_CEN.lng, COORDS.INIT_MP_CEN.lat);
-            map.centerAndZoom(point, 4);
-            map.disableDragging();
-            map.disableDoubleClickZoom();
-            init();
+            try {
+                map = new BMap.Map("map");
+                const point = new BMap.Point(COORDS.INIT_MP_CEN.lng, COORDS.INIT_MP_CEN.lat);
+                map.centerAndZoom(point, 4);
+                map.disableDragging();
+                map.disableDoubleClickZoom();
+                init();
+            } catch (error) {
+                console.error('地图初始化失败:', error);
+                alert('地图加载失败，请刷新页面重试');
+            }
         };
 
         // 初始化应用
@@ -446,7 +508,15 @@
             map.centerAndZoom(point, 4);
             map.clearOverlays();
             map.reset();
-            MUSIC.play();
+
+            // 播放音乐（在用户交互后调用）
+            try {
+                if (MUSIC) {
+                    MUSIC.play();
+                }
+            } catch (error) {
+                console.error('音乐播放失败:', error);
+            }
 
             // 开始展示
             const { coords } = LOCATIONS.GIRL;
@@ -458,13 +528,30 @@
         const loadScript = () => {
             const script = document.createElement("script");
             script.src = "https://api.map.baidu.com/api?v=3.0&ak=EXl1klVct9z0GXE7KAkPUkawwDhDN0h9&callback=initMap";
+            script.onerror = () => {
+                alert('百度地图API加载失败，请检查网络连接');
+            };
             document.body.appendChild(script);
+        };
+
+        // 开始按钮点击事件
+        const handleStartClick = () => {
+            // 尝试全屏
+            try {
+                if (screenfull && screenfull.request) {
+                    screenfull.request();
+                }
+            } catch (error) {
+                console.log('全屏请求失败:', error);
+            }
+
+            // 加载地图
+            loadScript();
         };
 
         // 页面加载完成后初始化
         window.onload = () => {
             const initMP3 = () => {
-                // 从配置文件获取配置
                 window.ConfigManager.getConfig().then(config => {
                     COORDS = config.COORDS;
                     LOCATIONS = config.LOCATIONS;
@@ -478,41 +565,98 @@
                     ANIMATION = config.ANIMATION;
                     SHARE = config.SHARE;
 
+                    // 创建音乐对象
                     MUSIC = soundManager.createSound({
                         id: 'mp3',
                         url: AUDIO.src,
                         onload: () => {
-                            // 遍历这几个数组ROUTE_INFO、PHOTOS、WANNATO，加载contentType = image 的图片
-                            // 过滤出 contentType 为 image 的项
+                            console.log('音乐加载完成');
+                            // 预加载图片
                             const imagesToLoad = [...ROUTE_INFO, ...PHOTOS, ...WANNATO]
                                 .filter(item => item.contentType === 'image')
                                 .map(item => item.content);
-                            console.log(imagesToLoad);
+                            console.log('预加载图片:', imagesToLoad);
 
+                            preLoadImages(imagesToLoad, () => {
+                                console.log('图片预加载完成');
+                                setTimeout(() => {
+                                    const loading = document.getElementById('loading');
+                                    loading.innerHTML = `
+                                        <div>
+                                            <div style="font-size: 24px; margin-bottom: 20px;">${TEXT.START}</div>
+                                            <button id="startButton">点击开始</button>
+                                        </div>
+                                    `;
+                                    
+                                    // 绑定开始按钮点击事件
+                                    const startButton = document.getElementById('startButton');
+                                    if (startButton) {
+                                        startButton.addEventListener('click', handleStartClick);
+                                        startButton.addEventListener('touchstart', handleStartClick);
+                                    }
+                                }, 1000);
+                            });
+                        },
+                        onerror: () => {
+                            console.error('音乐加载失败');
+                            // 即使音乐加载失败也继续
+                            const imagesToLoad = [...ROUTE_INFO, ...PHOTOS, ...WANNATO]
+                                .filter(item => item.contentType === 'image')
+                                .map(item => item.content);
+                            
                             preLoadImages(imagesToLoad, () => {
                                 setTimeout(() => {
                                     const loading = document.getElementById('loading');
-                                    loading.style.cursor = 'pointer';
-                                    loading.innerHTML = TEXT.START;
-                                    loading.onclick = () => {
-                                        screenfull && screenfull.request();
-                                        loadScript();
-                                    };
-                                }, 3000);
+                                    loading.innerHTML = `
+                                        <div>
+                                            <div style="font-size: 24px; margin-bottom: 20px;">${TEXT.START}</div>
+                                            <button id="startButton">点击开始</button>
+                                        </div>
+                                    `;
+                                    
+                                    const startButton = document.getElementById('startButton');
+                                    if (startButton) {
+                                        startButton.addEventListener('click', handleStartClick);
+                                        startButton.addEventListener('touchstart', handleStartClick);
+                                    }
+                                }, 1000);
                             });
                         }
                     });
+                    
+                    // 加载音乐
                     MUSIC.load();
+                }).catch(error => {
+                    console.error('配置加载失败:', error);
+                    alert('配置加载失败，请刷新页面重试');
                 });
-
-
             };
 
+            // 初始化SoundManager
             soundManager.setup({
                 url: './sm/',
-                onready: initMP3
+                onready: initMP3,
+                ontimeout: () => {
+                    console.error('SoundManager初始化超时');
+                    alert('音频系统初始化失败，请刷新页面重试');
+                }
             });
         };
+
+        // 添加页面可见性变化监听，处理页面切换时的音频问题
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // 页面隐藏时暂停音乐
+                if (MUSIC && MUSIC.playState) {
+                    MUSIC.pause();
+                }
+            } else {
+                // 页面显示时恢复音乐
+                if (MUSIC && MUSIC.paused && MUSIC.playState) {
+                    MUSIC.resume();
+                }
+            }
+        });
     </script>
     <script>
         var _hmt = _hmt || [];
