@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <title>配置管理 - 美君的生日礼物</title>
+    <title>配置管理</title>
     <style type="text/css">
         body {
             font-family: 'Microsoft Yahei', Arial, sans-serif;
@@ -372,6 +372,7 @@
     </div>
 
     <script type="text/javascript" src="./config.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=EXl1klVct9z0GXE7KAkPUkawwDhDN0h9"></script>
     <script type="text/javascript">
         // 当前配置
         let currentConfig = {};
@@ -577,6 +578,7 @@
             photoItems.forEach(item => {
                 const title = item.querySelector('input[name="photoTitle"]').value;
                 const image = item.querySelector('input[name="photoImage"]').value;
+                const address = item.querySelector('input[name="photoAddress"]').value;
                 const lng = parseFloat(item.querySelector('input[name="photoLng"]').value);
                 const lat = parseFloat(item.querySelector('input[name="photoLat"]').value);
                 
@@ -585,6 +587,7 @@
                         title: title,
                         contentType: 'image',
                         content: image,
+                        address: address,
                         point: { lng: lng, lat: lat }
                     });
                 }
@@ -602,6 +605,7 @@
                 const title = item.querySelector('input[name="placeTitle"]').value;
                 const content = item.querySelector('input[name="placeImage"]').value;
                 const contentType = item.querySelector('input[name="placeImage"]').dataset['contentType'];
+                const address = item.querySelector('input[name="placeAddress"]').value;
                 const lng = parseFloat(item.querySelector('input[name="placeLng"]').value);
                 const lat = parseFloat(item.querySelector('input[name="placeLat"]').value);
                 
@@ -610,6 +614,7 @@
                         title: title,
                         contentType: contentType,
                         content: content,
+                        address: address,
                         point: { lng: lng, lat: lat }
                     });
                 }
@@ -807,6 +812,11 @@
                     <button class="btn btn-sm" onclick="uploadPhotoImage(this)" style="margin-top: 10px;">上传图片</button>
                 </div>
                 <div class="form-group">
+                    <label>地址</label>
+                    <input type="text" name="photoAddress" value="${photo.address || ''}" placeholder="输入地址（如：广东省广州市天河区）">
+                    <button class="btn btn-sm" onclick="geocodeAddress(this, 'photo')" style="margin-top: 10px;">解析坐标</button>
+                </div>
+                <div class="form-group">
                     <label>坐标</label>
                     <div class="coordinate-inputs">
                         <input type="text" name="photoLng" value="${photo.point?.lng || ''}" placeholder="经度">
@@ -866,6 +876,11 @@
                     <button class="btn btn-sm" onclick="uploadPlaceImage(this)" style="margin-top: 10px;">上传图片</button>
                 </div>
                 <div class="form-group">
+                    <label>地址</label>
+                    <input type="text" name="placeAddress" value="${place.address || ''}" placeholder="输入地址（如：广东省广州市天河区）">
+                    <button class="btn btn-sm" onclick="geocodeAddress(this, 'place')" style="margin-top: 10px;">解析坐标</button>
+                </div>
+                <div class="form-group">
                     <label>坐标</label>
                     <div class="coordinate-inputs">
                         <input type="text" name="placeLng" value="${place.point?.lng || ''}" placeholder="经度">
@@ -921,6 +936,7 @@
                 const title = item.querySelector('input[name="routeTitle"]').value;
                 const content = item.querySelector('input[name="routeContent"]').value;
                 const contentType = item.querySelector('input[name="routeContent"]').dataset['contentType'] || 'text';
+                const address = item.querySelector('input[name="routeAddress"]').value;
                 const lng = parseFloat(item.querySelector('input[name="routeLng"]').value);
                 const lat = parseFloat(item.querySelector('input[name="routeLat"]').value);
                 
@@ -929,6 +945,7 @@
                         title: title,
                         contentType: contentType,
                         content: content,
+                        address: address,
                         point: { lng: lng, lat: lat }
                     });
                 }
@@ -961,6 +978,11 @@
                     <input type="text" name="routeContent" data-content-type="${route.contentType || 'text'}" value="${route.content || ''}" placeholder="输入路线内容">
                     <input type="file" name="routeContentUpload" accept="image/*" style="margin-top: 10px;">
                     <button class="btn btn-sm" onclick="uploadRouteImage(this)" style="margin-top: 10px;">上传图片</button>
+                </div>
+                <div class="form-group">
+                    <label>地址</label>
+                    <input type="text" name="routeAddress" value="${route.address || ''}" placeholder="输入地址（如：广东省广州市天河区）">
+                    <button class="btn btn-sm" onclick="geocodeAddress(this, 'route')" style="margin-top: 10px;">解析坐标</button>
                 </div>
                 <div class="form-group">
                     <label>坐标</label>
@@ -1025,6 +1047,45 @@
             } catch (error) {
                 console.error('Error uploading route image:', error);
                 showMessage('上传失败：' + error.message, 'error');
+            }
+        }
+        
+        // 地址解析函数
+        function geocodeAddress(button, type) {
+            const item = button.closest('.array-item');
+            const addressInput = item.querySelector(`input[name="${type}Address"]`);
+            const lngInput = item.querySelector(`input[name="${type}Lng"]`);
+            const latInput = item.querySelector(`input[name="${type}Lat"]`);
+            
+            const address = addressInput.value.trim();
+            
+            if (!address) {
+                showMessage('请输入地址！', 'error');
+                return;
+            }
+            
+            if (typeof BMap === 'undefined') {
+                showMessage('百度地图API未加载，请检查网络连接！', 'error');
+                return;
+            }
+            
+            try {
+                showMessage('正在解析地址...', 'info');
+                
+                const myGeo = new BMap.Geocoder();
+                myGeo.getPoint(address, function(point) {
+                    console.log("地址解析结果: ", point);
+                    if (point) {
+                        lngInput.value = point.lng;
+                        latInput.value = point.lat;
+                        showMessage('地址解析成功！', 'success');
+                    } else {
+                        showMessage('无法解析地址，请检查地址是否正确！', 'error');
+                    }
+                });
+            } catch (error) {
+                console.error('Error geocoding address:', error);
+                showMessage('地址解析失败：' + error.message, 'error');
             }
         }
         
