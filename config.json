@@ -52,6 +52,7 @@
       "title": "梅州 → 广州",
       "contentType": "text",
       "content": "426 km.",
+      "address": "",
       "point": {
         "lng": 116.135018,
         "lat": 24.33438
@@ -61,6 +62,7 @@
       "title": "梅州 → 广州",
       "contentType": "text",
       "content": "5 hours by train.",
+      "address": "",
       "point": {
         "lng": 113.345774,
         "lat": 23.153356
@@ -70,9 +72,20 @@
       "title": "变得是距离，不变的是坚持；",
       "contentType": "image",
       "content": "./images/ticket.jpg",
+      "address": "",
       "point": {
         "lng": 116.135018,
         "lat": 24.33438
+      }
+    },
+    {
+      "title": "",
+      "contentType": "text",
+      "content": "",
+      "address": "广东云浮新兴风车山",
+      "point": {
+        "lng": 112.307337,
+        "lat": 22.543128
       }
     }
   ],
@@ -81,15 +94,17 @@
       "title": "纪念堂",
       "contentType": "image",
       "content": "./images/jiniantang.jpg",
+      "address": "广东省广州市",
       "point": {
-        "lng": 113.271147,
-        "lat": 23.139616
+        "lng": 113.271431,
+        "lat": 23.135336
       }
     },
     {
       "title": "陈家祠",
       "contentType": "image",
       "content": "./images/chenjiaci.jpg",
+      "address": "",
       "point": {
         "lng": 113.252764,
         "lat": 23.131838
@@ -99,6 +114,7 @@
       "title": "看电影",
       "contentType": "image",
       "content": "./images/dianying.jpg",
+      "address": "",
       "point": {
         "lng": 113.268865,
         "lat": 23.200458
@@ -108,6 +124,7 @@
       "title": "",
       "contentType": "image",
       "content": "./images/chenjiaci1.jpg",
+      "address": "",
       "point": {
         "lng": 113.252764,
         "lat": 23.131838
@@ -117,6 +134,7 @@
       "title": "吃货",
       "contentType": "image",
       "content": "./images/beijingroad.jpg",
+      "address": "",
       "point": {
         "lng": 113.275619,
         "lat": 23.127547
@@ -126,6 +144,7 @@
       "title": "",
       "contentType": "image",
       "content": "./images/chenjiaci2.jpg",
+      "address": "",
       "point": {
         "lng": 113.252764,
         "lat": 23.131838
@@ -135,6 +154,7 @@
       "title": "臭美中...",
       "contentType": "image",
       "content": "./images/dress1.jpg",
+      "address": "",
       "point": {
         "lng": 113.275619,
         "lat": 23.127547
@@ -144,6 +164,7 @@
       "title": "臭美中...",
       "contentType": "image",
       "content": "./images/dress2.jpg",
+      "address": "",
       "point": {
         "lng": 113.248583,
         "lat": 23.123725
@@ -153,6 +174,7 @@
       "title": "",
       "contentType": "image",
       "content": "./images/you.jpg",
+      "address": "",
       "point": {
         "lng": 113.340995,
         "lat": 23.106222
@@ -162,6 +184,7 @@
       "title": "又是离开，又是不舍...",
       "contentType": "image",
       "content": "./images/leave.jpg",
+      "address": "",
       "point": {
         "lng": 113.358452,
         "lat": 23.158306
@@ -171,6 +194,7 @@
       "title": "红海湾",
       "contentType": "image",
       "content": "./images/sea.jpg",
+      "address": "",
       "point": {
         "lng": 115.573511,
         "lat": 22.712665
@@ -180,6 +204,7 @@
       "title": "后山",
       "contentType": "image",
       "content": "./images/s.jpg",
+      "address": "",
       "point": {
         "lng": 115.622433,
         "lat": 23.184734
@@ -191,6 +216,7 @@
       "title": "",
       "contentType": "text",
       "content": "地图标上想去的地方，有一天，带着你去流浪。",
+      "address": "",
       "point": {
         "lng": 103.758427,
         "lat": 36.172333
@@ -200,6 +226,7 @@
       "title": "厦门",
       "contentType": "image",
       "content": "./images/wannato/xiamen.jpg",
+      "address": "",
       "point": {
         "lng": 118.148154,
         "lat": 24.497912
@@ -209,6 +236,7 @@
       "title": "凤凰古镇",
       "contentType": "image",
       "content": "./images/wannato/fenghuang.jpg",
+      "address": "",
       "point": {
         "lng": 100.21191,
         "lat": 26.928061
@@ -218,6 +246,7 @@
       "title": "桂林阳朔",
       "contentType": "image",
       "content": "./images/wannato/guilin.jpg",
+      "address": "",
       "point": {
         "lng": 110.503626,
         "lat": 24.780932
@@ -227,6 +256,7 @@
       "title": "西藏",
       "contentType": "image",
       "content": "./images/wannato/xizang.jpg",
+      "address": "",
       "point": {
         "lng": 91.115691,
         "lat": 29.687083
@@ -236,6 +266,7 @@
       "title": "杭州西湖",
       "contentType": "image",
       "content": "./images/wannato/xihu.jpg",
+      "address": "",
       "point": {
         "lng": 120.151946,
         "lat": 30.250472
@@ -925,10 +956,10 @@
     "SHARE": "./social.png"
   },
   "TEXT": {
-    "TITLE": "Hello 小美地方!",
+    "TITLE": "Hello LJ!",
     "LOADING": "正在加载...",
     "START": "点击开始",
-    "BIRTHDAY_WISH": "Happy birthday to my dearest xxxx:) --by LOO2K",
+    "BIRTHDAY_WISH": "To my dearest LJ:) --by Jack",
     "SHARE_WEIBO": "分享到微博",
     "WATCH_AGAIN": "再看一次"
   },
@@ -939,8 +970,8 @@
     "MARKER_INTERVAL": 200
   },
   "SHARE": {
-    "CONTENT": "一个送给美君的生日礼物，也是送给所有异地恋人的礼物「变得是距离，不变的是坚持」。 via @LOO2K",
-    "URL": "http://liumeijun.com/xxxxxxxxxxx",
+    "CONTENT": "一个送给LJ的礼物，也是送给所有异地恋人的礼物「变得是距离，不变的是坚持」。 via @Jack",
+    "URL": "https://love.xiaofs.cs/xxxxxxxxxxx",
     "PIC": "./social.png"
   }
 }
