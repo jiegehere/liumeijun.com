@@ -7,14 +7,6 @@
     "WANT_TO_CN_CEN": {
       "lng": 103.758427,
       "lat": 36.172333
-    },
-    "MP_CEN": {
-      "lng": null,
-      "lat": null
-    },
-    "CN_CEN": {
-      "lng": null,
-      "lat": null
     }
   },
   "LOCATIONS": {
@@ -49,13 +41,13 @@
   },
   "ROUTE_INFO": [
     {
-      "title": "梅州 → 广州",
+      "title": "广西容县→ 广东深圳",
       "contentType": "text",
-      "content": "426 km.",
-      "address": "",
+      "content": "410 km.",
+      "address": "广东深圳宝体地铁站",
       "point": {
-        "lng": 116.135018,
-        "lat": 24.33438
+        "lng": 113.890887,
+        "lat": 22.567044
       }
     },
     {

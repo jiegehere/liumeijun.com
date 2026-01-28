@@ -276,7 +276,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- 路线信息 -->
         <div id="route" class="section">
             <h2>路线信息</h2>
@@ -500,10 +500,10 @@
         // 加载高级配置
         function loadAdvancedConfig() {
             // 地理坐标配置
-            document.getElementById('mpCenLng').value = currentConfig.COORDS?.MP_CEN?.lng || '';
-            document.getElementById('mpCenLat').value = currentConfig.COORDS?.MP_CEN?.lat || '';
-            document.getElementById('cnCenLng').value = currentConfig.COORDS?.CN_CEN?.lng || '';
-            document.getElementById('cnCenLat').value = currentConfig.COORDS?.CN_CEN?.lat || '';
+            document.getElementById('mpCenLng').value = currentConfig.COORDS?.INIT_MP_CEN?.lng || '';
+            document.getElementById('mpCenLat').value = currentConfig.COORDS?.INIT_MP_CEN?.lat || '';
+            document.getElementById('cnCenLng').value = currentConfig.COORDS?.WANT_TO_CN_CEN?.lng || '';
+            document.getElementById('cnCenLat').value = currentConfig.COORDS?.WANT_TO_CN_CEN?.lat || '';
             
             // 动画配置
             document.getElementById('animationZoomSpeed').value = currentConfig.ANIMATION?.ZOOM_SPEED || '';
@@ -631,11 +631,11 @@
             if (!currentConfig.COORDS) {
                 currentConfig.COORDS = {};
             }
-            currentConfig.COORDS.MP_CEN = {
+            currentConfig.COORDS.INIT_MP_CEN = {
                 lng: parseFloat(document.getElementById('mpCenLng').value),
                 lat: parseFloat(document.getElementById('mpCenLat').value)
             };
-            currentConfig.COORDS.CN_CEN = {
+            currentConfig.COORDS.WANT_TO_CN_CEN = {
                 lng: parseFloat(document.getElementById('cnCenLng').value),
                 lat: parseFloat(document.getElementById('cnCenLat').value)
             };
