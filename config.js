@@ -373,8 +373,8 @@ const DEFAULT_CONFIG = {
     LOADING: '正在加载...',
     // 开始按钮文本
     START: '点击开始',
-    // 生日祝福
-    BIRTHDAY_WISH: 'Happy birthday to my dearest Meijun :) --by LOO2K',
+    // 祝福
+    BIRTHDAY_WISH: 'Happy birthday to my dearest xx :) --by xx',
     // 分享到微博
     SHARE_WEIBO: '分享到微博',
     // 再看一次
