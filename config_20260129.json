@@ -1,115 +1,121 @@
 {
   "COORDS": {
-    "INIT_MP_CEN_ADDRESS": "广东广州市",
+    "INIT_MP_CEN_ADDRESS": "广西容县",
     "INIT_MP_CEN": {
-      "lng": 113.271431,
-      "lat": 23.135336
+      "lng": 3.894763,
+      "lat": 44.529534
     },
-    "WANT_TO_CN_CEN_ADDRESS": "湖北武汉市",
+    "WANT_TO_CN_CEN_ADDRESS": "广东深圳",
     "WANT_TO_CN_CEN": {
-      "lng": 114.311582,
-      "lat": 30.598467
+      "lng": 103.758427,
+      "lat": 36.172333
     }
   },
   "LOCATIONS": {
     "BOY": {
-      "desc": "男方地址信息",
-      "name": "广东深圳",
-      "address": "广东省深圳市宝体地铁站",
+      "name": "嘉应学院",
+      "address": "广西容县",
       "coords": {
-        "lng": 113.890887,
-        "lat": 22.567044
+        "lng": 116.135018,
+        "lat": 24.33438
       }
     },
     "GIRL": {
-      "desc": "女方地址信息",
-      "name": "广西容县",
-      "address": "广西省玉林市容县",
+      "name": "广外艺",
+      "address": "广西容县",
       "coords": {
-        "lng": 110.56453,
-        "lat": 22.863666
+        "lng": 113.345774,
+        "lat": 23.153356
       }
     },
     "MIDDLE": {
-      "desc": "双方中间城市地址信息",
-      "name": "",
-      "address": "广东省云浮市新兴县",
+      "name": "河源市",
+      "address": "广西容县",
       "coords": {
-        "lng": 112.231497,
-        "lat": 22.70189
+        "lng": 114.701682,
+        "lat": 23.754195
       }
     },
     "PHOTO_START_LOC": {
-      "desc": "共同的照片轮播开始地址",
-      "name": "惠州双月湾，雨天...",
-      "address": "广东省惠州市双月湾沙滩",
+      "name": "广州市",
+      "address": "广东深圳",
       "coords": {
-        "lng": 114.901295,
-        "lat": 22.586362
+        "lng": 113.256838,
+        "lat": 23.157309
       }
     }
   },
   "ROUTE_INFO": [
     {
-      "title": "深圳 → 容县",
+      "title": "广西容县→ 广东深圳",
       "contentType": "text",
       "content": "410 km.",
-      "address": "广东省深圳市宝体地铁站",
+      "address": "广东深圳宝体地铁站",
       "point": {
         "lng": 113.890887,
         "lat": 22.567044
       }
     },
     {
-      "title": "容县 → 深圳",
+      "title": "梅州 → 广州",
       "contentType": "text",
-      "content": "6 hours by car.",
-      "address": "广西省玉林市容县",
+      "content": "5 hours by train.",
+      "address": "",
       "point": {
-        "lng": 110.56453,
-        "lat": 22.863666
+        "lng": 113.345774,
+        "lat": 23.153356
       }
     },
     {
       "title": "变得是距离，不变的是坚持；",
       "contentType": "image",
-      "content": "/uploads/20260128234019.jpg",
-      "address": "广东省深圳市宝体地铁站",
+      "content": "./images/ticket.jpg",
+      "address": "",
       "point": {
-        "lng": 113.890887,
-        "lat": 22.567044
+        "lng": 116.135018,
+        "lat": 24.33438
+      }
+    },
+    {
+      "title": "",
+      "contentType": "text",
+      "content": "",
+      "address": "广东云浮新兴风车山",
+      "point": {
+        "lng": 112.307337,
+        "lat": 22.543128
       }
     }
   ],
   "PHOTOS": [
     {
-      "title": "惠州双月湾",
+      "title": "纪念堂",
       "contentType": "image",
-      "content": "/uploads/20260128234236.jpg",
-      "address": "广东省惠州市双月湾沙滩",
+      "content": "./images/jiniantang.jpg",
+      "address": "广东省广州市",
       "point": {
-        "lng": 114.901295,
-        "lat": 22.586362
+        "lng": 113.271431,
+        "lat": 23.135336
       }
     },
     {
-      "title": "海边漫步",
+      "title": "陈家祠",
       "contentType": "image",
-      "content": "/uploads/20260128234238.jpg",
-      "address": "广东省惠州市双月湾沙滩",
+      "content": "./images/chenjiaci.jpg",
+      "address": "",
       "point": {
-        "lng": 114.901295,
-        "lat": 22.586362
+        "lng": 113.252764,
+        "lat": 23.131838
       }
     },
     {
-      "title": "美术馆，美美哒",
+      "title": "看电影",
       "contentType": "image",
-      "content": "/uploads/20260128234323.jpg",
-      "address": "广东深圳市美术馆(新馆)",
+      "content": "./images/dianying.jpg",
+      "address": "",
       "point": {
-        "lng": 114.0303,
-        "lat": 22.630989
+        "lng": 113.268865,
+        "lat": 23.200458
       }
     },
     {

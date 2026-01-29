@@ -221,14 +221,17 @@
                 let content = loopList[i].content;
                 if (loopList[i].contentType === 'image') {
                     // 构造图片HTML，限制最大宽度为600像素
-                    content = `<img src="${content}" style="width: 100%; max-width: 600px; min-width: 400px; height: auto;" alt="${loopList[i].title || 'Image'}" />`;
+                    content = `<img src="${content}" style="width: 100%; max-width: 600px; height: auto; display: block; margin: 0 auto;" alt="${loopList[i].title || 'Image'}" />`;
+    
+                    // content = `<img src="${content}" style="width: 100%; max-width: 600px; min-width: 400px; height: auto;" alt="${loopList[i].title || 'Image'}" />`;
                     //content = `<img src="${content}" style="width: 500px; height: auto;" alt="${loopList[i].title || 'Image'}" />`;
                 }
-
+                
+                // 3. 配置 InfoWindow，不设置固定 height，让其自适应
                 const opts = {
-                    title: loopList[i].title,
-                    maxWidth: 600,
-                    height: 0
+                title: loopList[i].title,
+                maxWidth: 600, // 与图片 max-width 保持一致
+                // 移除 height: 0，让 InfoWindow 自动计算内容高度
                 };
                 const infoWindow = new BMap.InfoWindow(content, opts);
                 map.openInfoWindow(infoWindow, new BMap.Point(loopList[i].point.lng, loopList[i].point.lat));

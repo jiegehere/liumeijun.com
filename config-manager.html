@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
@@ -11,18 +12,21 @@
             padding: 20px;
             background-color: #f5f5f5;
         }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             background-color: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         h1 {
             color: #333;
             text-align: center;
         }
+
         h2 {
             color: #555;
             margin-top: 30px;
@@ -30,11 +34,13 @@
             border-bottom: 2px solid #4CAF50;
             padding-bottom: 10px;
         }
+
         h3 {
             color: #666;
             margin-top: 20px;
             margin-bottom: 15px;
         }
+
         .section {
             margin-bottom: 30px;
             padding: 20px;
@@ -42,16 +48,21 @@
             border-radius: 5px;
             background-color: #fafafa;
         }
+
         .form-group {
             margin-bottom: 15px;
         }
+
         label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
             color: #666;
         }
-        input[type="text"], textarea, select {
+
+        input[type="text"],
+        textarea,
+        select {
             width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
@@ -59,10 +70,12 @@
             font-size: 14px;
             box-sizing: border-box;
         }
+
         textarea {
             height: 100px;
             resize: vertical;
         }
+
         .array-item {
             margin-bottom: 15px;
             padding: 15px;
@@ -71,19 +84,23 @@
             background-color: white;
             position: relative;
         }
+
         .array-item:hover {
             border-color: #4CAF50;
         }
+
         .array-item-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
         }
+
         .array-item-title {
             font-weight: bold;
             color: #333;
         }
+
         .btn {
             display: inline-block;
             padding: 8px 16px;
@@ -96,91 +113,112 @@
             margin-right: 8px;
             text-decoration: none;
         }
+
         .btn:hover {
             background-color: #45a049;
         }
+
         .btn-danger {
             background-color: #f44336;
         }
+
         .btn-danger:hover {
             background-color: #da190b;
         }
+
         .btn-secondary {
             background-color: #666;
         }
+
         .btn-secondary:hover {
             background-color: #555;
         }
+
         .btn-sm {
             padding: 4px 12px;
             font-size: 12px;
         }
+
         .message {
             padding: 12px;
             margin-bottom: 20px;
             border-radius: 4px;
             font-size: 14px;
         }
+
         .message.success {
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
+
         .message.error {
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+
         .message.info {
             background-color: #d1ecf1;
             color: #0c5460;
             border: 1px solid #bee5eb;
         }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
         }
+
         .card {
             background-color: white;
             border: 1px solid #ddd;
             border-radius: 5px;
             padding: 15px;
         }
+
         .card-header {
             font-weight: bold;
             margin-bottom: 10px;
             color: #333;
         }
+
         .actions {
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid #ddd;
         }
+
         .tab-container {
             margin-bottom: 20px;
         }
+
         .tabs {
             display: flex;
             border-bottom: 1px solid #ddd;
             margin-bottom: 20px;
         }
+
         .tab {
             padding: 10px 20px;
             cursor: pointer;
             border-bottom: 3px solid transparent;
         }
+
         .tab.active {
             border-bottom-color: #4CAF50;
             color: #4CAF50;
             font-weight: bold;
         }
+
         .tab-content {
             display: none;
         }
+
         .tab-content.active {
             display: block;
         }
+
         .photo-preview {
             max-width: 200px;
             max-height: 150px;
@@ -188,28 +226,31 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
+
         .coordinate-inputs {
             display: flex;
             gap: 10px;
         }
+
         .coordinate-inputs input {
             flex: 1;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>配置管理</h1>
-        
+
         <div id="message" class="message" style="display: none;"></div>
-        
+
         <!-- 快速操作 -->
         <div class="section">
             <h2>快速操作</h2>
             <button class="btn" onclick="saveAllConfig()">保存配置(下方编辑好后再保存)</button>
             <button class="btn btn-secondary" onclick="switchToJson()">JSON编辑</button>
         </div>
-        
+
         <!-- 基本配置 -->
         <div id="basic" class="section">
             <h2>基本配置</h2>
@@ -242,7 +283,7 @@
                         <input type="text" id="textWatchAgain" placeholder="输入再看一次按钮文本">
                     </div>
                 </div>
-                
+
                 <!-- 音频配置 -->
                 <div class="card">
                     <div class="card-header">音频配置</div>
@@ -255,7 +296,7 @@
                         <input type="text" id="audioFallback" placeholder="输入音频文件备选路径">
                     </div>
                 </div>
-                
+
                 <!-- 分享配置 -->
                 <div class="card">
                     <div class="card-header">分享配置</div>
@@ -271,50 +312,64 @@
                         <label>分享图片</label>
                         <input type="text" id="sharePic" placeholder="输入分享图片路径">
                         <input type="file" id="sharePicUpload" accept="image/*" style="margin-top: 10px;">
-                        <button class="btn btn-sm" onclick="uploadImage('sharePic')" style="margin-top: 10px;">上传图片</button>
+                        <button class="btn btn-sm" onclick="uploadImage('sharePic')"
+                            style="margin-top: 10px;">上传图片</button>
                     </div>
                 </div>
             </div>
+        </div>
+        <!-- 地点配置 -->
+        <div id="locations" class="section">
+            <h2>双方基础信息</h2>
+            <p>配置双方地点的信息，包括名称、地址和坐标。</p>
+            <div id="locationsList" class="array-list">
+                <!-- 地点项将通过JavaScript动态添加 -->
+            </div>
+            <!-- <button class="btn" onclick="addLocation()">添加新地点</button> -->
         </div>
 
         <!-- 路线信息 -->
         <div id="route" class="section">
             <h2>路线信息</h2>
             <p>点击下方按钮添加新路线信息，或点击信息项进行编辑和删除。</p>
-            
+
             <div id="routeList" class="array-list">
                 <!-- 路线信息项将通过JavaScript动态添加 -->
             </div>
-            
+
             <button class="btn" onclick="addRoute()">添加新路线信息</button>
         </div>
+
+
+
+
 
         <!-- 照片管理 -->
         <div id="photos" class="section">
             <h2>照片管理</h2>
             <p>点击下方按钮添加新照片，或点击照片项进行编辑和删除。</p>
-            
+
             <div id="photosList" class="array-list">
                 <!-- 照片项将通过JavaScript动态添加 -->
             </div>
-            
+
             <button class="btn" onclick="addPhoto()">添加新照片</button>
         </div>
-        
+
         <!-- 想去的地方 -->
         <div id="wannato" class="section">
             <h2>想去的地方</h2>
             <p>点击下方按钮添加新地点，或点击地点项进行编辑和删除。</p>
-            
+
             <div id="wannatoList" class="array-list">
                 <!-- 地点项将通过JavaScript动态添加 -->
             </div>
-            
+
             <button class="btn" onclick="addWannaTo()">添加新地点</button>
         </div>
-        
 
-        
+
+
         <!-- 高级配置 -->
         <div id="advanced" class="section">
             <h2>高级配置</h2>
@@ -323,21 +378,33 @@
                 <div class="card">
                     <div class="card-header">地理坐标配置</div>
                     <div class="form-group">
-                        <label>初始化地图中心</label>
+                        <label>初始化地图中心地址</label>
+                        <input type="text" id="initMpCenAddress" placeholder="输入地址（如：广西容县）">
+                        <button class="btn btn-sm" onclick="geocodeCoordsAddress('initMpCen')"
+                            style="margin-top: 10px;">解析坐标</button>
+                    </div>
+                    <div class="form-group">
+                        <label>初始化地图中心坐标</label>
                         <div class="coordinate-inputs">
                             <input type="text" id="mpCenLng" placeholder="经度">
                             <input type="text" id="mpCenLat" placeholder="纬度">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>中国中心</label>
+                        <label>想去的地方中国中心地址</label>
+                        <input type="text" id="wantToCnCenAddress" placeholder="输入地址（如：广东深圳）">
+                        <button class="btn btn-sm" onclick="geocodeCoordsAddress('wantToCnCen')"
+                            style="margin-top: 10px;">解析坐标</button>
+                    </div>
+                    <div class="form-group">
+                        <label>想去的地方中国中心坐标</label>
                         <div class="coordinate-inputs">
                             <input type="text" id="cnCenLng" placeholder="经度">
                             <input type="text" id="cnCenLat" placeholder="纬度">
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- 动画配置 -->
                 <div class="card">
                     <div class="card-header">动画配置</div>
@@ -360,7 +427,9 @@
                 </div>
             </div>
         </div>
-        
+
+
+
         <!-- JSON编辑 -->
         <div id="json" class="section" style="display: none;">
             <h2>JSON编辑</h2>
@@ -374,24 +443,25 @@
     </div>
 
     <script type="text/javascript" src="./config.js"></script>
-    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=EXl1klVct9z0GXE7KAkPUkawwDhDN0h9"></script>
+    <script type="text/javascript"
+        src="http://api.map.baidu.com/api?v=2.0&ak=EXl1klVct9z0GXE7KAkPUkawwDhDN0h9"></script>
     <script type="text/javascript">
         // 当前配置
         let currentConfig = {};
-        
+
         // 显示消息
         function showMessage(text, type) {
             const messageElement = document.getElementById('message');
             messageElement.textContent = text;
             messageElement.className = 'message ' + type;
             messageElement.style.display = 'block';
-            
+
             // 3秒后自动隐藏
             setTimeout(() => {
                 messageElement.style.display = 'none';
             }, 3000);
         }
-        
+
         // 切换到JSON编辑页面
         function switchToJson() {
             // 隐藏所有配置模块
@@ -399,11 +469,14 @@
             document.getElementById('photos').style.display = 'none';
             document.getElementById('wannato').style.display = 'none';
             document.getElementById('advanced').style.display = 'none';
-            
+            document.getElementById('route').style.display = 'none';
+            document.getElementById('locations').style.display = 'none';
+
+
             // 显示JSON编辑模块
             document.getElementById('json').style.display = 'block';
         }
-        
+
         // 切换到基本配置页面
         function switchToBasic() {
             // 显示所有配置模块
@@ -411,11 +484,13 @@
             document.getElementById('photos').style.display = 'block';
             document.getElementById('wannato').style.display = 'block';
             document.getElementById('advanced').style.display = 'block';
-            
+            document.getElementById('route').style.display = 'block';
+            document.getElementById('locations').style.display = 'block';
+
             // 隐藏JSON编辑模块
             document.getElementById('json').style.display = 'none';
         }
-        
+
         // 加载配置
         async function loadConfig() {
             try {
@@ -427,32 +502,35 @@
                     return;
                 }
                 console.log('xxxxxxx currentConfig', currentConfig);
-                
+
                 // 加载基本配置
                 loadBasicConfig();
-                
+
                 // 加载照片配置
                 loadPhotosConfig();
-                
+
                 // 加载想去的地方配置
                 loadWannaToConfig();
-                
+
                 // 加载路线信息配置
                 loadRouteConfig();
-                
+
+                // 加载地点配置
+                loadLocationsConfig();
+
                 // 加载高级配置
                 loadAdvancedConfig();
-                
+
                 // 加载JSON配置
                 loadConfigToJson();
-                
+
                 showMessage('配置加载成功！', 'success');
             } catch (error) {
                 console.error('Error loading config:', error);
                 showMessage('加载配置失败：' + error.message, 'error');
             }
         }
-        
+
         // 加载基本配置
         function loadBasicConfig() {
             // 文本配置
@@ -462,79 +540,84 @@
             document.getElementById('textBirthdayWish').value = currentConfig.TEXT?.BIRTHDAY_WISH || '';
             document.getElementById('textShareWeibo').value = currentConfig.TEXT?.SHARE_WEIBO || '';
             document.getElementById('textWatchAgain').value = currentConfig.TEXT?.WATCH_AGAIN || '';
-            
+
             // 音频配置
             document.getElementById('audioSrc').value = currentConfig.AUDIO?.src || '';
             document.getElementById('audioFallback').value = currentConfig.AUDIO?.fallback || '';
-            
+
             // 分享配置
             document.getElementById('shareContent').value = currentConfig.SHARE?.CONTENT || '';
             document.getElementById('shareUrl').value = currentConfig.SHARE?.URL || '';
             document.getElementById('sharePic').value = currentConfig.SHARE?.PIC || '';
         }
-        
+
         // 加载照片配置
         function loadPhotosConfig() {
             const photosList = document.getElementById('photosList');
             photosList.innerHTML = '';
-            
+
             if (currentConfig.PHOTOS && Array.isArray(currentConfig.PHOTOS)) {
                 currentConfig.PHOTOS.forEach((photo, index) => {
                     addPhotoItem(photo, index);
                 });
             }
         }
-        
+
         // 加载想去的地方配置
         function loadWannaToConfig() {
             const wannatoList = document.getElementById('wannatoList');
             wannatoList.innerHTML = '';
-            
+
             if (currentConfig.WANNATO && Array.isArray(currentConfig.WANNATO)) {
                 currentConfig.WANNATO.forEach((place, index) => {
                     addWannaToItem(place, index);
                 });
             }
         }
-        
+
         // 加载高级配置
         function loadAdvancedConfig() {
             // 地理坐标配置
+            document.getElementById('initMpCenAddress').value = currentConfig.COORDS?.INIT_MP_CEN_ADDRESS || '';
             document.getElementById('mpCenLng').value = currentConfig.COORDS?.INIT_MP_CEN?.lng || '';
             document.getElementById('mpCenLat').value = currentConfig.COORDS?.INIT_MP_CEN?.lat || '';
+            document.getElementById('wantToCnCenAddress').value = currentConfig.COORDS?.WANT_TO_CN_CEN_ADDRESS || '';
             document.getElementById('cnCenLng').value = currentConfig.COORDS?.WANT_TO_CN_CEN?.lng || '';
             document.getElementById('cnCenLat').value = currentConfig.COORDS?.WANT_TO_CN_CEN?.lat || '';
-            
+
             // 动画配置
             document.getElementById('animationZoomSpeed').value = currentConfig.ANIMATION?.ZOOM_SPEED || '';
             document.getElementById('animationPanDelay').value = currentConfig.ANIMATION?.PAN_DELAY || '';
             document.getElementById('animationInfoWindowTimeout').value = currentConfig.ANIMATION?.INFO_WINDOW_TIMEOUT || '';
             document.getElementById('animationMarkerInterval').value = currentConfig.ANIMATION?.MARKER_INTERVAL || '';
         }
-        
+
         // 加载配置到JSON编辑器
         function loadConfigToJson() {
             document.getElementById('configJson').value = JSON.stringify(currentConfig, null, 2);
         }
-        
+
         // 保存所有配置
         async function saveAllConfig() {
             try {
                 // 收集基本配置
                 collectBasicConfig();
-                
+
                 // 收集照片配置
                 collectPhotosConfig();
-                
+
                 // 收集想去的地方配置
-            collectWannaToConfig();
-            
-            // 收集路线信息配置
-            collectRouteConfig();
-            
-            // 收集高级配置
-            collectAdvancedConfig();
-                
+                collectWannaToConfig();
+
+                // 收集路线信息配置
+                collectRouteConfig();
+
+                // 收集地点配置
+                collectLocationsConfig();
+
+                // 收集高级配置
+                collectAdvancedConfig();
+
                 // 保存配置
                 await saveConfig(currentConfig);
             } catch (error) {
@@ -542,7 +625,7 @@
                 showMessage('保存配置失败：' + error.message, 'error');
             }
         }
-        
+
         // 收集基本配置
         function collectBasicConfig() {
             // 文本配置
@@ -555,14 +638,14 @@
             currentConfig.TEXT.BIRTHDAY_WISH = document.getElementById('textBirthdayWish').value;
             currentConfig.TEXT.SHARE_WEIBO = document.getElementById('textShareWeibo').value;
             currentConfig.TEXT.WATCH_AGAIN = document.getElementById('textWatchAgain').value;
-            
+
             // 音频配置
             if (!currentConfig.AUDIO) {
                 currentConfig.AUDIO = {};
             }
             currentConfig.AUDIO.src = document.getElementById('audioSrc').value;
             currentConfig.AUDIO.fallback = document.getElementById('audioFallback').value;
-            
+
             // 分享配置
             if (!currentConfig.SHARE) {
                 currentConfig.SHARE = {};
@@ -571,19 +654,19 @@
             currentConfig.SHARE.URL = document.getElementById('shareUrl').value;
             currentConfig.SHARE.PIC = document.getElementById('sharePic').value;
         }
-        
+
         // 收集照片配置
         function collectPhotosConfig() {
             const photos = [];
             const photoItems = document.querySelectorAll('#photosList .array-item');
-            
+
             photoItems.forEach(item => {
                 const title = item.querySelector('input[name="photoTitle"]').value;
                 const image = item.querySelector('input[name="photoImage"]').value;
                 const address = item.querySelector('input[name="photoAddress"]').value;
                 const lng = parseFloat(item.querySelector('input[name="photoLng"]').value);
                 const lat = parseFloat(item.querySelector('input[name="photoLat"]').value);
-                
+
                 if (lng && lat) {
                     photos.push({
                         title: title,
@@ -594,15 +677,15 @@
                     });
                 }
             });
-            
+
             currentConfig.PHOTOS = photos;
         }
-        
+
         // 收集想去的地方配置
         function collectWannaToConfig() {
             const places = [];
             const placeItems = document.querySelectorAll('#wannatoList .array-item');
-            
+
             placeItems.forEach(item => {
                 const title = item.querySelector('input[name="placeTitle"]').value;
                 const content = item.querySelector('input[name="placeImage"]').value;
@@ -610,7 +693,7 @@
                 const address = item.querySelector('input[name="placeAddress"]').value;
                 const lng = parseFloat(item.querySelector('input[name="placeLng"]').value);
                 const lat = parseFloat(item.querySelector('input[name="placeLat"]').value);
-                
+
                 if (lng && lat) {
                     places.push({
                         title: title,
@@ -621,25 +704,27 @@
                     });
                 }
             });
-            
+
             currentConfig.WANNATO = places;
         }
-        
+
         // 收集高级配置
         function collectAdvancedConfig() {
             // 地理坐标配置
             if (!currentConfig.COORDS) {
                 currentConfig.COORDS = {};
             }
+            currentConfig.COORDS.INIT_MP_CEN_ADDRESS = document.getElementById('initMpCenAddress').value;
             currentConfig.COORDS.INIT_MP_CEN = {
                 lng: parseFloat(document.getElementById('mpCenLng').value),
                 lat: parseFloat(document.getElementById('mpCenLat').value)
             };
+            currentConfig.COORDS.WANT_TO_CN_CEN_ADDRESS = document.getElementById('wantToCnCenAddress').value;
             currentConfig.COORDS.WANT_TO_CN_CEN = {
                 lng: parseFloat(document.getElementById('cnCenLng').value),
                 lat: parseFloat(document.getElementById('cnCenLat').value)
             };
-            
+
             // 动画配置
             if (!currentConfig.ANIMATION) {
                 currentConfig.ANIMATION = {};
@@ -649,7 +734,7 @@
             currentConfig.ANIMATION.INFO_WINDOW_TIMEOUT = parseInt(document.getElementById('animationInfoWindowTimeout').value);
             currentConfig.ANIMATION.MARKER_INTERVAL = parseInt(document.getElementById('animationMarkerInterval').value);
         }
-        
+
         // 保存配置
         async function saveConfig(config) {
             console.log('saveConfig', config);
@@ -672,20 +757,20 @@
                 showMessage('保存配置失败：' + error.message, 'error');
             }
         }
-        
+
         // 上传图片
         async function uploadImage(inputId) {
             const fileInput = document.getElementById(inputId + 'Upload');
             const file = fileInput.files[0];
-            
+
             if (!file) {
                 showMessage('请选择要上传的图片！', 'error');
                 return;
             }
-            
+
             try {
                 showMessage('正在上传图片...', 'info');
-                
+
                 if (window.ConfigManager && window.ConfigManager.uploadImage) {
                     const result = await window.ConfigManager.uploadImage(file);
                     if (result.success) {
@@ -702,21 +787,21 @@
                 showMessage('上传失败：' + error.message, 'error');
             }
         }
-        
+
         // 上传照片模块的图片
         async function uploadPhotoImage(button) {
             const item = button.closest('.array-item');
             const fileInput = item.querySelector('input[name="photoImageUpload"]');
             const file = fileInput.files[0];
-            
+
             if (!file) {
                 showMessage('请选择要上传的图片！', 'error');
                 return;
             }
-            
+
             try {
                 showMessage('正在上传图片...', 'info');
-                
+
                 if (window.ConfigManager && window.ConfigManager.uploadImage) {
                     const result = await window.ConfigManager.uploadImage(file);
                     if (result.success) {
@@ -735,21 +820,21 @@
                 showMessage('上传失败：' + error.message, 'error');
             }
         }
-        
+
         // 上传想去的地方模块的图片
         async function uploadPlaceImage(button) {
             const item = button.closest('.array-item');
             const fileInput = item.querySelector('input[name="placeImageUpload"]');
             const file = fileInput.files[0];
-            
+
             if (!file) {
                 showMessage('请选择要上传的图片！', 'error');
                 return;
             }
-            
+
             try {
                 showMessage('正在上传图片...', 'info');
-                
+
                 if (window.ConfigManager && window.ConfigManager.uploadImage) {
                     const result = await window.ConfigManager.uploadImage(file);
                     if (result.success) {
@@ -768,7 +853,7 @@
                 showMessage('上传失败：' + error.message, 'error');
             }
         }
-        
+
         // 保存JSON配置
         async function saveJsonConfig() {
             const configJson = document.getElementById('configJson').value;
@@ -777,7 +862,7 @@
                 showMessage('请输入JSON配置！', 'error');
                 return;
             }
-            
+
             try {
                 const config = JSON.parse(configJson);
                 await saveConfig(config);
@@ -785,14 +870,14 @@
                 showMessage('JSON格式错误：' + error.message, 'error');
             }
         }
-        
- 
-        
+
+
+
         // 添加照片项
         function addPhotoItem(photo = {}, index = -1) {
             const photosList = document.getElementById('photosList');
             const itemId = index >= 0 ? index : Date.now();
-            
+
             const item = document.createElement('div');
             item.className = 'array-item';
             item.innerHTML = `
@@ -827,21 +912,21 @@
                 </div>
                 ${photo.contentType === 'image' ? `<img class="photo-preview" src="${photo.content}" alt="预览">` : ''}
             `;
-            
+
             photosList.appendChild(item);
         }
-        
+
         // 添加新照片
         function addPhoto() {
             addPhotoItem();
         }
-        
+
         // 编辑照片
         function editPhoto(index) {
             // 这里可以实现更复杂的编辑逻辑，比如弹出模态框
             showMessage('点击照片项中的输入框即可编辑', 'info');
         }
-        
+
         // 删除照片
         function deletePhoto(index) {
             const photosList = document.getElementById('photosList');
@@ -851,12 +936,12 @@
                 showMessage('照片删除成功！', 'success');
             }
         }
-        
+
         // 添加想去的地方项
         function addWannaToItem(place = {}, index = -1) {
             const wannatoList = document.getElementById('wannatoList');
             const itemId = index >= 0 ? index : Date.now();
-            
+
             const item = document.createElement('div');
             item.className = 'array-item';
             item.innerHTML = `
@@ -891,21 +976,21 @@
                 </div>
                 ${place.contentType === 'image' ? `<img class="photo-preview" src="${place.content}" alt="预览">` : ''}
             `;
-            
+
             wannatoList.appendChild(item);
         }
-        
+
         // 添加新地点
         function addWannaTo() {
             addWannaToItem();
         }
-        
+
         // 编辑地点
         function editWannaTo(index) {
             // 这里可以实现更复杂的编辑逻辑，比如弹出模态框
             showMessage('点击地点项中的输入框即可编辑', 'info');
         }
-        
+
         // 删除地点
         function deleteWannaTo(index) {
             const wannatoList = document.getElementById('wannatoList');
@@ -915,25 +1000,37 @@
                 showMessage('地点删除成功！', 'success');
             }
         }
-        
+
         // 加载路线信息配置
         function loadRouteConfig() {
             const routeList = document.getElementById('routeList');
             routeList.innerHTML = '';
-            
+
             if (currentConfig.ROUTE_INFO && Array.isArray(currentConfig.ROUTE_INFO)) {
                 currentConfig.ROUTE_INFO.forEach((route, index) => {
                     addRouteItem(route, index);
                 });
             }
         }
-        
+
+        // 加载地点配置
+        function loadLocationsConfig() {
+            const locationsList = document.getElementById('locationsList');
+            locationsList.innerHTML = '';
+
+            if (currentConfig.LOCATIONS) {
+                Object.keys(currentConfig.LOCATIONS).forEach((key, index) => {
+                    addLocationItem(key, currentConfig.LOCATIONS[key], index);
+                });
+            }
+        }
+
         // 收集路线信息配置
         function collectRouteConfig() {
             const routeList = document.getElementById('routeList');
             const routeItems = routeList.querySelectorAll('.array-item');
             const routes = [];
-            
+
             routeItems.forEach(item => {
                 const title = item.querySelector('input[name="routeTitle"]').value;
                 const content = item.querySelector('input[name="routeContent"]').value;
@@ -941,7 +1038,7 @@
                 const address = item.querySelector('input[name="routeAddress"]').value;
                 const lng = parseFloat(item.querySelector('input[name="routeLng"]').value);
                 const lat = parseFloat(item.querySelector('input[name="routeLat"]').value);
-                
+
                 if (lng && lat) {
                     routes.push({
                         title: title,
@@ -952,15 +1049,41 @@
                     });
                 }
             });
-            
+
             currentConfig.ROUTE_INFO = routes;
         }
-        
+
+        // 收集地点配置
+        function collectLocationsConfig() {
+            const locationsList = document.getElementById('locationsList');
+            const locationItems = locationsList.querySelectorAll('.array-item');
+            const locations = {};
+
+            locationItems.forEach(item => {
+                const key = item.querySelector('input[name="locationKey"]').value;
+                const name = item.querySelector('input[name="locationName"]').value;
+                const address = item.querySelector('input[name="locationAddress"]').value;
+                const lng = parseFloat(item.querySelector('input[name="locationLng"]').value);
+                const lat = parseFloat(item.querySelector('input[name="locationLat"]').value);
+
+                if (key && lng && lat) {
+                    locations[key] = {
+                        desc: item.querySelector('label').textContent || '',
+                        name: name,
+                        address: address,
+                        coords: { lng: lng, lat: lat }
+                    };
+                }
+            });
+
+            currentConfig.LOCATIONS = locations;
+        }
+
         // 添加路线信息项
         function addRouteItem(route = {}, index = -1) {
             const routeList = document.getElementById('routeList');
             const itemId = index >= 0 ? index : Date.now();
-            
+
             const item = document.createElement('div');
             item.className = 'array-item';
             item.innerHTML = `
@@ -995,20 +1118,20 @@
                 </div>
                 ${route.contentType === 'image' ? `<img class="photo-preview" src="${route.content}" alt="预览">` : ''}
             `;
-            
+
             routeList.appendChild(item);
         }
-        
+
         // 添加新路线信息
         function addRoute() {
             addRouteItem();
         }
-        
+
         // 编辑路线信息
         function editRoute(index) {
             showMessage('点击路线信息项中的输入框即可编辑', 'info');
         }
-        
+
         // 删除路线信息
         function deleteRoute(index) {
             const routeList = document.getElementById('routeList');
@@ -1018,21 +1141,74 @@
                 showMessage('路线信息删除成功！', 'success');
             }
         }
-        
+
+        // 添加地点项
+        function addLocationItem(key = '', location = {}, index = -1) {
+            const locationsList = document.getElementById('locationsList');
+            const itemId = index >= 0 ? index : Date.now();
+
+            const item = document.createElement('div');
+            item.className = 'array-item';
+            item.innerHTML = `
+                <div class="form-group">
+                    <label>${location.desc || ''}</label>
+                    <input type="text" style="display: none;" name="locationKey" value="${key || ''}" ">
+                </div>
+                <div class="form-group">
+                    <label>地点名称</label>
+                    <input type="text" name="locationName" value="${location.name || ''}" placeholder="输入地点名称（如：嘉应学院）">
+                </div>
+                <div class="form-group">
+                    <label>地址</label>
+                    <input type="text" name="locationAddress" value="${location.address || ''}" placeholder="输入地址（如：广西容县）">
+                    <button class="btn btn-sm" onclick="geocodeAddress(this, 'location')" style="margin-top: 10px;">解析坐标</button>
+                </div>
+                <div class="form-group">
+                    <label>坐标</label>
+                    <div class="coordinate-inputs">
+                        <input type="text" name="locationLng" value="${location.coords?.lng || ''}" placeholder="经度">
+                        <input type="text" name="locationLat" value="${location.coords?.lat || ''}" placeholder="纬度">
+                    </div>
+                </div>
+            `;
+
+            locationsList.appendChild(item);
+        }
+
+        // // 添加新地点
+        // function addLocation() {
+        //     addLocationItem();
+        // }
+
+        // 编辑地点
+        function editLocation(index) {
+            showMessage('点击地点项中的输入框即可编辑', 'info');
+        }
+
+        // 删除地点
+        function deleteLocation(index) {
+            const locationsList = document.getElementById('locationsList');
+            const items = locationsList.querySelectorAll('.array-item');
+            if (items[index]) {
+                items[index].remove();
+                showMessage('地点删除成功！', 'success');
+            }
+        }
+
         // 上传路线信息模块的图片
         async function uploadRouteImage(button) {
             const item = button.closest('.array-item');
             const fileInput = item.querySelector('input[name="routeContentUpload"]');
             const file = fileInput.files[0];
-            
+
             if (!file) {
                 showMessage('请选择要上传的图片！', 'error');
                 return;
             }
-            
+
             try {
                 showMessage('正在上传图片...', 'info');
-                
+
                 if (window.ConfigManager && window.ConfigManager.uploadImage) {
                     const result = await window.ConfigManager.uploadImage(file);
                     if (result.success) {
@@ -1051,31 +1227,78 @@
                 showMessage('上传失败：' + error.message, 'error');
             }
         }
-        
+
         // 地址解析函数
         function geocodeAddress(button, type) {
             const item = button.closest('.array-item');
             const addressInput = item.querySelector(`input[name="${type}Address"]`);
             const lngInput = item.querySelector(`input[name="${type}Lng"]`);
             const latInput = item.querySelector(`input[name="${type}Lat"]`);
-            
+
             const address = addressInput.value.trim();
-            
+
             if (!address) {
                 showMessage('请输入地址！', 'error');
                 return;
             }
-            
+
             if (typeof BMap === 'undefined') {
                 showMessage('百度地图API未加载，请检查网络连接！', 'error');
                 return;
             }
-            
+
             try {
                 showMessage('正在解析地址...', 'info');
-                
+
                 const myGeo = new BMap.Geocoder();
-                myGeo.getPoint(address, function(point) {
+                myGeo.getPoint(address, function (point) {
+                    console.log("地址解析结果: ", point);
+                    if (point) {
+                        lngInput.value = point.lng;
+                        latInput.value = point.lat;
+                        showMessage('地址解析成功！', 'success');
+                    } else {
+                        alert('无法解析地址，请检查地址是否正确！');
+                        showMessage('无法解析地址，请检查地址是否正确！', 'error');
+                    }
+                }, '');
+            } catch (error) {
+                console.error('Error geocoding address:', error);
+                showMessage('地址解析失败：' + error.message, 'error');
+            }
+        }
+
+        // 解析地理坐标配置中的地址
+        function geocodeCoordsAddress(type) {
+            let addressInput, lngInput, latInput;
+
+            if (type === 'initMpCen') {
+                addressInput = document.getElementById('initMpCenAddress');
+                lngInput = document.getElementById('mpCenLng');
+                latInput = document.getElementById('mpCenLat');
+            } else if (type === 'wantToCnCen') {
+                addressInput = document.getElementById('wantToCnCenAddress');
+                lngInput = document.getElementById('cnCenLng');
+                latInput = document.getElementById('cnCenLat');
+            }
+
+            const address = addressInput.value.trim();
+
+            if (!address) {
+                showMessage('请输入地址！', 'error');
+                return;
+            }
+
+            if (typeof BMap === 'undefined') {
+                showMessage('百度地图API未加载，请检查网络连接！', 'error');
+                return;
+            }
+
+            try {
+                showMessage('正在解析地址...', 'info');
+
+                const myGeo = new BMap.Geocoder();
+                myGeo.getPoint(address, function (point) {
                     console.log("地址解析结果: ", point);
                     if (point) {
                         lngInput.value = point.lng;
@@ -1090,11 +1313,12 @@
                 showMessage('地址解析失败：' + error.message, 'error');
             }
         }
-        
+
         // 页面加载时初始化
-        window.onload = async function() {
+        window.onload = async function () {
             await loadConfig();
         };
     </script>
 </body>
+
 </html>
