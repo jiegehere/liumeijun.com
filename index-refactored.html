@@ -763,30 +763,58 @@
              * @param {Object} end - 终点 {lng, lat}
              */
             async drawDrivingRoute(start, end) {
-                return new Promise((resolve) => {
+                return new Promise((resolve, reject) => {
                     const startPoint = new BMap.Point(start.lng, start.lat);
                     const endPoint = new BMap.Point(end.lng, end.lat);
                     
                     console.log('开始搜索路线:', startPoint, '->', endPoint);
+                    
+                    let isResolved = false;
+                    
+                    // 设置超时处理
+                    const timeoutId = setTimeout(() => {
+                        if (!isResolved) {
+                            isResolved = true;
+                            console.warn('路线搜索超时，继续执行后续动画');
+                            resolve();
+                        }
+                    }, 10000);
                     
                     const driving = new BMap.DrivingRoute(this.map, {
                         renderOptions: {
                             map: this.map,
                             autoViewport: false,
                             panel: false
+                        },
+                        onSearchComplete: (result) => {
+                            if (!isResolved) {
+                                isResolved = true;
+                                clearTimeout(timeoutId);
+                                console.log('路线规划成功');
+                                // 调整视野以显示完整路线
+                                const plan = result.getPlan(0);
+                                if (plan) {
+                                    const route = plan.getRoute(0);
+                                    if (route && route.getPath) {
+                                        const path = route.getPath();
+                                        if (path && path.length > 0) {
+                                            this.map.setViewport(path, { margins: [100, 100, 100, 100] });
+                                        }
+                                    }
+                                }
+                                setTimeout(() => { 
+                                    resolve();
+                                }, 100);
+                            }
+                        },
+                        onPolylinesSet: () => {
+                            console.log('路线折线已设置');
                         }
                     });
                     
-                    // 搜索路线（参考原代码，不使用回调）
+                    // 搜索路线
                     driving.search(startPoint, endPoint);
-                    
                     console.log('路线搜索请求已发送');
-                    
-                    // 等待一段时间让路线绘制完成
-                    setTimeout(() => {
-                        console.log('路线绘制完成');
-                        resolve();
-                    }, 2000);
                 });
             }
         }
