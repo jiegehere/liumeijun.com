@@ -1,0 +1,831 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>配置管理 - 重构版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft Yahei', Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #555;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #666;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #666;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        .btn-danger {
+            background-color: #f44336;
+        }
+
+        .btn-danger:hover {
+            background-color: #da190b;
+        }
+
+        .btn-secondary {
+            background-color: #666;
+        }
+
+        .btn-secondary:hover {
+            background-color: #555;
+        }
+
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+
+        .chapter-item {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background-color: white;
+        }
+
+        .chapter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .chapter-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .chapter-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .location-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .location-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .location-title {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .address-group {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .address-group input {
+            flex: 1;
+        }
+
+        .coordinate-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .coordinate-group input {
+            flex: 1;
+        }
+
+        .message {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .type-1 { background-color: #e3f2fd; color: #1976d2; }
+        .type-2 { background-color: #f3e5f5; color: #7b1fa2; }
+        .type-3 { background-color: #e8f5e9; color: #388e3c; }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .json-editor {
+            width: 100%;
+            min-height: 400px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            border-bottom-color: #4CAF50;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .chapter-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .address-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>配置管理 - 重构版</h1>
+        
+        <div id="message" class="message"></div>
+
+        <!-- 快速操作 -->
+        <div class="section">
+            <h2>快速操作</h2>
+            <button class="btn" onclick="saveConfig()">保存配置</button>
+            <button class="btn btn-secondary" onclick="loadConfig()">重新加载</button>
+            <button class="btn btn-secondary" onclick="exportConfig()">导出JSON</button>
+            <button class="btn btn-secondary" onclick="showJsonEditor()">JSON编辑</button>
+        </div>
+
+        <!-- 标签页 -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('basic')">基本配置</div>
+            <div class="tab" onclick="switchTab('chapters')">章节管理</div>
+            <div class="tab" onclick="switchTab('json')">JSON预览</div>
+        </div>
+
+        <!-- 基本配置 -->
+        <div id="tab-basic" class="tab-content active">
+            <div class="section">
+                <h2>基本配置</h2>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>初始地图中心地址</label>
+                        <div class="address-group">
+                            <input type="text" id="initMapCenterAddress" placeholder="输入地址">
+                            <button class="btn btn-sm" onclick="geocodeAddress('initMapCenter')">解析坐标</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>初始地图中心坐标</label>
+                        <div class="coordinate-group">
+                            <input type="text" id="initMapCenterLng" placeholder="经度">
+                            <input type="text" id="initMapCenterLat" placeholder="纬度">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>音频文件路径</label>
+                    <input type="text" id="audioUrl" placeholder="./audio.mp3">
+                </div>
+            </div>
+        </div>
+
+        <!-- 章节管理 -->
+        <div id="tab-chapters" class="tab-content">
+            <div class="section">
+                <h2>章节管理</h2>
+                <button class="btn" onclick="addChapter()">添加章节</button>
+                <div id="chaptersList" style="margin-top: 20px;">
+                    <!-- 章节列表将在这里动态生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- JSON预览 -->
+        <div id="tab-json" class="tab-content">
+            <div class="section">
+                <h2>JSON配置预览</h2>
+                <textarea id="jsonPreview" class="json-editor" readonly></textarea>
+            </div>
+        </div>
+
+        <!-- JSON编辑器弹窗 -->
+        <div id="jsonEditorModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 800px; background: white; padding: 20px; border-radius: 8px; max-height: 90vh; overflow: auto;">
+                <h2>JSON编辑器</h2>
+                <textarea id="jsonEditor" class="json-editor" style="margin: 20px 0;"></textarea>
+                <div>
+                    <button class="btn" onclick="saveFromJsonEditor()">保存</button>
+                    <button class="btn btn-secondary" onclick="closeJsonEditor()">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 百度地图API -->
+    <script src="https://api.map.baidu.com/api?v=2.0&ak=YOUR_BAIDU_MAP_KEY"></script>
+    
+    <script>
+        // 当前配置数据
+        let currentConfig = {
+            basic_cfg: {
+                initMapCenterAddress: "",
+                initMapCenterPoint: { lng: "", lat: "" },
+                audioUrl: ""
+            },
+            showList: []
+        };
+
+        // 章节类型说明
+        const chapterTypes = {
+            1: { name: "顺序展示", desc: "顺序展示地点位置，每个展示后增加标记弹跳效果" },
+            2: { name: "路线展示", desc: "展示两个地方之间的路线（限制2个地点）" },
+            3: { name: "共同回忆", desc: "顺序展示location位置，不用标记点弹跳效果" }
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConfig();
+        });
+
+        // 切换标签页
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+            
+            if (tabName === 'json') {
+                updateJsonPreview();
+            }
+        }
+
+        // 显示消息
+        function showMessage(message, type = 'info') {
+            const msgEl = document.getElementById('message');
+            msgEl.textContent = message;
+            msgEl.className = 'message ' + type;
+            setTimeout(() => {
+                msgEl.className = 'message';
+            }, 3000);
+        }
+
+        // 加载配置
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/config');
+                if (response.ok) {
+                    const data = await response.json();
+                    currentConfig = data;
+                    showMessage('配置加载成功', 'success');
+                } else {
+                    showMessage('使用默认配置', 'info');
+                }
+            } catch (error) {
+                showMessage('加载配置失败: ' + error.message, 'error');
+                console.error('加载配置失败:', error);
+            }
+            renderBasicConfig();
+            renderChapters();
+        }
+
+        // 渲染基本配置
+        function renderBasicConfig() {
+            document.getElementById('initMapCenterAddress').value = currentConfig.basic_cfg.initMapCenterAddress || '';
+            document.getElementById('initMapCenterLng').value = currentConfig.basic_cfg.initMapCenterPoint?.lng || '';
+            document.getElementById('initMapCenterLat').value = currentConfig.basic_cfg.initMapCenterPoint?.lat || '';
+            document.getElementById('audioUrl').value = currentConfig.basic_cfg.audioUrl || '';
+        }
+
+        // 收集基本配置
+        function collectBasicConfig() {
+            currentConfig.basic_cfg = {
+                initMapCenterAddress: document.getElementById('initMapCenterAddress').value,
+                initMapCenterPoint: {
+                    lng: parseFloat(document.getElementById('initMapCenterLng').value) || 0,
+                    lat: parseFloat(document.getElementById('initMapCenterLat').value) || 0
+                },
+                audioUrl: document.getElementById('audioUrl').value
+            };
+        }
+
+        // 渲染章节列表
+        function renderChapters() {
+            const container = document.getElementById('chaptersList');
+            if (!currentConfig.showList || currentConfig.showList.length === 0) {
+                container.innerHTML = '<div class="empty-state">暂无章节，请点击"添加章节"按钮</div>';
+                return;
+            }
+
+            container.innerHTML = currentConfig.showList.map((chapter, index) => `
+                <div class="chapter-item" data-index="${index}">
+                    <div class="chapter-header">
+                        <div>
+                            <span class="chapter-title">${chapter.chapterName || '未命名章节'}</span>
+                            <span class="type-badge type-${chapter.type}">类型${chapter.type}: ${chapterTypes[chapter.type]?.name || '未知'}</span>
+                        </div>
+                        <div class="chapter-actions">
+                            <button class="btn btn-sm btn-secondary" onclick="moveChapter(${index}, -1)">上移</button>
+                            <button class="btn btn-sm btn-secondary" onclick="moveChapter(${index}, 1)">下移</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteChapter(${index})">删除</button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>章节名称</label>
+                            <input type="text" class="chapter-name" value="${chapter.chapterName || ''}" placeholder="输入章节名称">
+                        </div>
+                        <div class="form-group">
+                            <label>章节类型</label>
+                            <select class="chapter-type" onchange="onChapterTypeChange(${index}, this.value)">
+                                ${Object.entries(chapterTypes).map(([type, info]) => `
+                                    <option value="${type}" ${parseInt(type) === chapter.type ? 'selected' : ''}>
+                                        类型${type}: ${info.name}
+                                    </option>
+                                `).join('')}
+                            </select>
+                            <small style="color: #666; display: block; margin-top: 5px;">${chapterTypes[chapter.type]?.desc || ''}</small>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>起始地址</label>
+                            <div class="address-group">
+                                <input type="text" class="start-address" value="${chapter.startAddress || ''}" placeholder="输入起始地址">
+                                <button class="btn btn-sm" onclick="geocodeChapterAddress(${index})">解析</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>起始坐标</label>
+                            <div class="coordinate-group">
+                                <input type="text" class="start-lng" value="${chapter.startPoint?.lng || ''}" placeholder="经度">
+                                <input type="text" class="start-lat" value="${chapter.startPoint?.lat || ''}" placeholder="纬度">
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>地点列表 (${chapter.locations?.length || 0}个)</h3>
+                    <button class="btn btn-sm" onclick="addLocation(${index})">添加地点</button>
+                    <div class="locations-list" style="margin-top: 10px;">
+                        ${renderLocations(chapter.locations || [], index)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 渲染地点列表
+        function renderLocations(locations, chapterIndex) {
+            if (!locations || locations.length === 0) {
+                return '<div class="empty-state" style="padding: 20px;">暂无地点</div>';
+            }
+
+            return locations.map((loc, locIndex) => `
+                <div class="location-item" data-loc-index="${locIndex}">
+                    <div class="location-header">
+                        <span class="location-title">地点 #${locIndex + 1}</span>
+                        <button class="btn btn-sm btn-danger" onclick="deleteLocation(${chapterIndex}, ${locIndex})">删除</button>
+                    </div>
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>显示文本</label>
+                            <input type="text" class="loc-showText" value="${loc.showText || ''}" placeholder="地点名称">
+                        </div>
+                        <div class="form-group">
+                            <label>地址</label>
+                            <div class="address-group">
+                                <input type="text" class="loc-address" value="${loc.address || ''}" placeholder="输入地址">
+                                <button class="btn btn-sm" onclick="geocodeLocationAddress(${chapterIndex}, ${locIndex})">解析</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>图片路径</label>
+                            <input type="text" class="loc-imgUrl" value="${loc.showImgUrl || ''}" placeholder="./images/xxx.jpg">
+                        </div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>坐标</label>
+                            <div class="coordinate-group">
+                                <input type="text" class="loc-lng" value="${loc.point?.lng || ''}" placeholder="经度">
+                                <input type="text" class="loc-lat" value="${loc.point?.lat || ''}" placeholder="纬度">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>显示类型</label>
+                            <select class="loc-showType">
+                                <option value="1" ${loc.showType === 1 ? 'selected' : ''}>标记点</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 添加章节
+        function addChapter() {
+            const newChapter = {
+                order: currentConfig.showList.length + 1,
+                type: 1,
+                typeDesc: chapterTypes[1].desc,
+                startAddress: "",
+                startPoint: { lng: "", lat: "" },
+                chapterName: "新章节",
+                locations: []
+            };
+            currentConfig.showList.push(newChapter);
+            renderChapters();
+            showMessage('章节添加成功', 'success');
+        }
+
+        // 删除章节
+        function deleteChapter(index) {
+            if (confirm('确定要删除这个章节吗？')) {
+                currentConfig.showList.splice(index, 1);
+                // 重新排序
+                currentConfig.showList.forEach((chapter, i) => chapter.order = i + 1);
+                renderChapters();
+                showMessage('章节已删除', 'success');
+            }
+        }
+
+        // 移动章节
+        function moveChapter(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= currentConfig.showList.length) return;
+            
+            const temp = currentConfig.showList[index];
+            currentConfig.showList[index] = currentConfig.showList[newIndex];
+            currentConfig.showList[newIndex] = temp;
+            
+            // 重新排序
+            currentConfig.showList.forEach((chapter, i) => chapter.order = i + 1);
+            renderChapters();
+        }
+
+        // 章节类型改变
+        function onChapterTypeChange(index, newType) {
+            currentConfig.showList[index].type = parseInt(newType);
+            currentConfig.showList[index].typeDesc = chapterTypes[newType].desc;
+            renderChapters();
+        }
+
+        // 添加地点
+        function addLocation(chapterIndex) {
+            const chapter = currentConfig.showList[chapterIndex];
+            if (chapter.type === 2 && chapter.locations.length >= 2) {
+                showMessage('路线展示类型最多只能有2个地点', 'error');
+                return;
+            }
+            
+            chapter.locations.push({
+                showText: "",
+                showType: 1,
+                showImgUrl: "",
+                address: "",
+                point: { lng: "", lat: "" }
+            });
+            renderChapters();
+        }
+
+        // 删除地点
+        function deleteLocation(chapterIndex, locIndex) {
+            currentConfig.showList[chapterIndex].locations.splice(locIndex, 1);
+            renderChapters();
+        }
+
+        // 收集章节数据
+        function collectChapters() {
+            const chapterItems = document.querySelectorAll('.chapter-item');
+            chapterItems.forEach((item, index) => {
+                const chapter = currentConfig.showList[index];
+                chapter.chapterName = item.querySelector('.chapter-name').value;
+                chapter.type = parseInt(item.querySelector('.chapter-type').value);
+                chapter.typeDesc = chapterTypes[chapter.type].desc;
+                chapter.startAddress = item.querySelector('.start-address').value;
+                chapter.startPoint = {
+                    lng: parseFloat(item.querySelector('.start-lng').value) || 0,
+                    lat: parseFloat(item.querySelector('.start-lat').value) || 0
+                };
+
+                // 收集地点数据
+                const locItems = item.querySelectorAll('.location-item');
+                chapter.locations = [];
+                locItems.forEach(locItem => {
+                    chapter.locations.push({
+                        showText: locItem.querySelector('.loc-showText').value,
+                        showType: parseInt(locItem.querySelector('.loc-showType').value),
+                        showImgUrl: locItem.querySelector('.loc-imgUrl').value,
+                        address: locItem.querySelector('.loc-address').value,
+                        point: {
+                            lng: parseFloat(locItem.querySelector('.loc-lng').value) || 0,
+                            lat: parseFloat(locItem.querySelector('.loc-lat').value) || 0
+                        }
+                    });
+                });
+            });
+        }
+
+        // 地址解析 - 基本配置
+        function geocodeAddress(prefix) {
+            const address = document.getElementById(prefix + 'Address').value;
+            if (!address) {
+                showMessage('请输入地址', 'error');
+                return;
+            }
+
+            const geocoder = new BMap.Geocoder();
+            geocoder.getPoint(address, function(point) {
+                if (point) {
+                    document.getElementById(prefix + 'Lng').value = point.lng;
+                    document.getElementById(prefix + 'Lat').value = point.lat;
+                    showMessage('坐标解析成功', 'success');
+                } else {
+                    showMessage('无法解析该地址', 'error');
+                }
+            });
+        }
+
+        // 地址解析 - 章节起始地址
+        function geocodeChapterAddress(chapterIndex) {
+            const chapterItem = document.querySelectorAll('.chapter-item')[chapterIndex];
+            const address = chapterItem.querySelector('.start-address').value;
+            if (!address) {
+                showMessage('请输入地址', 'error');
+                return;
+            }
+
+            const geocoder = new BMap.Geocoder();
+            geocoder.getPoint(address, function(point) {
+                if (point) {
+                    chapterItem.querySelector('.start-lng').value = point.lng;
+                    chapterItem.querySelector('.start-lat').value = point.lat;
+                    showMessage('坐标解析成功', 'success');
+                } else {
+                    showMessage('无法解析该地址', 'error');
+                }
+            });
+        }
+
+        // 地址解析 - 地点地址
+        function geocodeLocationAddress(chapterIndex, locIndex) {
+            const chapterItem = document.querySelectorAll('.chapter-item')[chapterIndex];
+            const locItem = chapterItem.querySelectorAll('.location-item')[locIndex];
+            const address = locItem.querySelector('.loc-address').value;
+            if (!address) {
+                showMessage('请输入地址', 'error');
+                return;
+            }
+
+            const geocoder = new BMap.Geocoder();
+            geocoder.getPoint(address, function(point) {
+                if (point) {
+                    locItem.querySelector('.loc-lng').value = point.lng;
+                    locItem.querySelector('.loc-lat').value = point.lat;
+                    showMessage('坐标解析成功', 'success');
+                } else {
+                    showMessage('无法解析该地址', 'error');
+                }
+            });
+        }
+
+        // 保存配置
+        async function saveConfig() {
+            try {
+                collectBasicConfig();
+                collectChapters();
+
+                const response = await fetch('/api/config', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(currentConfig)
+                });
+
+                if (response.ok) {
+                    showMessage('配置保存成功', 'success');
+                } else {
+                    throw new Error('保存失败');
+                }
+            } catch (error) {
+                showMessage('保存配置失败: ' + error.message, 'error');
+                console.error('保存配置失败:', error);
+            }
+        }
+
+        // 导出配置
+        function exportConfig() {
+            collectBasicConfig();
+            collectChapters();
+            
+            const dataStr = JSON.stringify(currentConfig, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'config-refactored.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showMessage('配置已导出', 'success');
+        }
+
+        // 更新JSON预览
+        function updateJsonPreview() {
+            collectBasicConfig();
+            collectChapters();
+            document.getElementById('jsonPreview').value = JSON.stringify(currentConfig, null, 2);
+        }
+
+        // 显示JSON编辑器
+        function showJsonEditor() {
+            collectBasicConfig();
+            collectChapters();
+            document.getElementById('jsonEditor').value = JSON.stringify(currentConfig, null, 2);
+            document.getElementById('jsonEditorModal').style.display = 'block';
+        }
+
+        // 关闭JSON编辑器
+        function closeJsonEditor() {
+            document.getElementById('jsonEditorModal').style.display = 'none';
+        }
+
+        // 从JSON编辑器保存
+        function saveFromJsonEditor() {
+            try {
+                const jsonStr = document.getElementById('jsonEditor').value;
+                currentConfig = JSON.parse(jsonStr);
+                renderBasicConfig();
+                renderChapters();
+                closeJsonEditor();
+                showMessage('JSON配置已应用', 'success');
+            } catch (error) {
+                showMessage('JSON格式错误: ' + error.message, 'error');
+            }
+        }
+
+        // 点击弹窗外部关闭
+        document.getElementById('jsonEditorModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeJsonEditor();
+            }
+        });
+    </script>
+</body>
+</html>
