@@ -226,8 +226,9 @@ def run_server():
     print('  POST /api/config        - 保存配置')
     print('  POST /api/upload        - 上传图片')
     print('Static files:')
-    print('  http://localhost:8000/config-manager.html - 配置管理页面')
-    print('  http://localhost:8000/index.html          - 网站首页')
+    print('  http://localhost:8000/config-manager.html      - 配置管理页面')
+    print('  http://localhost:8000/index.html               - 网站首页')
+    print('  http://localhost:8000/index-refactored.html    - 网站首页-重构版')
     httpd.serve_forever()
 
 if __name__ == '__main__':
