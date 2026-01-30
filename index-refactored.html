@@ -1,0 +1,1130 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+    <title>美君的生日礼物 - 重构版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            width: 100%;
+            font-family: 'Microsoft Yahei', 'Helvetica Neue', Helvetica, Arial, Sans-serif;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        #loading {
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            z-index: 999;
+            background: url("./images/site/loading.gif") no-repeat center center #FFFAD1;
+            top: 0;
+            left: 0;
+            text-align: center;
+            line-height: 300px;
+            font-size: 32px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        #theEnd {
+            height: 0%;
+            width: 100%;
+            line-height: 0;
+            font-size: 0;
+            overflow: hidden;
+            position: absolute;
+            z-index: 999;
+            background-color: #FFFAD1;
+            top: 0;
+            left: 0;
+        }
+
+        #theEndText {
+            position: absolute;
+            left: 0;
+            z-index: 9999;
+            width: 100%;
+            text-align: center;
+            font-size: 26px;
+            line-height: 2;
+            top: 50%;
+            margin-top: -100px;
+            height: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button:active {
+            background-color: #3d8b40;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">正在加载...</div>
+    <div id="theEnd"></div>
+    <div id="map"></div>
+
+    <script type="text/javascript">
+        // ==================== 配置数据 ====================
+        
+        /**
+         * 新协议配置数据
+         * 基于原有 config.json 转换而来
+         */
+        const NEW_CONFIG = {
+            basic_cfg: {
+                initMapCenterAddress: "广西容县",
+                initMapCenterPoint: {
+                    lng: 3.894763,
+                    lat: 44.529534
+                },
+                audioUrl: "./LemonTree.mp3"
+            },
+            showList: [
+                {
+                    order: 1,
+                    type: 1,
+                    typeDesc: "1代表顺序展示地点位置，locations每个展示后增加标记弹跳效果",
+                    startAddress: "广东省梅州市",
+                    startPoint: {
+                        lng: 116.135018,
+                        lat: 24.33438
+                    },
+                    chapterName: "双方位置",
+                    locations: [
+                        {
+                            showText: "嘉应学院",
+                            showType: 1,
+                            showImgUrl: "",
+                            address: "广东省梅州市",
+                            point: {
+                                lng: 116.135018,
+                                lat: 24.33438
+                            }
+                        },
+                        {
+                            showText: "广外艺",
+                            showType: 1,
+                            showImgUrl: "",
+                            address: "广东省广州市",
+                            point: {
+                                lng: 113.345774,
+                                lat: 23.153356
+                            }
+                        }
+                    ]
+                },
+                {
+                    order: 2,
+                    type: 2,
+                    typeDesc: "2代表展示两个地方之间的路线，限制locations只有两个",
+                    startAddress: "广东省河源市",
+                    startPoint: {
+                        lng: 114.701682,
+                        lat: 23.754195
+                    },
+                    chapterName: "路线展示",
+                    locations: [
+                        {
+                            showText: "梅州",
+                            showType: 1,
+                            showImgUrl: "",
+                            address: "广东省梅州市",
+                            point: {
+                                lng: 116.135018,
+                                lat: 24.33438
+                            }
+                        },
+                        {
+                            showText: "广州",
+                            showType: 1,
+                            showImgUrl: "",
+                            address: "广东省广州市",
+                            point: {
+                                lng: 113.345774,
+                                lat: 23.153356
+                            }
+                        }
+                    ]
+                },
+                {
+                    order: 3,
+                    type: 3,
+                    typeDesc: "3代表展示一起去过的地方，顺序展示location位置，不用标记点弹跳效果",
+                    startAddress: "广东省广州市",
+                    startPoint: {
+                        lng: 113.256838,
+                        lat: 23.157309
+                    },
+                    chapterName: "共同回忆",
+                    locations: [
+                        {
+                            showText: "纪念堂",
+                            showType: 1,
+                            showImgUrl: "./images/jiniantang.jpg",
+                            address: "广东省广州市",
+                            point: {
+                                lng: 113.271147,
+                                lat: 23.139616
+                            }
+                        },
+                        {
+                            showText: "陈家祠",
+                            showType: 1,
+                            showImgUrl: "./images/chenjiaci.jpg",
+                            address: "广东省广州市",
+                            point: {
+                                lng: 113.252764,
+                                lat: 23.131838
+                            }
+                        },
+                        {
+                            showText: "看电影",
+                            showType: 1,
+                            showImgUrl: "./images/dianying.jpg",
+                            address: "广东省广州市",
+                            point: {
+                                lng: 113.268865,
+                                lat: 23.200458
+                            }
+                        },
+                        {
+                            showText: "",
+                            showType: 1,
+                            showImgUrl: "./images/chenjiaci1.jpg",
+                            address: "",
+                            point: {
+                                lng: 113.252764,
+                                lat: 23.131838
+                            }
+                        },
+                        {
+                            showText: "吃货",
+                            showType: 1,
+                            showImgUrl: "./images/beijingroad.jpg",
+                            address: "",
+                            point: {
+                                lng: 113.275619,
+                                lat: 23.127547
+                            }
+                        },
+                        {
+                            showText: "",
+                            showType: 1,
+                            showImgUrl: "./images/chenjiaci2.jpg",
+                            address: "",
+                            point: {
+                                lng: 113.252764,
+                                lat: 23.131838
+                            }
+                        },
+                        {
+                            showText: "臭美中...",
+                            showType: 1,
+                            showImgUrl: "./images/dress1.jpg",
+                            address: "",
+                            point: {
+                                lng: 113.275619,
+                                lat: 23.127547
+                            }
+                        },
+                        {
+                            showText: "臭美中...",
+                            showType: 1,
+                            showImgUrl: "./images/dress2.jpg",
+                            address: "",
+                            point: {
+                                lng: 113.248583,
+                                lat: 23.123725
+                            }
+                        },
+                        {
+                            showText: "",
+                            showType: 1,
+                            showImgUrl: "./images/you.jpg",
+                            address: "",
+                            point: {
+                                lng: 113.340995,
+                                lat: 23.106222
+                            }
+                        },
+                        {
+                            showText: "又是离开，又是不舍...",
+                            showType: 1,
+                            showImgUrl: "./images/leave.jpg",
+                            address: "",
+                            point: {
+                                lng: 113.358452,
+                                lat: 23.158306
+                            }
+                        },
+                        {
+                            showText: "红海湾",
+                            showType: 1,
+                            showImgUrl: "./images/sea.jpg",
+                            address: "",
+                            point: {
+                                lng: 115.573511,
+                                lat: 22.712665
+                            }
+                        },
+                        {
+                            showText: "后山",
+                            showType: 1,
+                            showImgUrl: "./images/s.jpg",
+                            address: "",
+                            point: {
+                                lng: 115.622433,
+                                lat: 23.184734
+                            }
+                        }
+                    ]
+                },
+                {
+                    order: 4,
+                    type: 3,
+                    typeDesc: "3代表展示想去的地方",
+                    startAddress: "广东深圳",
+                    startPoint: {
+                        lng: 103.758427,
+                        lat: 36.172333
+                    },
+                    chapterName: "想去的地方",
+                    locations: [
+                        {
+                            showText: "",
+                            showType: 1,
+                            showImgUrl: "",
+                            address: "",
+                            point: {
+                                lng: 103.758427,
+                                lat: 36.172333
+                            }
+                        },
+                        {
+                            showText: "厦门",
+                            showType: 1,
+                            showImgUrl: "./images/wannato/xiamen.jpg",
+                            address: "",
+                            point: {
+                                lng: 118.148154,
+                                lat: 24.497912
+                            }
+                        },
+                        {
+                            showText: "凤凰古镇",
+                            showType: 1,
+                            showImgUrl: "./images/wannato/fenghuang.jpg",
+                            address: "",
+                            point: {
+                                lng: 100.21191,
+                                lat: 26.928061
+                            }
+                        },
+                        {
+                            showText: "桂林阳朔",
+                            showType: 1,
+                            showImgUrl: "./images/wannato/guilin.jpg",
+                            address: "",
+                            point: {
+                                lng: 110.503626,
+                                lat: 24.780932
+                            }
+                        },
+                        {
+                            showText: "西藏",
+                            showType: 1,
+                            showImgUrl: "./images/wannato/xizang.jpg",
+                            address: "",
+                            point: {
+                                lng: 91.115691,
+                                lat: 29.687083
+                            }
+                        },
+                        {
+                            showText: "杭州西湖",
+                            showType: 1,
+                            showImgUrl: "./images/wannato/xihu.jpg",
+                            address: "",
+                            point: {
+                                lng: 120.151946,
+                                lat: 30.250472
+                            }
+                        }
+                    ]
+                }
+            ],
+            endShowCfg: {
+                endMapCenterAddress: "甘肃省兰州市",
+                endMapCenterPoint: {
+                    lng: 82.699584,
+                    lat: 39.8202
+                },
+                markerList: [
+                    { lng: 80.050373, lat: 39.924749 },
+                    { lng: 80.064171, lat: 39.832612 },
+                    { lng: 80.064171, lat: 39.747453 },
+                    { lng: 80.054973, lat: 39.647966 },
+                    { lng: 80.031976, lat: 39.566136 },
+                    { lng: 80.022777, lat: 39.469951 },
+                    { lng: 79.990582, lat: 39.366491 },
+                    { lng: 79.93539, lat: 39.273603 },
+                    { lng: 79.875599, lat: 39.216379 },
+                    { lng: 80.165356, lat: 39.697727 },
+                    { lng: 80.289538, lat: 39.70128 },
+                    { lng: 80.427518, lat: 39.708386 },
+                    { lng: 80.537902, lat: 39.708386 },
+                    { lng: 80.666683, lat: 39.711938 },
+                    { lng: 80.795464, lat: 39.715491 },
+                    { lng: 80.123962, lat: 39.402184 },
+                    { lng: 80.271141, lat: 39.420024 },
+                    { lng: 80.418319, lat: 39.423591 },
+                    { lng: 80.570097, lat: 39.423591 },
+                    { lng: 80.726474, lat: 39.427159 },
+                    { lng: 80.873652, lat: 39.434292 },
+                    { lng: 81.039228, lat: 39.434292 },
+                    { lng: 80.501107, lat: 40.105115 },
+                    { lng: 80.501107, lat: 40.01676 },
+                    { lng: 80.501107, lat: 39.921207 },
+                    { lng: 80.501107, lat: 39.829066 },
+                    { lng: 80.496508, lat: 39.623071 },
+                    { lng: 80.496508, lat: 39.544773 },
+                    { lng: 80.491908, lat: 39.370061 },
+                    { lng: 80.491908, lat: 39.255725 },
+                    { lng: 80.491908, lat: 39.166269 },
+                    { lng: 80.491908, lat: 39.087453 },
+                    { lng: 79.820407, lat: 39.015724 },
+                    { lng: 79.949188, lat: 39.008548 },
+                    { lng: 80.100966, lat: 39.030076 },
+                    { lng: 80.252744, lat: 39.030076 },
+                    { lng: 80.41372, lat: 39.030076 },
+                    { lng: 80.611491, lat: 39.051598 },
+                    { lng: 80.744871, lat: 39.05877 },
+                    { lng: 80.924245, lat: 39.05877 },
+                    { lng: 81.089821, lat: 39.073113 },
+                    { lng: 81.517558, lat: 39.775851 },
+                    { lng: 81.517558, lat: 39.708386 },
+                    { lng: 81.512958, lat: 39.605284 },
+                    { lng: 81.512958, lat: 39.480645 },
+                    { lng: 81.494561, lat: 39.38434 },
+                    { lng: 81.494561, lat: 39.262877 },
+                    { lng: 81.632541, lat: 39.81488 },
+                    { lng: 81.738325, lat: 39.811332 },
+                    { lng: 81.867106, lat: 39.811332 },
+                    { lng: 82.018884, lat: 39.804238 },
+                    { lng: 82.018884, lat: 39.704833 },
+                    { lng: 82.023483, lat: 39.598168 },
+                    { lng: 82.023483, lat: 39.502027 },
+                    { lng: 82.028083, lat: 39.395047 },
+                    { lng: 82.023483, lat: 39.320062 },
+                    { lng: 82.018884, lat: 39.24142 },
+                    { lng: 81.853308, lat: 39.219957 },
+                    { lng: 81.696931, lat: 39.230689 },
+                    { lng: 81.56815, lat: 39.234266 },
+                    { lng: 81.63714, lat: 39.530527 },
+                    { lng: 81.765921, lat: 39.530527 },
+                    { lng: 81.903901, lat: 39.530527 },
+                    { lng: 82.621395, lat: 40.020297 },
+                    { lng: 82.621395, lat: 39.921207 },
+                    { lng: 82.621395, lat: 39.811332 },
+                    { lng: 82.621395, lat: 39.708386 },
+                    { lng: 82.616796, lat: 39.605284 },
+                    { lng: 82.621395, lat: 39.459255 },
+                    { lng: 82.621395, lat: 39.35935 },
+                    { lng: 82.607598, lat: 39.24142 },
+                    { lng: 82.607598, lat: 39.159108 },
+                    { lng: 82.483416, lat: 39.647966 },
+                    { lng: 82.446621, lat: 39.555455 },
+                    { lng: 82.391429, lat: 39.469951 },
+                    { lng: 82.736379, lat: 39.687067 },
+                    { lng: 82.79617, lat: 39.59461 },
+                    { lng: 82.846762, lat: 39.519841 },
+                    { lng: 82.984742, lat: 39.829066 },
+                    { lng: 83.122722, lat: 39.832612 },
+                    { lng: 83.260702, lat: 39.836158 },
+                    { lng: 83.398681, lat: 39.846795 },
+                    { lng: 83.486068, lat: 39.860975 },
+                    { lng: 83.509065, lat: 39.775851 },
+                    { lng: 83.495267, lat: 39.694174 },
+                    { lng: 83.47227, lat: 39.626628 },
+                    { lng: 82.966345, lat: 39.544773 },
+                    { lng: 83.150318, lat: 39.551895 },
+                    { lng: 83.283698, lat: 39.551895 },
+                    { lng: 83.426277, lat: 39.559016 },
+                    { lng: 83.578055, lat: 39.559016 },
+                    { lng: 83.711435, lat: 39.569696 },
+                    { lng: 83.2699, lat: 40.140424 },
+                    { lng: 83.251503, lat: 40.066253 },
+                    { lng: 83.237705, lat: 39.97077 },
+                    { lng: 83.187112, lat: 39.754553 },
+                    { lng: 83.145718, lat: 39.658632 },
+                    { lng: 83.095126, lat: 39.47708 },
+                    { lng: 83.072129, lat: 39.337923 },
+                    { lng: 83.021537, lat: 39.216379 },
+                    { lng: 82.99854, lat: 39.159108 },
+                    { lng: 83.219308, lat: 39.47708 },
+                    { lng: 83.315893, lat: 39.387909 },
+                    { lng: 83.380284, lat: 39.312917 },
+                    { lng: 83.47687, lat: 39.259301 },
+                    { lng: 83.596452, lat: 39.202065 },
+                    { lng: 84.714088, lat: 40.249767 },
+                    { lng: 84.626701, lat: 40.228618 },
+                    { lng: 84.49332, lat: 40.179244 },
+                    { lng: 84.364539, lat: 40.151014 },
+                    { lng: 84.240358, lat: 40.112178 },
+                    { lng: 84.148371, lat: 40.080387 },
+                    { lng: 84.111577, lat: 39.992 },
+                    { lng: 84.139172, lat: 39.914124 },
+                    { lng: 84.198964, lat: 39.818426 },
+                    { lng: 84.014991, lat: 39.690621 },
+                    { lng: 84.175967, lat: 39.708386 },
+                    { lng: 84.318546, lat: 39.751003 },
+                    { lng: 84.479522, lat: 39.743902 },
+                    { lng: 84.612903, lat: 39.772302 },
+                    { lng: 84.810674, lat: 39.782949 },
+                    { lng: 84.976249, lat: 39.807785 },
+                    { lng: 85.114229, lat: 39.829066 },
+                    { lng: 84.589906, lat: 40.101583 },
+                    { lng: 84.589906, lat: 40.009687 },
+                    { lng: 84.589906, lat: 39.892869 },
+                    { lng: 84.580708, lat: 39.676405 },
+                    { lng: 84.571509, lat: 39.519841 },
+                    { lng: 84.571509, lat: 39.362921 },
+                    { lng: 84.576108, lat: 39.255725 },
+                    { lng: 84.576108, lat: 39.166269 },
+                    { lng: 84.465724, lat: 39.64441 },
+                    { lng: 84.350741, lat: 39.566136 },
+                    { lng: 84.240358, lat: 39.480645 },
+                    { lng: 84.024189, lat: 39.35578 },
+                    { lng: 84.139172, lat: 39.427159 },
+                    { lng: 84.695691, lat: 39.694174 },
+                    { lng: 84.815273, lat: 39.605284 },
+                    { lng: 84.916458, lat: 39.516279 },
+                    { lng: 85.036041, lat: 39.452124 },
+                    { lng: 85.123428, lat: 39.402184 },
+                    { lng: 85.224613, lat: 39.352209 },
+                    { lng: 85.376391, lat: 39.298623 },
+                    { lng: 85.500572, lat: 39.373631 },
+                    { lng: 85.51437, lat: 39.537651 },
+                    { lng: 85.348795, lat: 39.555455 },
+                    { lng: 85.24761, lat: 39.480645 },
+                    { lng: 81.407174, lat: 40.573219 },
+                    { lng: 81.250797, lat: 40.618798 },
+                    { lng: 81.103618, lat: 40.639824 },
+                    { lng: 80.95644, lat: 40.63632 },
+                    { lng: 80.901248, lat: 40.562697 },
+                    { lng: 80.951841, lat: 40.47143 },
+                    { lng: 81.057625, lat: 40.383557 },
+                    { lng: 81.204804, lat: 40.327257 },
+                    { lng: 81.388777, lat: 40.306132 },
+                    { lng: 81.526756, lat: 40.288523 },
+                    { lng: 81.696931, lat: 40.277955 },
+                    { lng: 81.526756, lat: 40.65734 },
+                    { lng: 81.563551, lat: 40.804295 },
+                    { lng: 81.696931, lat: 40.846222 },
+                    { lng: 81.830312, lat: 40.83225 },
+                    { lng: 81.922298, lat: 40.751849 },
+                    { lng: 81.926898, lat: 40.653837 },
+                    { lng: 81.9131, lat: 40.552172 },
+                    { lng: 81.885504, lat: 40.48548 },
+                    { lng: 81.848709, lat: 40.387074 },
+                    { lng: 81.793517, lat: 40.313174 }
+                ]
+            }
+        };
+
+        // ==================== 工具函数 ====================
+
+        /**
+         * 异步延迟函数
+         * @param {number} ms - 延迟毫秒数
+         * @returns {Promise}
+         */
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        /**
+         * 数组随机排序
+         * @param {Array} array - 要排序的数组
+         * @returns {Array} - 随机排序后的数组
+         */
+        const shuffleArray = (array) => {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        };
+
+        /**
+         * 预加载图片
+         * @param {Array} imageUrls - 图片URL数组
+         * @returns {Promise}
+         */
+        const preloadImages = (imageUrls) => {
+            return new Promise((resolve) => {
+                let loadedCount = 0;
+                const total = imageUrls.length;
+                
+                if (total === 0) {
+                    resolve();
+                    return;
+                }
+
+                imageUrls.forEach(url => {
+                    const img = new Image();
+                    img.onload = () => {
+                        loadedCount++;
+                        if (loadedCount === total) {
+                            resolve();
+                        }
+                    };
+                    img.onerror = () => {
+                        loadedCount++;
+                        if (loadedCount === total) {
+                            resolve();
+                        }
+                    };
+                    img.src = url;
+                });
+            });
+        };
+
+        /**
+         * 下滑动画
+         * @param {string} elementId - 元素ID
+         * @param {number} duration - 动画持续时间（毫秒）
+         * @returns {Promise}
+         */
+        const slideDownAnimation = (elementId, duration = 1000) => {
+            return new Promise((resolve) => {
+                const element = document.getElementById(elementId);
+                const startTime = Date.now();
+                const startHeight = 0;
+                const endHeight = 100;
+                const step = 10; // 每10ms更新一次
+
+                element.style.display = 'block';
+                element.style.height = '0%';
+
+                const animate = () => {
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const currentHeight = startHeight + (endHeight - startHeight) * progress;
+                    
+                    element.style.height = currentHeight + '%';
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        resolve();
+                    }
+                };
+
+                animate();
+            });
+        };
+
+        // ==================== 地图操作工具类 ====================
+
+        class MapUtils {
+            constructor(map) {
+                this.map = map;
+            }
+
+            /**
+             * 地图平移动画
+             * @param {Object} point - 目标点 {lng, lat}
+             * @param {number} delay - 延迟时间（毫秒）
+             */
+            async panTo(point, delay = 1000) {
+                this.map.panTo(new BMap.Point(point.lng, point.lat));
+                await sleep(delay);
+            }
+
+            /**
+             * 地图缩放动画
+             * @param {number} level - 目标缩放级别
+             * @param {number} speed - 缩放速度（毫秒）
+             * @param {Object} point - 目标点（可选）
+             */
+            async zoomTo(level, speed = 800, point = null) {
+                return new Promise((resolve) => {
+                    const currentZoom = this.map.getZoom();
+                    const targetZoom = level;
+                    const direction = targetZoom > currentZoom ? 1 : -1;
+                    const stepTime = speed / Math.abs(targetZoom - currentZoom);
+
+                    const zoomStep = () => {
+                        const newZoom = this.map.getZoom() + direction;
+                        
+                        if ((direction > 0 && newZoom >= targetZoom) || 
+                            (direction < 0 && newZoom <= targetZoom)) {
+                            this.map.setZoom(targetZoom);
+                            if (point) {
+                                this.map.setCenter(new BMap.Point(point.lng, point.lat));
+                            }
+                            resolve();
+                            return;
+                        }
+
+                        this.map.setZoom(newZoom);
+                        if (point) {
+                            this.map.setCenter(new BMap.Point(point.lng, point.lat));
+                        }
+
+                        setTimeout(zoomStep, stepTime);
+                    };
+
+                    zoomStep();
+                });
+            }
+
+            /**
+             * 添加标记点
+             * @param {Object} point - 坐标点 {lng, lat}
+             * @param {string} animation - 动画类型
+             */
+            addMarker(point, animation = null) {
+                const marker = new BMap.Marker(new BMap.Point(point.lng, point.lat));
+                if (animation) {
+                    marker.setAnimation(animation);
+                }
+                this.map.addOverlay(marker);
+                return marker;
+            }
+
+            /**
+             * 清除所有覆盖物
+             */
+            clearOverlays() {
+                this.map.clearOverlays();
+            }
+
+            /**
+             * 设置地图类型
+             * @param {number} mapType - 地图类型
+             */
+            setMapType(mapType) {
+                this.map.setMapType(mapType);
+            }
+
+            /**
+             * 打开信息窗口
+             * @param {string} content - 内容
+             * @param {Object} point - 坐标点 {lng, lat}
+             * @param {string} title - 标题
+             */
+            openInfoWindow(content, point, title = '') {
+                const opts = {
+                    title: title,
+                    maxWidth: 600
+                };
+                const infoWindow = new BMap.InfoWindow(content, opts);
+                this.map.openInfoWindow(infoWindow, new BMap.Point(point.lng, point.lat));
+                infoWindow.redraw();
+            }
+
+            /**
+             * 关闭信息窗口
+             */
+            closeInfoWindow() {
+                this.map.closeInfoWindow();
+            }
+
+            /**
+             * 绘制驾车路线
+             * @param {Object} start - 起点 {lng, lat}
+             * @param {Object} end - 终点 {lng, lat}
+             */
+            async drawDrivingRoute(start, end) {
+                return new Promise((resolve) => {
+                    const startPoint = new BMap.Point(start.lng, start.lat);
+                    const endPoint = new BMap.Point(end.lng, end.lat);
+                    
+                    console.log('开始搜索路线:', startPoint, '->', endPoint);
+                    
+                    const driving = new BMap.DrivingRoute(this.map, {
+                        renderOptions: {
+                            map: this.map,
+                            autoViewport: false,
+                            panel: false
+                        }
+                    });
+                    
+                    // 搜索路线（参考原代码，不使用回调）
+                    driving.search(startPoint, endPoint);
+                    
+                    console.log('路线搜索请求已发送');
+                    
+                    // 等待一段时间让路线绘制完成
+                    setTimeout(() => {
+                        console.log('路线绘制完成');
+                        resolve();
+                    }, 2000);
+                });
+            }
+        }
+
+        // ==================== 展示控制器 ====================
+
+        class ShowController {
+            constructor(map, config) {
+                this.mapUtils = new MapUtils(map);
+                this.config = config;
+                this.audio = null;
+            }
+
+            /**
+             * 初始化音频
+             */
+            async initAudio() {
+                return new Promise((resolve) => {
+                    this.audio = new Audio(this.config.basic_cfg.audioUrl);
+                    this.audio.oncanplay = () => {
+                        resolve();
+                    };
+                    this.audio.load();
+                });
+            }
+
+            /**
+             * 播放音频
+             */
+            playAudio() {
+                if (this.audio) {
+                    this.audio.play().catch(err => {
+                        console.error('音频播放失败:', err);
+                    });
+                }
+            }
+
+            /**
+             * 开始展示流程
+             */
+            async start() {
+                try {
+                    // 1. 预加载所有图片
+                    await this.preloadAllImages();
+
+                    // 2. 初始化音频
+                    await this.initAudio();
+
+                    // 3. 显示开始按钮
+                    this.showStartButton();
+
+                } catch (error) {
+                    console.error('初始化失败:', error);
+                    alert('初始化失败：' + error.message);
+                }
+            }
+
+            /**
+             * 预加载所有图片
+             */
+            async preloadAllImages() {
+                const imageUrls = [];
+                
+                // 从 showList 中提取所有图片
+                this.config.showList.forEach(item => {
+                    item.locations.forEach(loc => {
+                        if (loc.showImgUrl) {
+                            imageUrls.push(loc.showImgUrl);
+                        }
+                    });
+                });
+
+                await preloadImages(imageUrls);
+            }
+
+            /**
+             * 显示开始按钮
+             */
+            showStartButton() {
+                const loading = document.getElementById('loading');
+                loading.innerHTML = '点击开始';
+                loading.onclick = async () => {
+                    // 进入全屏
+                    if (document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen();
+                    }
+                    
+                    // 开始展示
+                    await this.runShowFlow();
+                };
+            }
+
+            /**
+             * 运行展示流程
+             */
+            async runShowFlow() {
+                try {
+                    // 隐藏加载层
+                    document.getElementById('loading').style.display = 'none';
+
+                    // 播放音频
+                    this.playAudio();
+
+                    // 按 order 排序 showList
+                    const sortedShowList = [...this.config.showList].sort((a, b) => a.order - b.order);
+
+                    // 顺序执行每个展示项
+                    for (const showItem of sortedShowList) {
+                        await this.executeShowItem(showItem);
+                    }
+
+                    // 执行结束展示
+                    await this.executeEndShow();
+
+                } catch (error) {
+                    console.error('展示流程执行失败:', error);
+                    alert('展示失败：' + error.message);
+                }
+            }
+
+            /**
+             * 执行展示项
+             * @param {Object} showItem - 展示项配置
+             */
+            async executeShowItem(showItem) {
+                console.log(`执行展示项: ${showItem.chapterName} (type: ${showItem.type})`);
+                console.log("showItem:", showItem);
+
+                // 重置地图到起点
+                console.log('重置地图到起点');
+                await this.mapUtils.panTo(showItem.startPoint, 1000);
+                await this.mapUtils.zoomTo(15, 800, showItem.startPoint);
+                console.log('地图重置完成');
+
+                // 根据类型执行不同的展示逻辑
+                console.log('开始执行展示类型:', showItem.type);
+                switch (showItem.type) {
+                    case 1:
+                        console.log('调用 showType1');
+                        await this.showType1(showItem);
+                        console.log('showType1 完成');
+                        break;
+                    case 2:
+                        console.log('调用 showType2');
+                        await this.showType2(showItem);
+                        console.log('showType2 完成');
+                        break;
+                    case 3:
+                        console.log('调用 showType3');
+                        await this.showType3(showItem);
+                        console.log('showType3 完成');
+                        break;
+                    default:
+                        console.warn('未知的展示类型:', showItem.type);
+                }
+                console.log(`展示项 ${showItem.chapterName} 执行完成`);
+            }
+
+            /**
+             * 展示类型1：顺序展示地点位置，每个展示后增加标记弹跳效果
+             * @param {Object} showItem - 展示项配置
+             */
+            async showType1(showItem) {
+                for (const location of showItem.locations) {
+                    // 移动到地点
+                    await this.mapUtils.panTo(location.point, 1000);
+                    await this.mapUtils.zoomTo(16, 800, location.point);
+
+                    // 添加弹跳标记
+                    this.mapUtils.addMarker(location.point, BMAP_ANIMATION_BOUNCE);
+
+                    // 等待一段时间
+                    await sleep(1500);
+                }
+            }
+
+            /**
+             * 展示类型2：展示两个地方之间的路线
+             * @param {Object} showItem - 展示项配置
+             */
+            async showType2(showItem) {
+                console.log('开始执行 showType2');
+                
+                if (showItem.locations.length !== 2) {
+                    console.error('类型2需要恰好2个地点');
+                    return;
+                }
+
+                const [loc1, loc2] = showItem.locations;
+                console.log('地点1:', loc1, '地点2:', loc2);
+
+                // 显示第一个地点
+                console.log('移动到地点1');
+                await this.mapUtils.panTo(loc1.point, 1000);
+                console.log('缩放到地点1');
+                await this.mapUtils.zoomTo(16, 800, loc1.point);
+                console.log('添加标记1');
+                this.mapUtils.addMarker(loc1.point, BMAP_ANIMATION_BOUNCE);
+                console.log('等待1秒');
+                await sleep(1000);
+
+                // 显示第二个地点
+                console.log('移动到地点2');
+                await this.mapUtils.panTo(loc2.point, 1000);
+                console.log('缩放到地点2');
+                await this.mapUtils.zoomTo(16, 800, loc2.point);
+                console.log('添加标记2');
+                this.mapUtils.addMarker(loc2.point, BMAP_ANIMATION_BOUNCE);
+                console.log('等待1秒');
+                await sleep(1000);
+
+                // 绘制路线
+                console.log('开始绘制路线');
+                await this.mapUtils.drawDrivingRoute(loc1.point, loc2.point);
+                console.log('路线绘制完成，等待2秒');
+                await sleep(2000);
+                console.log('showType2 完成');
+            }
+
+            /**
+             * 展示类型3：展示一起去过的地方，顺序展示location位置，不用标记点弹跳效果
+             * @param {Object} showItem - 展示项配置
+             */
+            async showType3(showItem) {
+                this.mapUtils.clearOverlays();
+
+                for (const location of showItem.locations) {
+                    // 移动到地点
+                    await this.mapUtils.panTo(location.point, 1000);
+                    await this.mapUtils.zoomTo(15, 800, location.point);
+
+                    // 如果有图片或文本，显示信息窗口
+                    if (location.showImgUrl || location.showText) {
+                        let content = '';
+                        if (location.showImgUrl) {
+                            content = `<img src="${location.showImgUrl}" style="width: 100%; max-width: 600px; height: auto; display: block; margin: 0 auto;" alt="${location.showText || 'Image'}" />`;
+                        } else if (location.showText) {
+                            content = location.showText;
+                        }
+
+                        if (content) {
+                            this.mapUtils.openInfoWindow(content, location.point, location.showText);
+                        }
+                    }
+
+                    // 等待一段时间
+                    await sleep(2500);
+
+                    // 关闭信息窗口
+                    this.mapUtils.closeInfoWindow();
+                }
+            }
+
+            /**
+             * 执行结束展示
+             */
+            async executeEndShow() {
+                const endCfg = this.config.endShowCfg;
+
+                // 移动到结束位置
+                await this.mapUtils.panTo(endCfg.endMapCenterPoint, 1000);
+                await this.mapUtils.zoomTo(9, 800, endCfg.endMapCenterPoint);
+
+                // 切换到卫星图
+                this.mapUtils.setMapType(BMAP_HYBRID_MAP);
+
+                // 随机打乱标记点
+                const shuffledMarkers = shuffleArray(endCfg.markerList);
+
+                // 顺序添加标记点
+                for (const marker of shuffledMarkers) {
+                    this.mapUtils.addMarker(marker, BMAP_ANIMATION_DROP);
+                    await sleep(200);
+                }
+
+                // 等待5秒后显示结束画面
+                await sleep(5000);
+                await this.showEndScreen();
+            }
+
+            /**
+             * 显示结束画面
+             */
+            async showEndScreen() {
+                await slideDownAnimation('theEnd', 1000);
+
+                const theEndText = document.getElementById('theEnd');
+                theEndText.innerHTML = `
+                    <div id="theEndText">
+                        Happy birthday to my dearest xx :) --by xx<br /><br />
+                        <button onclick="window.location.reload();">再看一次</button>
+                        <button onclick="window.location.href='./config-manager.html';">修改配置</button>
+                    </div>
+                `;
+            }
+        }
+
+        // ==================== 页面初始化 ====================
+
+        let map;
+        let showController;
+
+        /**
+         * 初始化地图
+         */
+        function initMap() {
+            map = new BMap.Map("map");
+            const point = new BMap.Point(
+                NEW_CONFIG.basic_cfg.initMapCenterPoint.lng,
+                NEW_CONFIG.basic_cfg.initMapCenterPoint.lat
+            );
+            map.centerAndZoom(point, 4);
+            map.disableDragging();
+            map.disableDoubleClickZoom();
+
+            // 初始化展示控制器
+            showController = new ShowController(map, NEW_CONFIG);
+
+            // 开始展示流程
+            showController.start();
+        }
+
+        /**
+         * 加载百度地图脚本
+         */
+        function loadBaiduMapScript() {
+            const script = document.createElement("script");
+            script.src = "https://api.map.baidu.com/api?v=3.0&ak=EXl1klVct9z0GXE7KAkPUkawwDhDN0h9&callback=initMap";
+            document.body.appendChild(script);
+        }
+
+        /**
+         * 页面加载完成后初始化
+         */
+        window.onload = function() {
+            // 加载百度地图脚本
+            loadBaiduMapScript();
+        };
+    </script>
+</body>
+</html>
