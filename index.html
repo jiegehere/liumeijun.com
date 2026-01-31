@@ -1325,11 +1325,13 @@
 
         let map;
         let showController;
-        let debugAlert = true;
+        let debugAlert = false;
 
         function alertDebug(msg) {
             if (debugAlert) {
                 alert(msg);
+            } else {
+                console.log(msg);
             }
         }
 
@@ -1339,6 +1341,12 @@
         async function initMap() {
             alertDebug('initMap 开始执行');
             try {
+                // 防止重复初始化
+                if (map) {
+                    console.log('地图已经初始化，跳过');
+                    return;
+                }
+                
                 // 1. 从 API 加载配置
                 var configData = await loadConfigFromApi();
                 // 2. 初始化地图
@@ -1405,9 +1413,12 @@
             script.onload = function () {
                 console.log('百度地图脚本加载完成');
                 // 微信浏览器兼容：如果回调没有触发，手动调用
-                if (typeof BMap !== 'undefined' && !map ) {
-                    console.log('BMap 已加载，手动调用 initMap');
+                // 严格检查：BMap 存在且 Map 构造函数可用
+                if (typeof BMap !== 'undefined' && typeof BMap.Map === 'function' && !map) {
+                    console.log('BMap 和 Map 构造函数已加载，手动调用 initMap');
                     setTimeout(initMap, 500);
+                } else {
+                    console.log('BMap 脚本已加载，但 Map 构造函数尚未就绪，等待检测机制');
                 }
             };
             script.onerror = function () {
@@ -1428,8 +1439,9 @@
                 attempts++;
                 alertDebug(`检测百度地图加载状态，尝试 ${attempts}/${maxAttempts}`);
 
-                if (typeof BMap !== 'undefined') {
-                    alertDebug("百度地图已加载完成")
+                // 严格检查：BMap 存在且 Map 构造函数可用
+                if (typeof BMap !== 'undefined' && typeof BMap.Map === 'function') {
+                    alertDebug("百度地图已加载完成，Map 构造函数可用")
                     clearInterval(checkInterval);
                     // 如果 initMap 还没有被调用，手动调用
                     if (!map) {
