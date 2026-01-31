@@ -19,7 +19,8 @@ def optimize_image(input_path, max_size_kb=300):
     print(f"⚠ {os.path.basename(input_path)}: {size_kb:.1f}KB (已达到最低质量)")
 
 def main():
-    upload_dir = 'uploads'
+    # 处理目录，在上一层目录下的uploads文件夹下
+    upload_dir = '../uploads/images'
     if not os.path.exists(upload_dir):
         print(f"目录 {upload_dir} 不存在")
         return
