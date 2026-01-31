@@ -951,6 +951,7 @@
              * 开始展示流程
              */
             async start() {
+                alertDebug('开始展示流程');
                 try {
                     // 1. 从 API 加载配置、初始化地图
                     // 已经挪出去了
@@ -1423,18 +1424,17 @@
 
             const checkInterval = setInterval(() => {
                 attempts++;
-                console.log(`检测百度地图加载状态，尝试 ${attempts}/${maxAttempts}`);
+                alertDebug(`检测百度地图加载状态，尝试 ${attempts}/${maxAttempts}`);
 
                 if (typeof BMap !== 'undefined') {
-                    console.log('百度地图已加载完成');
+                    alertDebug("百度地图已加载完成")
                     clearInterval(checkInterval);
                     // 如果 initMap 还没有被调用，手动调用
                     if (!map) {
-                        console.log('手动调用 initMap');
+                        alertDebug('手动调用 initMap');
                         initMap();
                     }
                 } else if (attempts >= maxAttempts) {
-                    console.error('百度地图加载超时');
                     clearInterval(checkInterval);
                     alert('百度地图加载超时，请刷新页面重试');
                 }
