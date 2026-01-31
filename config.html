@@ -121,7 +121,7 @@
 
         .chapter-item {
             margin-bottom: 20px;
-            padding: 20px;
+            padding: 10px;
             border: 2px solid #ddd;
             border-radius: 8px;
             background-color: white;
@@ -152,7 +152,7 @@
             padding: 15px;
             border: 1px solid #e0e0e0;
             border-radius: 5px;
-            background-color: #f9f9f9;
+            background-color: #e3f2fd;
         }
 
         .location-header {
@@ -571,15 +571,15 @@
             }
 
             container.innerHTML = currentConfig.showList.map((chapter, index) => `
-                <div class="chapter-item" data-index="${index}">
+                <div class="chapter-item" style="background: ${chapter.isNew ? '#edcdcd' : '#d1ecf1'}" data-index="${index}">
                     <div class="chapter-header">
                         <div>
                             <span class="chapter-title">${chapter.chapterName || '未命名章节'}</span>
                             <span class="type-badge type-${chapter.type}">类型${chapter.type}: ${chapterTypes[chapter.type]?.name || '未知'}</span>
                         </div>
                         <div class="chapter-actions">
-                            <button class="btn btn-sm btn-secondary" onclick="moveChapter(${index}, -1)">上移</button>
-                            <button class="btn btn-sm btn-secondary" onclick="moveChapter(${index}, 1)">下移</button>
+                            <button class="btn btn-sm btn-secondary" style="display: ${chapter.isNew ? 'none' : 'inline-block'}" onclick="moveChapter(${index}, -1)">上移</button>
+                            <button class="btn btn-sm btn-secondary" style="display: ${chapter.isNew ? 'none' : 'inline-block'}" onclick="moveChapter(${index}, 1)">下移</button>
                             <button class="btn btn-sm btn-danger" onclick="deleteChapter(${index})">删除</button>
                         </div>
                     </div>
@@ -674,8 +674,14 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>图片路径</label>
-                            <input type="text" class="loc-imgUrl" value="${loc.showImgUrl || ''}" placeholder="./images/xxx.jpg">
+                            <label>图片</label>
+                            <div class="image-upload-group">
+                                <input type="text" class="loc-imgUrl" value="${loc.showImgUrl || ''}" placeholder="./uploads/images/xxx.jpg" readonly>
+                                <input type="file" class="loc-imgFile" id="file-${chapterIndex}-${locIndex}" accept="image/*" style="display: none;" onchange="handleImageUpload(this, ${chapterIndex}, ${locIndex})">
+                                <button class="btn btn-sm" onclick="document.getElementById('file-${chapterIndex}-${locIndex}').click()">上传</button>
+                                <button class="btn btn-sm btn-danger" onclick="clearImage(${chapterIndex}, ${locIndex})" ${loc.showImgUrl ? '' : 'style="display: none;"'}>清除</button>
+                            </div>
+                            ${loc.showImgUrl ? `<img src="${loc.showImgUrl}" class="preview-img" style="max-width: 100px; max-height: 100px; margin-top: 10px; border-radius: 4px;">` : ''}
                         </div>
                     </div>
                     <div class="grid-2">
@@ -706,7 +712,8 @@
                 startAddress: "",
                 startPoint: { lng: "", lat: "" },
                 chapterName: "新章节",
-                locations: []
+                locations: [],
+                isNew: true
             };
             currentConfig.showList.push(newChapter);
             renderChapters();
@@ -800,6 +807,93 @@
                     });
                 });
             });
+        }
+
+        // 处理图片上传
+        async function handleImageUpload(input, chapterIndex, locIndex) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // 检查文件类型
+            if (!file.type.startsWith('image/')) {
+                showMessage('请选择图片文件', 'error');
+                return;
+            }
+
+            // 检查文件大小（限制 10MB）
+            if (file.size > 10 * 1024 * 1024) {
+                showMessage('图片大小不能超过 10MB', 'error');
+                return;
+            }
+
+            showMessage('正在上传图片...', 'info');
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // 更新图片路径输入框
+                    const chapterItem = document.querySelectorAll('.chapter-item')[chapterIndex];
+                    const locItem = chapterItem.querySelectorAll('.location-item')[locIndex];
+                    const imgUrlInput = locItem.querySelector('.loc-imgUrl');
+                    imgUrlInput.value = result.url;
+
+                    // 更新或添加预览图
+                    let previewImg = locItem.querySelector('.preview-img');
+                    if (!previewImg) {
+                        previewImg = document.createElement('img');
+                        previewImg.className = 'preview-img';
+                        previewImg.style.cssText = 'max-width: 100px; max-height: 100px; margin-top: 10px; border-radius: 4px;';
+                        imgUrlInput.parentElement.parentElement.appendChild(previewImg);
+                    }
+                    previewImg.src = result.url;
+
+                    // 显示清除按钮
+                    const clearBtn = locItem.querySelector('.btn-danger');
+                    if (clearBtn) {
+                        clearBtn.style.display = 'inline-block';
+                    }
+
+                    showMessage('图片上传成功', 'success');
+                } else {
+                    showMessage('上传失败: ' + result.message, 'error');
+                }
+            } catch (error) {
+                console.error('上传失败:', error);
+                showMessage('上传失败: ' + error.message, 'error');
+            }
+        }
+
+        // 清除图片
+        function clearImage(chapterIndex, locIndex) {
+            const chapterItem = document.querySelectorAll('.chapter-item')[chapterIndex];
+            const locItem = chapterItem.querySelectorAll('.location-item')[locIndex];
+            
+            // 清空输入框
+            const imgUrlInput = locItem.querySelector('.loc-imgUrl');
+            imgUrlInput.value = '';
+
+            // 移除预览图
+            const previewImg = locItem.querySelector('.preview-img');
+            if (previewImg) {
+                previewImg.remove();
+            }
+
+            // 隐藏清除按钮
+            const clearBtn = locItem.querySelector('.btn-danger');
+            if (clearBtn) {
+                clearBtn.style.display = 'none';
+            }
+
+            showMessage('图片已清除', 'success');
         }
 
         // 地址解析 - 基本配置

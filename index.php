@@ -55,6 +55,113 @@ function generate_unique_filename($filename) {
     return $timestamp . '.' . $ext;
 }
 
+// 图片压缩函数
+function compress_image($source_path, $target_path, $max_size_kb = 200) {
+    // 获取图片信息
+    $info = getimagesize($source_path);
+    if (!$info) {
+        return false;
+    }
+    
+    $width = $info[0];
+    $height = $info[1];
+    $mime = $info['mime'];
+    
+    // 根据 MIME 类型创建图片资源
+    switch ($mime) {
+        case 'image/jpeg':
+            $source_image = imagecreatefromjpeg($source_path);
+            break;
+        case 'image/png':
+            $source_image = imagecreatefrompng($source_path);
+            // 保留 PNG 透明度
+            imagealphablending($source_image, false);
+            imagesavealpha($source_image, true);
+            break;
+        case 'image/gif':
+            $source_image = imagecreatefromgif($source_path);
+            break;
+        case 'image/webp':
+            $source_image = imagecreatefromwebp($source_path);
+            break;
+        default:
+            // 不支持的格式，直接复制
+            return copy($source_path, $target_path);
+    }
+    
+    if (!$source_image) {
+        return false;
+    }
+    
+    // 计算当前文件大小
+    $current_size = filesize($source_path) / 1024; // KB
+    
+    // 如果已经小于目标大小，直接保存
+    if ($current_size <= $max_size_kb) {
+        imagejpeg($source_image, $target_path, 90);
+        imagedestroy($source_image);
+        return true;
+    }
+    
+    // 计算需要的压缩比例
+    $ratio = sqrt($max_size_kb / $current_size);
+    
+    // 限制最小尺寸，避免过度压缩
+    $min_width = 800;
+    $min_height = 600;
+    
+    $new_width = max($min_width, intval($width * $ratio));
+    $new_height = max($min_height, intval($height * $ratio));
+    
+    // 如果计算后的尺寸比原图大，使用原图尺寸
+    if ($new_width >= $width || $new_height >= $height) {
+        $new_width = $width;
+        $new_height = $height;
+    }
+    
+    // 创建新的图片资源
+    $new_image = imagecreatetruecolor($new_width, $new_height);
+    
+    // 处理 PNG 透明度
+    if ($mime === 'image/png') {
+        imagealphablending($new_image, false);
+        imagesavealpha($new_image, true);
+        $transparent = imagecolorallocatealpha($new_image, 255, 255, 255, 127);
+        imagefilledrectangle($new_image, 0, 0, $new_width, $new_height, $transparent);
+    }
+    
+    // 重采样
+    imagecopyresampled(
+        $new_image, $source_image,
+        0, 0, 0, 0,
+        $new_width, $new_height,
+        $width, $height
+    );
+    
+    // 保存图片（使用渐进式 JPEG 以获得更好的压缩率）
+    $quality = 85; // 初始质量
+    
+    // 尝试不同的质量等级，直到达到目标大小
+    do {
+        if ($mime === 'image/png') {
+            // PNG 使用质量 0-9，9 是最高压缩
+            imagepng($new_image, $target_path, min(9, intval((100 - $quality) / 11)));
+        } else {
+            imagejpeg($new_image, $target_path, $quality);
+        }
+        
+        $file_size = filesize($target_path) / 1024; // KB
+        $quality -= 5;
+        
+    } while ($file_size > $max_size_kb && $quality >= 60);
+    
+    // 清理资源
+    imagedestroy($source_image);
+    imagedestroy($new_image);
+    
+    return true;
+}
+
 // 设置CORS头
 function set_cors_headers() {
     header('Access-Control-Allow-Origin: *');
@@ -186,12 +293,20 @@ function handle_post($path) {
                 exit;
             }
             
-            // 生成唯一文件名
-            $filename = generate_unique_filename($file['name']);
+            // 生成唯一文件名（使用 .jpg 扩展名，因为压缩后都是 JPEG 格式）
+            // 使用原文件的MD5作为文件名，避免文件名冲突
+            $md5 = md5_file($file['tmp_name']);
+            $filename = $md5 . '.jpg';
             $file_path = UPLOAD_DIR . '/' . $filename;
             
-            // 保存文件
-            if (move_uploaded_file($file['tmp_name'], $file_path)) {
+            // 压缩图片并保存
+            $temp_path = $file['tmp_name'];
+            $compressed = compress_image($temp_path, $file_path, 200); // 最大 200KB
+            
+            if ($compressed) {
+                // 获取压缩后的文件大小
+                $final_size = round(filesize($file_path) / 1024, 2);
+                
                 // 生成文件URL
                 $file_url = '/uploads/images/' . $filename;
                 
@@ -199,7 +314,12 @@ function handle_post($path) {
                 header('Content-Type: application/json');
                 set_cors_headers();
                 
-                $response = ["success" => true, "url" => $file_url, "message" => "文件上传成功"];
+                $response = [
+                    "success" => true, 
+                    "url" => $file_url, 
+                    "message" => "文件上传成功，压缩后大小: {$final_size}KB",
+                    "size" => $final_size
+                ];
                 echo json_encode($response, JSON_UNESCAPED_UNICODE);
                 exit;
             } else {
@@ -207,7 +327,7 @@ function handle_post($path) {
                 header('Content-Type: application/json');
                 set_cors_headers();
                 
-                $response = ["success" => false, "message" => "文件保存失败"];
+                $response = ["success" => false, "message" => "图片压缩失败"];
                 echo json_encode($response, JSON_UNESCAPED_UNICODE);
                 exit;
             }

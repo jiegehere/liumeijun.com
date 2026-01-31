@@ -726,13 +726,15 @@
                     await this.mapUtils.panTo(location.point, 1000, location.address);
                     await this.mapUtils.zoomTo(16, 800, location.point, location.address);
 
+                    await this.showLocationWindowInfo(location, 1000);
+
                     // 添加弹跳标记
                     this.mapUtils.addMarker(location.point, BMAP_ANIMATION_BOUNCE);
                     console.log('添加弹跳标记:', location.address);
 
                     await this.mapUtils.zoomTo(9, 800, location.point, location.address);
                     // 等待一段时间
-                    await sleep(5000);
+                    await sleep(3000);
                 }
             }
 
@@ -803,7 +805,12 @@
                 }
             }
 
-            async showLocationWindowInfo(location) {
+            /**
+             * 展示地点信息窗口
+             * @param {Object} location - 地点配置
+             * @param {number} showTime - 展示时间（毫秒）
+             */
+            async showLocationWindowInfo(location, showTime = 2500) {
                 // 如果有图片或文本，显示信息窗口
                 if (location.showImgUrl || location.showText) {
                     let content = '';
@@ -831,7 +838,7 @@
                 }
 
                 // 等待一段时间
-                await sleep(2500);
+                await sleep(showTime);
 
                 // 关闭信息窗口
                 this.mapUtils.closeInfoWindow();
