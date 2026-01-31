@@ -1322,11 +1322,19 @@
 
         let map;
         let showController;
+        let debugAlert = true;
+
+        function alertDebug(msg) {
+            if (debugAlert) {
+                alert(msg);
+            }
+        }
 
         /**
          * 初始化地图
          */
         async function initMap() {
+            alertDebug('initMap 开始执行');
             try {
                 // 1. 从 API 加载配置
                 var configData = await loadConfigFromApi(); 
@@ -1394,12 +1402,12 @@
             document.body.appendChild(script);
         }
 
-        alert('js代码执行了');
+        alertDebug('initMap 开始执行');
         /**
          * 页面加载完成后初始化
          */
         window.onload = function () {
-            alert('页面加载完成');
+            alertDebug('initMap 开始执行');
             // 加载百度地图脚本
             loadBaiduMapScript();
         };
