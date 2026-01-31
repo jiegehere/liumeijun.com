@@ -1394,10 +1394,12 @@
             document.body.appendChild(script);
         }
 
+        alert('js代码执行了');
         /**
          * 页面加载完成后初始化
          */
         window.onload = function () {
+            alert('页面加载完成');
             // 加载百度地图脚本
             loadBaiduMapScript();
         };
