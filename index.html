@@ -93,11 +93,11 @@
     <div id="map"></div>
 
     <script type="text/javascript">
- 
+
         // ==================== 工具函数 ====================
 
         // 判断是否移动端，包括微信内、或者手机浏览器
-        const isMobile = (function() {
+        const isMobile = (function () {
             const userAgent = navigator.userAgent.toLowerCase();
             // 检测移动设备标识
             const mobileKeywords = [
@@ -128,7 +128,7 @@
                 hasMobileKeyword: hasMobileKeyword,
                 isMobileDevice: isMobileDevice
             });
-            
+
             return isMobileDevice;
         })();
 
@@ -448,26 +448,30 @@
              */
             async initAudio() {
                 return new Promise((resolve) => {
-                    this.audio = new Audio(this.config.basicCfg.audioUrl);
+                    try {
+                        // 微信浏览器兼容处理：设置音频属性
+                        this.audio.loop = false; //默认不循环播放
+                        this.audio.preload = 'auto';
 
-                    // 微信浏览器兼容处理：设置音频属性
-                    this.audio.loop = false; //默认不循环播放
-                    this.audio.preload = 'auto';
+                        // 监听音频可以播放事件
+                        this.audio.oncanplay = () => {
+                            alertDebug('音频加载完成，可以播放');
+                            resolve();
+                        };
 
-                    // 监听音频可以播放事件
-                    this.audio.oncanplay = () => {
-                        alertDebug('音频加载完成，可以播放');
+                        // 监听错误事件
+                        this.audio.onerror = (e) => {
+                            alertDebug('音频加载失败:', e);
+                            // 即使加载失败也继续，避免阻塞
+                            resolve();
+                        };
+
+                        this.audio.load();
+                    } catch (error) {
+                        alertDebug('创建音频对象失败:', error);
                         resolve();
-                    };
-
-                    // 监听错误事件
-                    this.audio.onerror = (e) => {
-                        alertDebug('音频加载失败:', e);
-                        // 即使加载失败也继续，避免阻塞
-                        resolve();
-                    };
-
-                    this.audio.load();
+                        return;
+                    }
                 });
             }
 
@@ -637,6 +641,7 @@
             showStartButton() {
                 const loading = document.getElementById('loading');
                 loading.innerHTML = '点击开始';
+                alertDebug('显示开始按钮');
                 loading.onclick = async () => {
                     // 先播放音频（微信浏览器需要用户交互才能播放）
                     this.playAudio();
@@ -858,7 +863,7 @@
                     console.log('移动端，缩放比例:', zoomLevel);
                 }
                 await this.mapUtils.zoomTo(zoomLevel, 800, endCfg.endMapCenterPoint, endCfg.endMapCenterAddress);
-                
+
 
                 // 切换到卫星图
                 this.mapUtils.setMapType(BMAP_HYBRID_MAP);
@@ -918,7 +923,7 @@
                     alertDebug('地图已经初始化，跳过');
                     return;
                 }
-                
+
                 // 1. 从 API 加载配置
                 var configData = await loadConfigFromApi();
                 // 2. 初始化地图
