@@ -864,9 +864,24 @@
             async initAudio() {
                 return new Promise((resolve) => {
                     this.audio = new Audio(this.config.basicCfg.audioUrl);
+                    
+                    // 微信浏览器兼容处理：设置音频属性
+                    this.audio.loop = true;
+                    this.audio.preload = 'auto';
+                    
+                    // 监听音频可以播放事件
                     this.audio.oncanplay = () => {
+                        console.log('音频加载完成，可以播放');
                         resolve();
                     };
+                    
+                    // 监听错误事件
+                    this.audio.onerror = (e) => {
+                        console.error('音频加载失败:', e);
+                        // 即使加载失败也继续，避免阻塞
+                        resolve();
+                    };
+                    
                     this.audio.load();
                 });
             }
@@ -876,9 +891,36 @@
              */
             playAudio() {
                 if (this.audio) {
-                    this.audio.play().catch(err => {
-                        console.error('音频播放失败:', err);
-                    });
+                    // 微信浏览器兼容处理
+                    if (typeof WeixinJSBridge !== 'undefined') {
+                        WeixinJSBridge.invoke('getNetworkType', {}, function(e) {
+                            console.log('微信网络类型:', e.err_msg);
+                        });
+                    }
+
+                    const playPromise = this.audio.play();
+                    
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            console.log('音频播放成功');
+                        }).catch(err => {
+                            console.error('音频播放失败:', err);
+                            // 尝试重新加载并播放
+                            this.audio.load();
+                            this.audio.play().catch(e => {
+                                console.error('重试播放失败:', e);
+                            });
+                        });
+                    }
+                }
+            }
+
+            /**
+             * 暂停音频
+             */
+            pauseAudio() {
+                if (this.audio) {
+                    this.audio.pause();
                 }
             }
 
@@ -1014,6 +1056,9 @@
                 const loading = document.getElementById('loading');
                 loading.innerHTML = '点击开始';
                 loading.onclick = async () => {
+                    // 先播放音频（微信浏览器需要用户交互才能播放）
+                    this.playAudio();
+
                     // 进入全屏
                     if (document.documentElement.requestFullscreen) {
                         document.documentElement.requestFullscreen();
@@ -1032,13 +1077,10 @@
                     // 隐藏加载层
                     document.getElementById('loading').style.display = 'none';
 
-                    // 播放音频
-                    this.playAudio();
-
                     // 按 order 排序 showList
                     const sortedShowList = [...this.config.showList].sort((a, b) => a.order - b.order);
 
-                    // 顺序执行每个展示项
+                    //顺序执行每个展示项
                     for (const showItem of sortedShowList) {
                         await this.executeShowItem(showItem);
                     }
