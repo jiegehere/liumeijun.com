@@ -1337,7 +1337,7 @@
             alertDebug('initMap 开始执行');
             try {
                 // 1. 从 API 加载配置
-                var configData = await loadConfigFromApi(); 
+                var configData = await loadConfigFromApi();
                 // 2. 初始化地图
                 map = new BMap.Map("map");
                 map.setMapType(BMAP_NORMAL_MAP);
@@ -1399,17 +1399,57 @@
         function loadBaiduMapScript() {
             const script = document.createElement("script");
             script.src = "https://api.map.baidu.com/api?v=3.0&ak=EXl1klVct9z0GXE7KAkPUkawwDhDN0h9&callback=initMap";
+            script.onload = function () {
+                console.log('百度地图脚本加载完成');
+                // 微信浏览器兼容：如果回调没有触发，手动调用
+                if (typeof BMap !== 'undefined' && !map ) {
+                    console.log('BMap 已加载，手动调用 initMap');
+                    setTimeout(initMap, 500);
+                }
+            };
+            script.onerror = function () {
+                console.error('百度地图脚本加载失败');
+                alert('百度地图加载失败，请检查网络连接');
+            };
             document.body.appendChild(script);
         }
 
-        alertDebug('initMap 开始执行');
+        /**
+         * 检测百度地图是否加载完成
+         */
+        function checkBaiduMapLoaded() {
+            const maxAttempts = 50; // 最多尝试50次
+            let attempts = 0;
+
+            const checkInterval = setInterval(() => {
+                attempts++;
+                console.log(`检测百度地图加载状态，尝试 ${attempts}/${maxAttempts}`);
+
+                if (typeof BMap !== 'undefined') {
+                    console.log('百度地图已加载完成');
+                    clearInterval(checkInterval);
+                    // 如果 initMap 还没有被调用，手动调用
+                    if (!map) {
+                        console.log('手动调用 initMap');
+                        initMap();
+                    }
+                } else if (attempts >= maxAttempts) {
+                    console.error('百度地图加载超时');
+                    clearInterval(checkInterval);
+                    alert('百度地图加载超时，请刷新页面重试');
+                }
+            }, 200); // 每200ms检测一次
+        }
+
         /**
          * 页面加载完成后初始化
          */
         window.onload = function () {
-            alertDebug('initMap 开始执行');
+            alertDebug('页面加载完成，开始加载百度地图');
             // 加载百度地图脚本
             loadBaiduMapScript();
+            // 启动检测机制（微信浏览器兼容）
+            checkBaiduMapLoaded();
         };
     </script>
 </body>
