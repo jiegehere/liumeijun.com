@@ -449,6 +449,17 @@
             async initAudio() {
                 return new Promise((resolve) => {
                     try {
+                        // 获取音频URL
+                        const audioUrl = this.config.basicCfg?.audioUrl;
+                        if (!audioUrl) {
+                            alertDebug('未配置音频URL');
+                            resolve();
+                            return;
+                        }
+
+                        // 创建音频对象
+                        this.audio = new Audio(audioUrl);
+
                         // 微信浏览器兼容处理：设置音频属性
                         this.audio.loop = false; //默认不循环播放
                         this.audio.preload = 'auto';
