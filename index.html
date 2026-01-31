@@ -463,6 +463,10 @@
                             audioUrl = window.location.origin + audioUrl;
                         }
                         alertDebug('音频URL:' + audioUrl);
+                        if (this.audio) {
+                            alertDebug('音频对象已存在');
+                            resolve();
+                        }
                         this.audio = new Audio(audioUrl);
 
                         // 微信浏览器兼容处理：设置音频属性
@@ -919,6 +923,7 @@
         let map;
         let showController;
         let debugAlert = true;
+        let configData = {};
 
         function alertDebug(msg) {
             if (debugAlert) {
@@ -941,7 +946,7 @@
                 }
 
                 // 1. 从 API 加载配置
-                var configData = await loadConfigFromApi();
+                configData = await loadConfigFromApi();
                 // 2. 初始化地图
                 map = new BMap.Map("map");
                 map.setMapType(BMAP_NORMAL_MAP);
