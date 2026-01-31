@@ -462,6 +462,7 @@
                         if (!audioUrl.includes('http')) {
                             audioUrl = window.location.origin + audioUrl;
                         }
+                        alertDebug('音频URL:', audioUrl);
                         this.audio = new Audio(audioUrl);
 
                         // 微信浏览器兼容处理：设置音频属性
