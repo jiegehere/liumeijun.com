@@ -462,7 +462,7 @@
                         if (!audioUrl.startsWith('http')) {
                             // 去掉前面的 ./ 或 ../
                             audioUrl = audioUrl.replace(/^\.\//, '');
-                            audioUrl = window.location.origin + audioUrl;
+                            audioUrl = window.location.origin + '/' + audioUrl;
                         }
                         alertDebug('音频URL:' + audioUrl);
                         if (this.audio) {
