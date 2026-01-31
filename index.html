@@ -462,7 +462,7 @@
                         if (!audioUrl.includes('http')) {
                             audioUrl = window.location.origin + audioUrl;
                         }
-                        alertDebug('音频URL:', audioUrl);
+                        alertDebug('音频URL:' + audioUrl);
                         this.audio = new Audio(audioUrl);
 
                         // 微信浏览器兼容处理：设置音频属性
@@ -477,14 +477,14 @@
 
                         // 监听错误事件
                         this.audio.onerror = (e) => {
-                            alertDebug('音频加载失败:', e);
+                            alertDebug('音频加载失败:' + e.message);
                             // 即使加载失败也继续，避免阻塞
                             resolve();
                         };
 
                         this.audio.load();
                     } catch (error) {
-                        alertDebug('创建音频对象失败:', error);
+                        alertDebug('创建音频对象失败:' + error.message);
                         resolve();
                         return;
                     }
@@ -978,21 +978,21 @@
 
                 // 1. 等待 fetch 请求完成，拿到实际的响应对象
                 const response = await fetch('/api/config?version=' + configVersion);
-                alertDebug('请求配置, configVersion: ', configVersion, ' 接口返回: response.ok', response.ok); // 此时才是真正的请求成功状态
+                alertDebug('请求配置, configVersion: ' + configVersion + ' 接口返回: response.ok' + response.ok); // 此时才是真正的请求成功状态
 
                 // 2. 判断响应状态是否正常（HTTP 状态码 200-299）
                 if (response.ok) {
                     // 3. 等待 JSON 解析完成，返回配置数据
                     const configData = response.json();
-                    alertDebug('加载API configData', configData);
+                    alertDebug('加载API configData:' + JSON.stringify(configData));
                     return configData;
                 } else {
                     // 处理 HTTP 错误（如 404/500）
-                    console.error('API 请求失败，状态码：', response.status);
+                    alertDebug('API 请求失败，状态码：' + response.status);
                 }
             } catch (error) {
                 // 处理网络错误（如断网、跨域）
-                alertDebug('Error loading config from API:', error);
+                alertDebug('Error loading config from API:' + error.message);
             }
             return null;
         }
