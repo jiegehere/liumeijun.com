@@ -456,13 +456,13 @@
 
                     // 监听音频可以播放事件
                     this.audio.oncanplay = () => {
-                        console.log('音频加载完成，可以播放');
+                        alertDebug('音频加载完成，可以播放');
                         resolve();
                     };
 
                     // 监听错误事件
                     this.audio.onerror = (e) => {
-                        console.error('音频加载失败:', e);
+                        alertDebug('音频加载失败:', e);
                         // 即使加载失败也继续，避免阻塞
                         resolve();
                     };
@@ -574,10 +574,9 @@
                         }
                     });
                 });
-
-                console.log('开始预加载图片, 数量:', imageUrls.length);
+                alertDebug('开始预加载图片, 数量:' + imageUrls.length);
                 await this.preloadImages(imageUrls);
-                console.log('所有图片预加载完成');
+                alertDebug('所有图片预加载完成');
             }
 
             /**
