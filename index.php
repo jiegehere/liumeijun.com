@@ -55,6 +55,62 @@ function generate_unique_filename($filename) {
     return $timestamp . '.' . $ext;
 }
 
+// 获取图片的 EXIF 方向信息
+function get_image_orientation($source_path) {
+    // 检查是否有 EXIF 扩展
+    if (!function_exists('exif_read_data')) {
+        return 1; // 默认方向
+    }
+    
+    try {
+        $exif = @exif_read_data($source_path);
+        if ($exif && isset($exif['Orientation'])) {
+            return intval($exif['Orientation']);
+        }
+    } catch (Exception $e) {
+        // 读取 EXIF 失败，返回默认方向
+    }
+    
+    return 1; // 默认方向（正常）
+}
+
+// 根据 EXIF 方向旋转图片
+function fix_image_orientation($image, $orientation) {
+    if ($orientation == 1) {
+        return $image; // 不需要旋转
+    }
+    
+    // 获取原图尺寸
+    $width = imagesx($image);
+    $height = imagesy($image);
+    
+    // 创建透明背景色
+    $transparent = imagecolorallocatealpha($image, 255, 255, 255, 127);
+    
+    switch ($orientation) {
+        case 3: // 旋转 180 度
+            $rotated = imagerotate($image, 180, $transparent);
+            break;
+        case 6: // 顺时针旋转 90 度
+            $rotated = imagerotate($image, -90, $transparent);
+            break;
+        case 8: // 逆时针旋转 90 度
+            $rotated = imagerotate($image, 90, $transparent);
+            break;
+        default:
+            return $image; // 不需要旋转
+    }
+    
+    // 旋转后保留透明度
+    imagealphablending($rotated, false);
+    imagesavealpha($rotated, true);
+    
+    // 销毁原图资源
+    imagedestroy($image);
+    
+    return $rotated;
+}
+
 // 图片压缩函数
 function compress_image($source_path, $target_path, $max_size_kb = 200) {
     // 获取图片信息
@@ -63,9 +119,12 @@ function compress_image($source_path, $target_path, $max_size_kb = 200) {
         return false;
     }
     
-    $width = $info[0];
-    $height = $info[1];
+    $original_width = $info[0];
+    $original_height = $info[1];
     $mime = $info['mime'];
+    
+    // 获取 EXIF 方向信息
+    $orientation = get_image_orientation($source_path);
     
     // 根据 MIME 类型创建图片资源
     switch ($mime) {
@@ -93,12 +152,23 @@ function compress_image($source_path, $target_path, $max_size_kb = 200) {
         return false;
     }
     
+    // 根据 EXIF 方向旋转图片
+    $source_image = fix_image_orientation($source_image, $orientation);
+    
+    // 获取旋转后的实际尺寸
+    $width = imagesx($source_image);
+    $height = imagesy($source_image);
+    
     // 计算当前文件大小
     $current_size = filesize($source_path) / 1024; // KB
     
-    // 如果已经小于目标大小，直接保存
+    // 如果已经小于目标大小，直接保存（保持原尺寸）
     if ($current_size <= $max_size_kb) {
-        imagejpeg($source_image, $target_path, 90);
+        if ($mime === 'image/png') {
+            imagepng($source_image, $target_path, 6);
+        } else {
+            imagejpeg($source_image, $target_path, 90);
+        }
         imagedestroy($source_image);
         return true;
     }
@@ -106,12 +176,21 @@ function compress_image($source_path, $target_path, $max_size_kb = 200) {
     // 计算需要的压缩比例
     $ratio = sqrt($max_size_kb / $current_size);
     
-    // 限制最小尺寸，避免过度压缩
-    $min_width = 800;
-    $min_height = 600;
+    // 计算新尺寸（保持宽高比）
+    $new_width = intval($width * $ratio);
+    $new_height = intval($height * $ratio);
     
-    $new_width = max($min_width, intval($width * $ratio));
-    $new_height = max($min_height, intval($height * $ratio));
+    // 限制最小尺寸，避免过度压缩（保持宽高比）
+    $min_dimension = 600; // 最小边长
+    if ($new_width < $min_dimension || $new_height < $min_dimension) {
+        if ($width > $height) {
+            $new_width = $min_dimension;
+            $new_height = intval($min_dimension * $height / $width);
+        } else {
+            $new_height = $min_dimension;
+            $new_width = intval($min_dimension * $width / $height);
+        }
+    }
     
     // 如果计算后的尺寸比原图大，使用原图尺寸
     if ($new_width >= $width || $new_height >= $height) {
@@ -130,7 +209,7 @@ function compress_image($source_path, $target_path, $max_size_kb = 200) {
         imagefilledrectangle($new_image, 0, 0, $new_width, $new_height, $transparent);
     }
     
-    // 重采样
+    // 重采样（保持宽高比）
     imagecopyresampled(
         $new_image, $source_image,
         0, 0, 0, 0,
