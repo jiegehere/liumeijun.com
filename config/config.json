@@ -1,5 +1,5 @@
 {
-  "basic_cfg": {
+  "basicCfg": {
     "initMapCenterAddress": "广西容县",
     "initMapCenterPoint": {
       "lng": 3.894763,

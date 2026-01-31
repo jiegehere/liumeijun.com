@@ -1040,6 +1040,11 @@
                         await this.showType3(showItem);
                         console.log('showType3 完成');
                         break;
+                    case 4:
+                        console.log('想去的地方，暂时调用 showType3');
+                        await this.showType3(showItem);
+                        console.log('showType3 完成');
+                        break;
                     default:
                         console.warn('未知的展示类型:', showItem.type);
                 }

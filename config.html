@@ -348,10 +348,11 @@
         <div id="tab-chapters" class="tab-content">
             <div class="section">
                 <h2>章节管理</h2>
-                <button class="btn" onclick="addChapter()">添加章节</button>
+               
                 <div id="chaptersList" style="margin-top: 20px;">
                     <!-- 章节列表将在这里动态生成 -->
                 </div>
+                <button class="btn" onclick="addChapter()">添加章节</button>
             </div>
         </div>
 
@@ -392,9 +393,10 @@
 
         // 章节类型说明
         const chapterTypes = {
-            1: { name: "顺序展示", desc: "顺序展示地点位置，每个展示后增加标记弹跳效果" },
-            2: { name: "路线展示", desc: "展示两个地方之间的路线（限制2个地点）" },
-            3: { name: "共同回忆", desc: "顺序展示location位置，不用标记点弹跳效果" }
+            1: { name: "展示双方位置", desc: "展示双方的位置，每个展示后增加标记弹跳效果" },
+            2: { name: "展示路线", desc: "展示两个地方之间的路线（限制2个地点）" },
+            3: { name: "一起去过的地方", desc: "顺序每个地点，可以配置图片和文字说明" },
+            4: { name: "想去的地方", desc: "展示想去的地方" }
         };
 
         // 初始化
@@ -429,6 +431,7 @@
         async function loadConfig() {
             try {
                 const response = await fetch('/api/config');
+                console.log("加载配置响应:", response);
                 if (response.ok) {
                     const data = await response.json();
                     currentConfig = data;
@@ -440,6 +443,7 @@
                 showMessage('加载配置失败: ' + error.message, 'error');
                 console.error('加载配置失败:', error);
             }
+            console.log('加载配置:', currentConfig);
             renderBasicConfig();
             renderChapters();
         }

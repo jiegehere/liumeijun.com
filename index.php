@@ -1,8 +1,8 @@
 <?php
 // 配置文件路径
-const CONFIG_FILE = 'config.json';
+const CONFIG_FILE = 'config/config.json';
 // 上传图片保存目录
-const UPLOAD_DIR = 'uploads';
+const UPLOAD_DIR = 'uploads/images/';
 
 // 确保上传目录存在
 if (!file_exists(UPLOAD_DIR)) {
