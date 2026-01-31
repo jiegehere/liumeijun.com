@@ -916,7 +916,7 @@
             try {
                 // 防止重复初始化
                 if (map) {
-                    console.log('地图已经初始化，跳过');
+                    alertDebug('地图已经初始化，跳过');
                     return;
                 }
                 
@@ -1015,11 +1015,7 @@
                 if (typeof BMap !== 'undefined' && typeof BMap.Map === 'function') {
                     alertDebug("百度地图已加载完成，Map 构造函数可用")
                     clearInterval(checkInterval);
-                    // 如果 initMap 还没有被调用，手动调用
-                    if (!map) {
-                        alertDebug('手动调用 initMap');
-                        initMap();
-                    }
+                    initMap();
                 } else if (attempts >= maxAttempts) {
                     clearInterval(checkInterval);
                     alert('百度地图加载超时，请刷新页面重试');
