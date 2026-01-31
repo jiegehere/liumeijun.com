@@ -1109,6 +1109,8 @@
                     // 执行结束展示
                     await this.executeEndShow();
 
+                    // 暂停音乐
+                    this.pauseAudio();
                 } catch (error) {
                     console.error('展示流程执行失败:', error);
                     alert('展示失败：' + error.message);
@@ -1297,8 +1299,8 @@
                     await sleep(300);
                 }
 
-                // 等待5秒后显示结束画面
-                await sleep(5000);
+                // 等待4秒后显示结束画面
+                await sleep(4000);
                 await this.showEndScreen();
             }
 
