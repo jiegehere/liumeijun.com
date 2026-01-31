@@ -669,11 +669,11 @@
 
             /**
              * 地图居中并缩放
-             * @param {Object} point - 目标点 {lng, lat}
+             * @param {Object} BMap.Point - 目标点
              * @param {number} zoomLevel - 目标缩放级别
              */
             centerAndZoom(point, zoomLevel) {
-                this.map.centerAndZoom(new BMap.Point(point.lng, point.lat), zoomLevel);
+                this.map.centerAndZoom(point, zoomLevel);
             }
 
             /**
@@ -953,18 +953,7 @@
             async start() {
                 try {
                     // 1. 从 API 加载配置、初始化地图
-                    const configData = await this.loadConfigFromApi();
-                    if (!configData) {
-                        throw new Error('无法加载配置，请检查 API 接口');
-                    }
-                    this.config = configData;
-                    const point = new BMap.Point(
-                        configData.basicCfg.initMapCenterPoint.lng,
-                        configData.basicCfg.initMapCenterPoint.lat
-                    );
-                    this.mapUtils.centerAndZoom(point, configData.basicCfg.initMapZoomLevel);
-                    this.mapUtils.disableDragging();
-                    this.mapUtils.disableDoubleClickZoom();
+                    // 已经挪出去了
 
                     // 2. 预加载所有图片
                     await this.preloadAllImages();
@@ -1337,17 +1326,63 @@
         /**
          * 初始化地图
          */
-        function initMap() {
+        async function initMap() {
             try {
+                // 1. 从 API 加载配置
+                var configData = await loadConfigFromApi(); 
+                // 2. 初始化地图
                 map = new BMap.Map("map");
-                // 初始化展示控制器
+                map.setMapType(BMAP_NORMAL_MAP);
+                const point = new BMap.Point(
+                    configData.basicCfg.initMapCenterPoint.lng,
+                    configData.basicCfg.initMapCenterPoint.lat
+                );
+                //地图居中并缩放
+                map.centerAndZoom(point, 4);
+                map.clearOverlays();
+                map.reset();
+                // 禁用地图拖拽和双击缩放
+                map.disableDragging();
+                map.disableDoubleClickZoom();
+                // 3.初始化展示控制器
                 showController = new ShowController(map, configData);
-                // 开始流程
+                // 4.开始展示流程
                 showController.start();
             } catch (error) {
                 console.error('初始化地图失败:', error);
-                alert('初始化地图失败，请刷新页面重试。' + error.message);
+                alert('初始化地图失败，errr:' + error.message);
+                return;
             }
+        }
+
+        /**
+         * 从 API 加载配置
+         */
+        async function loadConfigFromApi() {
+            try {
+                // 从当前页面url参数获取 配置文件版本
+                const urlParams = new URLSearchParams(window.location.search);
+                const configVersion = urlParams.get('version') || '';
+
+                // 1. 等待 fetch 请求完成，拿到实际的响应对象
+                const response = await fetch('/api/config?version=' + configVersion);
+                console.log('请求配置, configVersion: ', configVersion, ' 接口返回: response.ok', response.ok); // 此时才是真正的请求成功状态
+
+                // 2. 判断响应状态是否正常（HTTP 状态码 200-299）
+                if (response.ok) {
+                    // 3. 等待 JSON 解析完成，返回配置数据
+                    const configData = response.json();
+                    console.log('加载API configData', configData);
+                    return configData;
+                } else {
+                    // 处理 HTTP 错误（如 404/500）
+                    console.error('API 请求失败，状态码：', response.status);
+                }
+            } catch (error) {
+                // 处理网络错误（如断网、跨域）
+                console.error('Error loading config from API:', error);
+            }
+            return null;
         }
 
         /**
