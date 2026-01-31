@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -12,7 +13,8 @@
             box-sizing: border-box;
         }
 
-        body, html {
+        body,
+        html {
             height: 100%;
             width: 100%;
             font-family: 'Microsoft Yahei', 'Helvetica Neue', Helvetica, Arial, Sans-serif;
@@ -84,6 +86,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="loading">正在加载...</div>
     <div id="theEnd"></div>
@@ -91,7 +94,7 @@
 
     <script type="text/javascript">
         // ==================== 配置数据 ====================
-        
+
         /**
          * 新协议配置数据
          * 基于原有 config.json 转换而来
@@ -391,6 +394,7 @@
                     lng: 82.699584,
                     lat: 39.8202
                 },
+                zoomLevel: 9,
                 markerList: [
                     { lng: 80.050373, lat: 39.924749 },
                     { lng: 80.064171, lat: 39.832612 },
@@ -596,7 +600,7 @@
             return new Promise((resolve) => {
                 let loadedCount = 0;
                 const total = imageUrls.length;
-                
+
                 if (total === 0) {
                     resolve();
                     return;
@@ -642,7 +646,7 @@
                     const elapsed = Date.now() - startTime;
                     const progress = Math.min(elapsed / duration, 1);
                     const currentHeight = startHeight + (endHeight - startHeight) * progress;
-                    
+
                     element.style.height = currentHeight + '%';
 
                     if (progress < 1) {
@@ -688,8 +692,8 @@
 
                     const zoomStep = () => {
                         const newZoom = this.map.getZoom() + direction;
-                        
-                        if ((direction > 0 && newZoom >= targetZoom) || 
+
+                        if ((direction > 0 && newZoom >= targetZoom) ||
                             (direction < 0 && newZoom <= targetZoom)) {
                             this.map.setZoom(targetZoom);
                             if (point) {
@@ -750,7 +754,7 @@
                 // 检测是否为移动端
                 const isMobile = window.innerWidth <= 768;
                 const windowWidth = isMobile ? Math.min(window.innerWidth - 40, 320) : 600;
-                
+
                 const opts = {
                     title: title,
                     width: windowWidth,
@@ -778,11 +782,11 @@
                 return new Promise((resolve, reject) => {
                     const startPoint = new BMap.Point(start.lng, start.lat);
                     const endPoint = new BMap.Point(end.lng, end.lat);
-                    
+
                     console.log('开始搜索路线:', startPoint, '->', endPoint);
-                    
+
                     let isResolved = false;
-                    
+
                     // 设置超时处理
                     const timeoutId = setTimeout(() => {
                         if (!isResolved) {
@@ -791,7 +795,7 @@
                             resolve();
                         }
                     }, 10000);
-                    
+
                     const driving = new BMap.DrivingRoute(this.map, {
                         renderOptions: {
                             map: this.map,
@@ -814,7 +818,7 @@
                                         }
                                     }
                                 }
-                                setTimeout(() => { 
+                                setTimeout(() => {
                                     resolve();
                                 }, 100);
                             }
@@ -823,7 +827,7 @@
                             console.log('路线折线已设置');
                         }
                     });
-                    
+
                     // 搜索路线
                     driving.search(startPoint, endPoint);
                     console.log('路线搜索请求已发送');
@@ -870,13 +874,20 @@
              */
             async start() {
                 try {
-                    // 1. 预加载所有图片
+                    // 1. 从 API 加载配置
+                    const configData = await this.loadConfigFromApi();
+                    if (!configData) {
+                        throw new Error('无法加载配置，请检查 API 接口');
+                    }
+                    this.config = configData;
+
+                    // 2. 预加载所有图片
                     await this.preloadAllImages();
 
-                    // 2. 初始化音频
+                    // 3. 初始化音频
                     await this.initAudio();
 
-                    // 3. 显示开始按钮
+                    // 4. 显示开始按钮
                     this.showStartButton();
 
                 } catch (error) {
@@ -884,13 +895,40 @@
                     alert('初始化失败：' + error.message);
                 }
             }
+            // 从 后端API 加载配置
+            async loadConfigFromApi() {
+                try {
+                    // 从当前页面url参数获取 配置文件版本
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const configVersion = urlParams.get('version');
+                    console.log('configVersion', configVersion);
+                    
+                    // 1. 等待 fetch 请求完成，拿到实际的响应对象
+                    const response = await fetch('/api/config?version=' + configVersion);
+                    console.log('response', response.ok); // 此时才是真正的请求成功状态
 
+                    // 2. 判断响应状态是否正常（HTTP 状态码 200-299）
+                    if (response.ok) {
+                        // 3. 等待 JSON 解析完成，返回配置数据
+                        const configData = await response.json();
+                        console.log('加载API configData', configData);
+                        return configData;
+                    } else {
+                        // 处理 HTTP 错误（如 404/500）
+                        console.error('API 请求失败，状态码：', response.status);
+                    }
+                } catch (error) {
+                    // 处理网络错误（如断网、跨域）
+                    console.error('Error loading config from API:', error);
+                }
+                return null;
+            }
             /**
              * 预加载所有图片
              */
             async preloadAllImages() {
                 const imageUrls = [];
-                
+
                 // 从 showList 中提取所有图片
                 this.config.showList.forEach(item => {
                     item.locations.forEach(loc => {
@@ -913,7 +951,7 @@
                 return new Promise((resolve) => {
                     let loadedCount = 0;
                     const total = imageUrls.length;
-                    
+
                     if (total === 0) {
                         resolve();
                         return;
@@ -939,7 +977,7 @@
                                 console.warn('图片转换失败，使用原始 URL:', e);
                                 this.preloadedImages[url] = url;
                             }
-                            
+
                             loadedCount++;
                             if (loadedCount === total) {
                                 resolve();
@@ -969,7 +1007,7 @@
                     if (document.documentElement.requestFullscreen) {
                         document.documentElement.requestFullscreen();
                     }
-                    
+
                     // 开始展示
                     await this.runShowFlow();
                 };
@@ -1010,7 +1048,7 @@
             async executeShowItem(showItem) {
                 console.log(`执行展示项: ${showItem.chapterName} (type: ${showItem.type})`);
                 console.log("showItem:", showItem);
-                
+
                 // 先调整缩放级别
                 console.log('this.config:', this.config);
                 var zoomSpeed = showItem?.zoomSpeed || this.config.basicCfg.globalZoomSpeed;
@@ -1063,9 +1101,10 @@
 
                     // 添加弹跳标记
                     this.mapUtils.addMarker(location.point, BMAP_ANIMATION_BOUNCE);
+                    console.log('添加弹跳标记:', location.address);
 
                     // 等待一段时间
-                    await sleep(1500);
+                    await sleep(5000);
                 }
             }
 
@@ -1075,7 +1114,7 @@
              */
             async showType2(showItem) {
                 console.log('开始执行 showType2');
-                
+
                 if (showItem.locations.length !== 2) {
                     console.error('类型2需要恰好2个地点');
                     return;
@@ -1083,7 +1122,7 @@
 
                 const [loc1, loc2] = showItem.locations;
                 console.log('地点1:', loc1, '地点2:', loc2);
-
+                
                 // 显示第一个地点
                 console.log('移动到地点1');
                 await this.mapUtils.panTo(loc1.point, 1000);
@@ -1132,13 +1171,13 @@
                             const preloadedSrc = this.preloadedImages[location.showImgUrl];
                             console.log('使用预加载图片:', location.showImgUrl);
                             console.log('预加载源:', preloadedSrc ? preloadedSrc.substring(0, 50) + '...' : '未找到');
-                            
+
                             const isMobile = window.innerWidth <= 768;
                             const maxHeight = isMobile ? '250px' : '400px';
-                            
+
                             // 使用预加载的 data URL 或原始 URL
                             const imgSrc = preloadedSrc || location.showImgUrl;
-                            
+
                             content = `
                                 <div style="width: 100%; max-height: ${maxHeight}; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f5f5f5;">
                                     <img src="${imgSrc}" 
@@ -1146,13 +1185,8 @@
                                          alt="${location.showText || 'Image'}" />
                                 </div>
                             `;
-                        } else if (location.showText) {
-                            content = location.showText;
                         }
-
-                        if (content) {
-                            this.mapUtils.openInfoWindow(content, location.point, location.showText);
-                        }
+                        this.mapUtils.openInfoWindow(content, location.point, location.showText);
                     }
 
                     // 等待一段时间
@@ -1170,8 +1204,8 @@
                 const endCfg = this.config.endShowCfg;
 
                 // 移动到结束位置
-                await this.mapUtils.panTo(endCfg.endMapCenterPoint, 1000);
-                await this.mapUtils.zoomTo(9, 800, endCfg.endMapCenterPoint);
+                await this.mapUtils.panTo(endCfg.endMapCenterPoint, 2000);
+                await this.mapUtils.zoomTo(endCfg.zoomLevel, 800, endCfg.endMapCenterPoint);
 
                 // 切换到卫星图
                 this.mapUtils.setMapType(BMAP_HYBRID_MAP);
@@ -1182,7 +1216,7 @@
                 // 顺序添加标记点
                 for (const marker of shuffledMarkers) {
                     this.mapUtils.addMarker(marker, BMAP_ANIMATION_DROP);
-                    await sleep(200);
+                    await sleep(300);
                 }
 
                 // 等待5秒后显示结束画面
@@ -1244,10 +1278,11 @@
         /**
          * 页面加载完成后初始化
          */
-        window.onload = function() {
+        window.onload = function () {
             // 加载百度地图脚本
             loadBaiduMapScript();
         };
     </script>
 </body>
+
 </html>

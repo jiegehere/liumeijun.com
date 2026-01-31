@@ -314,6 +314,7 @@
         <div class="tabs">
             <div class="tab active" onclick="switchTab('basic')">基本配置</div>
             <div class="tab" onclick="switchTab('chapters')">章节管理</div>
+            <div class="tab" onclick="switchTab('end')">结束画面配置</div>
             <div class="tab" onclick="switchTab('json')">JSON预览</div>
         </div>
 
@@ -338,6 +339,11 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label>全局缩放速度（毫秒）</label>
+                    <input type="number" id="globalZoomSpeed" placeholder="1000" min="100" step="100">
+                    <small style="color: #666;">地图缩放动画的持续时间，单位：毫秒</small>
+                </div>
+                <div class="form-group">
                     <label>音频文件路径</label>
                     <input type="text" id="audioUrl" placeholder="./audio.mp3">
                 </div>
@@ -353,6 +359,54 @@
                     <!-- 章节列表将在这里动态生成 -->
                 </div>
                 <button class="btn" onclick="addChapter()">添加章节</button>
+            </div>
+        </div>
+
+        <!-- 结束配置 -->
+        <div id="tab-end" class="tab-content">
+            <div class="section">
+                <h2>结束配置</h2>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>结束地图中心地址</label>
+                        <div class="address-group">
+                            <input type="text" id="endMapCenterAddress" placeholder="输入地址">
+                            <button class="btn btn-sm" onclick="geocodeAddress('endMapCenter')">解析坐标</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>结束地图中心坐标</label>
+                        <div class="coordinate-group">
+                            <input type="text" id="endMapCenterLng" placeholder="经度">
+                            <input type="text" id="endMapCenterLat" placeholder="纬度">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>缩放级别</label>
+                    <select id="endZoomLevel">
+                        <option value="3">3 - 展示全国范围（如：中国地图）</option>
+                        <option value="4">4 - 展示全国范围（如：中国地图）</option>
+                        <option value="5">5 - 展示省级范围（如：广东省）</option>
+                        <option value="6">6 - 展示省级范围（如：广东省）</option>
+                        <option value="7">7 - 展示省级范围（如：广东省）</option>
+                        <option value="8">8 - 展示城市范围（如：梅州、广州）</option>
+                        <option value="9" selected>9 - 展示城市范围（如：梅州、广州）</option>
+                        <option value="10">10 - 展示城市范围（如：梅州、广州）</option>
+                        <option value="11">11 - 展示城市范围（如：梅州、广州）</option>
+                        <option value="12">12 - 展示街道级视图</option>
+                        <option value="13">13 - 展示路线（如：两地之间的路线）</option>
+                        <option value="14">14 - 展示路线（如：两地之间的路线）</option>
+                        <option value="15">15 - 展示具体地点（如：纪念馆、祠堂）</option>
+                        <option value="16">16 - 展示具体地点（如：纪念馆、祠堂）</option>
+                        <option value="17">17 - 展示具体地点（如：纪念馆、祠堂）</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>标记点列表（JSON数组）</label>
+                    <textarea id="endMarkerList" class="json-editor" placeholder='[{"lng": 116.135018, "lat": 24.33438}, {"lng": 113.345774, "lat": 23.153356}]'></textarea>
+                    <small style="color: #666;">格式：JSON数组，每个元素包含 lng 和 lat 属性</small>
+                </div>
             </div>
         </div>
 
@@ -386,9 +440,16 @@
             basicCfg: {
                 initMapCenterAddress: "",
                 initMapCenterPoint: { lng: "", lat: "" },
+                globalZoomSpeed: 1000,
                 audioUrl: ""
             },
-            showList: []
+            showList: [],
+            endShowCfg: {
+                endMapCenterAddress: "",
+                endMapCenterPoint: { lng: "", lat: "" },
+                zoomLevel: 9,
+                markerList: []
+            }
         };
 
         // 章节类型说明
@@ -445,6 +506,7 @@
             }
             console.log('加载配置:', currentConfig);
             renderBasicConfig();
+            renderEndConfig();
             renderChapters();
         }
 
@@ -453,7 +515,17 @@
             document.getElementById('initMapCenterAddress').value = currentConfig.basicCfg.initMapCenterAddress || '';
             document.getElementById('initMapCenterLng').value = currentConfig.basicCfg.initMapCenterPoint?.lng || '';
             document.getElementById('initMapCenterLat').value = currentConfig.basicCfg.initMapCenterPoint?.lat || '';
+            document.getElementById('globalZoomSpeed').value = currentConfig.basicCfg.globalZoomSpeed || 1000;
             document.getElementById('audioUrl').value = currentConfig.basicCfg.audioUrl || '';
+        }
+
+        // 渲染结束配置
+        function renderEndConfig() {
+            document.getElementById('endMapCenterAddress').value = currentConfig.endShowCfg?.endMapCenterAddress || '';
+            document.getElementById('endMapCenterLng').value = currentConfig.endShowCfg?.endMapCenterPoint?.lng || '';
+            document.getElementById('endMapCenterLat').value = currentConfig.endShowCfg?.endMapCenterPoint?.lat || '';
+            document.getElementById('endZoomLevel').value = currentConfig.endShowCfg?.zoomLevel || 9;
+            document.getElementById('endMarkerList').value = JSON.stringify(currentConfig.endShowCfg?.markerList || [], null, 2);
         }
 
         // 收集基本配置
@@ -464,8 +536,30 @@
                     lng: parseFloat(document.getElementById('initMapCenterLng').value) || 0,
                     lat: parseFloat(document.getElementById('initMapCenterLat').value) || 0
                 },
+                globalZoomSpeed: parseInt(document.getElementById('globalZoomSpeed').value) || 1000,
                 audioUrl: document.getElementById('audioUrl').value
             };
+        }
+
+        // 收集结束配置
+        function collectEndConfig() {
+            try {
+                const markerListJson = document.getElementById('endMarkerList').value;
+                const markerList = markerListJson ? JSON.parse(markerListJson) : [];
+                
+                currentConfig.endShowCfg = {
+                    endMapCenterAddress: document.getElementById('endMapCenterAddress').value,
+                    endMapCenterPoint: {
+                        lng: parseFloat(document.getElementById('endMapCenterLng').value) || 0,
+                        lat: parseFloat(document.getElementById('endMapCenterLat').value) || 0
+                    },
+                    zoomLevel: parseInt(document.getElementById('endZoomLevel').value) || 9,
+                    markerList: markerList
+                };
+            } catch (error) {
+                showMessage('标记点列表JSON格式错误: ' + error.message, 'error');
+                throw error;
+            }
         }
 
         // 渲染章节列表
@@ -523,6 +617,27 @@
                                 <input type="text" class="start-lat" value="${chapter.startPoint?.lat || ''}" placeholder="纬度">
                             </div>
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>缩放级别</label>
+                        <select class="chapter-zoomLevel">
+                            <option value="3" ${chapter.zoomLevel === 3 ? 'selected' : ''}>3 - 展示全国范围（如：中国地图）</option>
+                            <option value="4" ${chapter.zoomLevel === 4 ? 'selected' : ''}>4 - 展示全国范围（如：中国地图）</option>
+                            <option value="5" ${chapter.zoomLevel === 5 ? 'selected' : ''}>5 - 展示省级范围（如：广东省）</option>
+                            <option value="6" ${chapter.zoomLevel === 6 ? 'selected' : ''}>6 - 展示省级范围（如：广东省）</option>
+                            <option value="7" ${chapter.zoomLevel === 7 ? 'selected' : ''}>7 - 展示省级范围（如：广东省）</option>
+                            <option value="8" ${chapter.zoomLevel === 8 ? 'selected' : ''}>8 - 展示城市范围（如：梅州、广州）</option>
+                            <option value="9" ${chapter.zoomLevel === 9 ? 'selected' : ''}>9 - 展示城市范围（如：梅州、广州）</option>
+                            <option value="10" ${chapter.zoomLevel === 10 ? 'selected' : ''}>10 - 展示城市范围（如：梅州、广州）</option>
+                            <option value="11" ${chapter.zoomLevel === 11 ? 'selected' : ''}>11 - 展示城市范围（如：梅州、广州）</option>
+                            <option value="12" ${chapter.zoomLevel === 12 ? 'selected' : ''}>12 - 展示街道级视图</option>
+                            <option value="13" ${chapter.zoomLevel === 13 ? 'selected' : ''}>13 - 展示路线（如：两地之间的路线）</option>
+                            <option value="14" ${chapter.zoomLevel === 14 ? 'selected' : ''}>14 - 展示路线（如：两地之间的路线）</option>
+                            <option value="15" ${chapter.zoomLevel === 15 ? 'selected' : ''}>15 - 展示具体地点（如：纪念馆、祠堂）</option>
+                            <option value="16" ${chapter.zoomLevel === 16 ? 'selected' : ''}>16 - 展示具体地点（如：纪念馆、祠堂）</option>
+                            <option value="17" ${chapter.zoomLevel === 17 ? 'selected' : ''}>17 - 展示具体地点（如：纪念馆、祠堂）</option>
+                        </select>
                     </div>
 
                     <h3>地点列表 (${chapter.locations?.length || 0}个)</h3>
@@ -667,6 +782,7 @@
                     lng: parseFloat(item.querySelector('.start-lng').value) || 0,
                     lat: parseFloat(item.querySelector('.start-lat').value) || 0
                 };
+                chapter.zoomLevel = parseInt(item.querySelector('.chapter-zoomLevel').value) || 9;
 
                 // 收集地点数据
                 const locItems = item.querySelectorAll('.location-item');
@@ -754,6 +870,7 @@
             try {
                 collectBasicConfig();
                 collectChapters();
+                collectEndConfig();
 
                 const response = await fetch('/api/config', {
                     method: 'POST',
@@ -778,6 +895,7 @@
         function exportConfig() {
             collectBasicConfig();
             collectChapters();
+            collectEndConfig();
             
             const dataStr = JSON.stringify(currentConfig, null, 2);
             const blob = new Blob([dataStr], { type: 'application/json' });
@@ -794,6 +912,7 @@
         function updateJsonPreview() {
             collectBasicConfig();
             collectChapters();
+            collectEndConfig();
             document.getElementById('jsonPreview').value = JSON.stringify(currentConfig, null, 2);
         }
 
@@ -801,6 +920,7 @@
         function showJsonEditor() {
             collectBasicConfig();
             collectChapters();
+            collectEndConfig();
             document.getElementById('jsonEditor').value = JSON.stringify(currentConfig, null, 2);
             document.getElementById('jsonEditorModal').style.display = 'block';
         }

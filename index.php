@@ -4,6 +4,11 @@ const CONFIG_FILE = 'config/config.json';
 // 上传图片保存目录
 const UPLOAD_DIR = 'uploads/images/';
 
+// 确保配置目录存在
+if (!file_exists('config')) {
+    mkdir('config', 0777, true);
+}
+
 // 确保上传目录存在
 if (!file_exists(UPLOAD_DIR)) {
     mkdir(UPLOAD_DIR, 0777, true);
@@ -18,8 +23,8 @@ if (!file_exists(CONFIG_FILE)) {
     $file = DEFAULT_CONFIG_FILE;
 }
 
-// 读取配置
-function load_config($file) {
+// 读取配置, 后续再做多版本管理
+function load_config($file, $version = '') {
     try {
         if (!file_exists($file)) {
             return [];
@@ -71,8 +76,8 @@ function handle_get($path) {
         http_response_code(200);
         header('Content-Type: application/json');
         set_cors_headers();
-        
-        $config = load_config($GLOBALS['file']);
+        $version = $_GET['version'] ?? '';
+        $config = load_config($GLOBALS['file'], $version);
         echo json_encode($config, JSON_UNESCAPED_UNICODE);
         exit;
     }
@@ -188,7 +193,7 @@ function handle_post($path) {
             // 保存文件
             if (move_uploaded_file($file['tmp_name'], $file_path)) {
                 // 生成文件URL
-                $file_url = '/uploads/' . $filename;
+                $file_url = '/uploads/images/' . $filename;
                 
                 http_response_code(200);
                 header('Content-Type: application/json');

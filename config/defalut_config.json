@@ -5,7 +5,7 @@
             "lng": 110.56453,
             "lat": 22.863666
         },
-        "globalZoomSpeed": 800,
+        "globalZoomSpeed": 1000,
         "audioUrl": ".\/uploads\/music\/LemonTree.mp3"
     },
     "showList": [
@@ -18,7 +18,7 @@
                 "lng": 110.56453,
                 "lat": 22.863666
             },
-            "zoomLevel": 6,
+            "zoomLevel": 10,
             "chapterName": "双方位置",
             "locations": [
                 {
