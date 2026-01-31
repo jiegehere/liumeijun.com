@@ -978,13 +978,13 @@
 
                 // 1. 等待 fetch 请求完成，拿到实际的响应对象
                 const response = await fetch('/api/config?version=' + configVersion);
-                console.log('请求配置, configVersion: ', configVersion, ' 接口返回: response.ok', response.ok); // 此时才是真正的请求成功状态
+                alertDebug('请求配置, configVersion: ', configVersion, ' 接口返回: response.ok', response.ok); // 此时才是真正的请求成功状态
 
                 // 2. 判断响应状态是否正常（HTTP 状态码 200-299）
                 if (response.ok) {
                     // 3. 等待 JSON 解析完成，返回配置数据
                     const configData = response.json();
-                    console.log('加载API configData', configData);
+                    alertDebug('加载API configData', configData);
                     return configData;
                 } else {
                     // 处理 HTTP 错误（如 404/500）
@@ -992,7 +992,7 @@
                 }
             } catch (error) {
                 // 处理网络错误（如断网、跨域）
-                console.error('Error loading config from API:', error);
+                alertDebug('Error loading config from API:', error);
             }
             return null;
         }
