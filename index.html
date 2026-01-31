@@ -668,6 +668,29 @@
             }
 
             /**
+             * 地图居中并缩放
+             * @param {Object} point - 目标点 {lng, lat}
+             * @param {number} zoomLevel - 目标缩放级别
+             */
+            centerAndZoom(point, zoomLevel) {
+                this.map.centerAndZoom(new BMap.Point(point.lng, point.lat), zoomLevel);
+            }
+
+            /**
+             * 禁用地图拖拽
+             */
+            disableDragging() {
+                this.map.disableDragging();
+            }
+
+            /**
+             * 禁用地图双击缩放
+             */
+            disableDoubleClickZoom() {
+                this.map.disableDoubleClickZoom();
+            }
+
+            /**
              * 地图平移动画
              * @param {Object} point - 目标点 {lng, lat}
              * @param {number} delay - 延迟时间（毫秒）
@@ -679,12 +702,12 @@
                 await sleep(delay);
             }
 
-             /**
-             * 获取两个点的中间位置， 大概精度，不是很精准
-             * @param {Object} point1 - 百度坐标点 点1 {lng, lat}
-             * @param {Object} point2 - 百度坐标点 点2 {lng, lat}
-             * @returns {Object} - 中间位置点 {lng, lat}
-             */
+            /**
+            * 获取两个点的中间位置， 大概精度，不是很精准
+            * @param {Object} point1 - 百度坐标点 点1 {lng, lat}
+            * @param {Object} point2 - 百度坐标点 点2 {lng, lat}
+            * @returns {Object} - 中间位置点 {lng, lat}
+            */
             getCenterPoint(point1, point2) {
                 const centerLng = (point1.lng + point2.lng) / 2;
                 const centerLat = (point1.lat + point2.lat) / 2;
@@ -864,24 +887,24 @@
             async initAudio() {
                 return new Promise((resolve) => {
                     this.audio = new Audio(this.config.basicCfg.audioUrl);
-                    
+
                     // 微信浏览器兼容处理：设置音频属性
                     this.audio.loop = true;
                     this.audio.preload = 'auto';
-                    
+
                     // 监听音频可以播放事件
                     this.audio.oncanplay = () => {
                         console.log('音频加载完成，可以播放');
                         resolve();
                     };
-                    
+
                     // 监听错误事件
                     this.audio.onerror = (e) => {
                         console.error('音频加载失败:', e);
                         // 即使加载失败也继续，避免阻塞
                         resolve();
                     };
-                    
+
                     this.audio.load();
                 });
             }
@@ -893,13 +916,13 @@
                 if (this.audio) {
                     // 微信浏览器兼容处理
                     if (typeof WeixinJSBridge !== 'undefined') {
-                        WeixinJSBridge.invoke('getNetworkType', {}, function(e) {
+                        WeixinJSBridge.invoke('getNetworkType', {}, function (e) {
                             console.log('微信网络类型:', e.err_msg);
                         });
                     }
 
                     const playPromise = this.audio.play();
-                    
+
                     if (playPromise !== undefined) {
                         playPromise.then(() => {
                             console.log('音频播放成功');
@@ -929,12 +952,19 @@
              */
             async start() {
                 try {
-                    // 1. 从 API 加载配置
+                    // 1. 从 API 加载配置、初始化地图
                     const configData = await this.loadConfigFromApi();
                     if (!configData) {
                         throw new Error('无法加载配置，请检查 API 接口');
                     }
                     this.config = configData;
+                    const point = new BMap.Point(
+                        configData.basicCfg.initMapCenterPoint.lng,
+                        configData.basicCfg.initMapCenterPoint.lat
+                    );
+                    this.mapUtils.centerAndZoom(point, configData.basicCfg.initMapZoomLevel);
+                    this.mapUtils.disableDragging();
+                    this.mapUtils.disableDoubleClickZoom();
 
                     // 2. 预加载所有图片
                     await this.preloadAllImages();
@@ -977,6 +1007,7 @@
                 }
                 return null;
             }
+
             /**
              * 预加载所有图片
              */
@@ -1307,20 +1338,16 @@
          * 初始化地图
          */
         function initMap() {
-            map = new BMap.Map("map");
-            const point = new BMap.Point(
-                NEW_CONFIG.basicCfg.initMapCenterPoint.lng,
-                NEW_CONFIG.basicCfg.initMapCenterPoint.lat
-            );
-            map.centerAndZoom(point, NEW_CONFIG.basicCfg.initMapZoomLevel);
-            map.disableDragging();
-            map.disableDoubleClickZoom();
-
-            // 初始化展示控制器
-            showController = new ShowController(map, NEW_CONFIG);
-
-            // 开始展示流程
-            showController.start();
+            try {
+                map = new BMap.Map("map");
+                // 初始化展示控制器
+                showController = new ShowController(map, configData);
+                // 开始流程
+                showController.start();
+            } catch (error) {
+                console.error('初始化地图失败:', error);
+                alert('初始化地图失败，请刷新页面重试。' + error.message);
+            }
         }
 
         /**
