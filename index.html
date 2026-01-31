@@ -458,8 +458,10 @@
                         }
 
                         // 创建音频对象
-                        // audioUrl 不包含域名情况，处理下
-                        if (!audioUrl.includes('http')) {
+                        // audioUrl 不包含域名情况，不是http或https，添加域名
+                        if (!audioUrl.startsWith('http')) {
+                            // 去掉前面的 ./ 或 ../
+                            audioUrl = audioUrl.replace(/^\.\//, '');
                             audioUrl = window.location.origin + audioUrl;
                         }
                         alertDebug('音频URL:' + audioUrl);
