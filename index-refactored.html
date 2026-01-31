@@ -97,13 +97,15 @@
          * 基于原有 config.json 转换而来
          */
         const NEW_CONFIG = {
-            basic_cfg: {
+            basicCfg: {
+                initMapZoomLevel: 5,
                 initMapCenterAddress: "广西容县",
                 initMapCenterPoint: {
                     lng: 3.894763,
                     lat: 44.529534
                 },
-                audioUrl: "./LemonTree.mp3"
+                audioUrl: "./LemonTree.mp3",
+                globalZoomSpeed: 1000
             },
             showList: [
                 {
@@ -115,6 +117,7 @@
                         lng: 116.135018,
                         lat: 24.33438
                     },
+                    zoomLevel: 10,
                     chapterName: "双方位置",
                     locations: [
                         {
@@ -148,6 +151,7 @@
                         lng: 114.701682,
                         lat: 23.754195
                     },
+                    zoomLevel: 8,
                     chapterName: "路线展示",
                     locations: [
                         {
@@ -181,6 +185,7 @@
                         lng: 113.256838,
                         lat: 23.157309
                     },
+                    zoomLevel: 11,
                     chapterName: "共同回忆",
                     locations: [
                         {
@@ -314,6 +319,7 @@
                         lng: 103.758427,
                         lat: 36.172333
                     },
+                    zoomLevel: 9,
                     chapterName: "想去的地方",
                     locations: [
                         {
@@ -832,6 +838,7 @@
                 this.mapUtils = new MapUtils(map);
                 this.config = config;
                 this.audio = null;
+                this.preloadedImages = {}; // 存储预加载的图片对象
             }
 
             /**
@@ -839,7 +846,7 @@
              */
             async initAudio() {
                 return new Promise((resolve) => {
-                    this.audio = new Audio(this.config.basic_cfg.audioUrl);
+                    this.audio = new Audio(this.config.basicCfg.audioUrl);
                     this.audio.oncanplay = () => {
                         resolve();
                     };
@@ -893,8 +900,62 @@
                     });
                 });
 
-                await preloadImages(imageUrls);
-                console.log('所有图片预加载完成: ', imageUrls);
+                console.log('开始预加载图片:', imageUrls);
+                await this.preloadImages(imageUrls);
+                console.log('所有图片预加载完成');
+            }
+
+            /**
+             * 预加载图片（存储预加载的图片对象）
+             * @param {Array} imageUrls - 图片URL数组
+             */
+            preloadImages(imageUrls) {
+                return new Promise((resolve) => {
+                    let loadedCount = 0;
+                    const total = imageUrls.length;
+                    
+                    if (total === 0) {
+                        resolve();
+                        return;
+                    }
+
+                    imageUrls.forEach(url => {
+                        const img = new Image();
+                        img.crossOrigin = 'Anonymous'; // 允许跨域
+                        img.onload = () => {
+                            console.log('图片加载成功:', url);
+                            // 将预加载的图片转换为 data URL 存储
+                            try {
+                                const canvas = document.createElement('canvas');
+                                canvas.width = img.width;
+                                canvas.height = img.height;
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0);
+                                const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                                // 存储 data URL
+                                this.preloadedImages[url] = dataUrl;
+                                console.log('图片转换为 data URL:', url.substring(0, 30) + '...');
+                            } catch (e) {
+                                console.warn('图片转换失败，使用原始 URL:', e);
+                                this.preloadedImages[url] = url;
+                            }
+                            
+                            loadedCount++;
+                            if (loadedCount === total) {
+                                resolve();
+                            }
+                        };
+                        img.onerror = () => {
+                            console.error('图片加载失败:', url);
+                            this.preloadedImages[url] = url; // 失败时使用原始 URL
+                            loadedCount++;
+                            if (loadedCount === total) {
+                                resolve();
+                            }
+                        };
+                        img.src = url;
+                    });
+                });
             }
 
             /**
@@ -949,12 +1010,17 @@
             async executeShowItem(showItem) {
                 console.log(`执行展示项: ${showItem.chapterName} (type: ${showItem.type})`);
                 console.log("showItem:", showItem);
+                
+                // 先调整缩放级别
+                console.log('this.config:', this.config);
+                var zoomSpeed = showItem?.zoomSpeed || this.config.basicCfg.globalZoomSpeed;
+                console.log('zoomSpeed:', zoomSpeed);
+                await this.mapUtils.zoomTo(showItem.zoomLevel, zoomSpeed, showItem.startPoint);
+                console.log('地图重置完成');
 
                 // 重置地图到起点
                 console.log('重置地图到起点');
                 await this.mapUtils.panTo(showItem.startPoint, 1000);
-                await this.mapUtils.zoomTo(15, 800, showItem.startPoint);
-                console.log('地图重置完成');
 
                 // 根据类型执行不同的展示逻辑
                 console.log('开始执行展示类型:', showItem.type);
@@ -1057,11 +1123,20 @@
                     if (location.showImgUrl || location.showText) {
                         let content = '';
                         if (location.showImgUrl) {
+                            // 使用预加载的图片 data URL
+                            const preloadedSrc = this.preloadedImages[location.showImgUrl];
+                            console.log('使用预加载图片:', location.showImgUrl);
+                            console.log('预加载源:', preloadedSrc ? preloadedSrc.substring(0, 50) + '...' : '未找到');
+                            
                             const isMobile = window.innerWidth <= 768;
                             const maxHeight = isMobile ? '250px' : '400px';
+                            
+                            // 使用预加载的 data URL 或原始 URL
+                            const imgSrc = preloadedSrc || location.showImgUrl;
+                            
                             content = `
                                 <div style="width: 100%; max-height: ${maxHeight}; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f5f5f5;">
-                                    <img src="${location.showImgUrl}" 
+                                    <img src="${imgSrc}" 
                                          style="max-width: 100%; max-height: ${maxHeight}; width: auto; height: auto; object-fit: contain; display: block;" 
                                          alt="${location.showText || 'Image'}" />
                                 </div>
@@ -1138,10 +1213,10 @@
         function initMap() {
             map = new BMap.Map("map");
             const point = new BMap.Point(
-                NEW_CONFIG.basic_cfg.initMapCenterPoint.lng,
-                NEW_CONFIG.basic_cfg.initMapCenterPoint.lat
+                NEW_CONFIG.basicCfg.initMapCenterPoint.lng,
+                NEW_CONFIG.basicCfg.initMapCenterPoint.lat
             );
-            map.centerAndZoom(point, 4);
+            map.centerAndZoom(point, NEW_CONFIG.basicCfg.initMapZoomLevel);
             map.disableDragging();
             map.disableDoubleClickZoom();
 

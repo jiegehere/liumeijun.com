@@ -382,7 +382,7 @@
     <script>
         // 当前配置数据
         let currentConfig = {
-            basic_cfg: {
+            basicCfg: {
                 initMapCenterAddress: "",
                 initMapCenterPoint: { lng: "", lat: "" },
                 audioUrl: ""
@@ -446,15 +446,15 @@
 
         // 渲染基本配置
         function renderBasicConfig() {
-            document.getElementById('initMapCenterAddress').value = currentConfig.basic_cfg.initMapCenterAddress || '';
-            document.getElementById('initMapCenterLng').value = currentConfig.basic_cfg.initMapCenterPoint?.lng || '';
-            document.getElementById('initMapCenterLat').value = currentConfig.basic_cfg.initMapCenterPoint?.lat || '';
-            document.getElementById('audioUrl').value = currentConfig.basic_cfg.audioUrl || '';
+            document.getElementById('initMapCenterAddress').value = currentConfig.basicCfg.initMapCenterAddress || '';
+            document.getElementById('initMapCenterLng').value = currentConfig.basicCfg.initMapCenterPoint?.lng || '';
+            document.getElementById('initMapCenterLat').value = currentConfig.basicCfg.initMapCenterPoint?.lat || '';
+            document.getElementById('audioUrl').value = currentConfig.basicCfg.audioUrl || '';
         }
 
         // 收集基本配置
         function collectBasicConfig() {
-            currentConfig.basic_cfg = {
+            currentConfig.basicCfg = {
                 initMapCenterAddress: document.getElementById('initMapCenterAddress').value,
                 initMapCenterPoint: {
                     lng: parseFloat(document.getElementById('initMapCenterLng').value) || 0,
