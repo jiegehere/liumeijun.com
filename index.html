@@ -475,17 +475,45 @@
                         this.audio.loop = false; //默认不循环播放
                         this.audio.preload = 'auto';
 
+                        // 设置超时机制（微信浏览器可能不会触发 oncanplay）
+                        let resolved = false;
+                        const timeout = setTimeout(() => {
+                            if (!resolved) {
+                                resolved = true;
+                                alertDebug('音频初始化超时，继续执行');
+                                resolve();
+                            }
+                        }, 5000); // 5秒超时
+
                         // 监听音频可以播放事件
                         this.audio.oncanplay = () => {
-                            alertDebug('音频加载完成，可以播放');
-                            resolve();
+                            if (!resolved) {
+                                resolved = true;
+                                clearTimeout(timeout);
+                                alertDebug('音频加载完成，可以播放');
+                                resolve();
+                            }
                         };
 
                         // 监听错误事件
                         this.audio.onerror = (e) => {
-                            alertDebug('音频加载失败:' + e.message);
-                            // 即使加载失败也继续，避免阻塞
-                            resolve();
+                            if (!resolved) {
+                                resolved = true;
+                                clearTimeout(timeout);
+                                alertDebug('音频加载失败:' + e.message);
+                                // 即使加载失败也继续，避免阻塞
+                                resolve();
+                            }
+                        };
+
+                        // 监听 loadeddata 事件（比 oncanplay 更早触发）
+                        this.audio.onloadeddata = () => {
+                            if (!resolved) {
+                                resolved = true;
+                                clearTimeout(timeout);
+                                alertDebug('音频数据加载完成');
+                                resolve();
+                            }
                         };
 
                         this.audio.load();
@@ -988,7 +1016,7 @@
                 // 2. 判断响应状态是否正常（HTTP 状态码 200-299）
                 if (response.ok) {
                     // 3. 等待 JSON 解析完成，返回配置数据
-                    const configData = response.json();
+                    const configData = await response.json();
                     alertDebug('加载API configData:' + JSON.stringify(configData));
                     return configData;
                 } else {
@@ -1045,7 +1073,7 @@
                     clearInterval(checkInterval);
                     alert('百度地图加载超时，请刷新页面重试');
                 }
-            }, 200); // 每200ms检测一次
+            }, 3000); // 每3秒检测一次
         }
 
         /**
