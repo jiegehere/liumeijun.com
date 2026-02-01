@@ -409,6 +409,9 @@
                 </div>
                 <div class="form-group">
                     <label>标记点列表（JSON数组）</label>
+                    <div class="form-group">
+                        <button class="btn btn-sm" onclick="goToGetPoints()">点击跳转地图页面拾取坐标</button>
+                    </div>
                     <textarea id="endMarkerList" class="json-editor" placeholder='[{"lng": 116.135018, "lat": 24.33438}, {"lng": 113.345774, "lat": 23.153356}]'></textarea>
                     <small style="color: #666;">格式：JSON数组，每个元素包含 lng 和 lat 属性， 默认标记点组成字是 生日快乐</small>
                 </div>
@@ -488,6 +491,14 @@
             window.open('./index.html?code=' + currentConfig.code, '_blank');
         }
 
+        function goToGetPoints()
+        {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const token = urlParams.get('token');
+            window.open('./get-points.html?code=' + code + '&token=' + token, '_blank');
+        }
+
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
             loadConfig();
@@ -528,7 +539,6 @@
         async function loadConfig() {
             // 读取链接参数code或者本地cookie中的code
             const urlParams = new URLSearchParams(window.location.search);
-            console.log("xxxxxxxx:", urlParams);
             const code = urlParams.get('code');
             const token = urlParams.get('token');
             console.log("code:", code, ' token:', token);
