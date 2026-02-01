@@ -58,8 +58,8 @@ function readCsvAllLines($file) {
     return $codes;
 }
 
-// 判断编码是否有效
-function checkCodeValid($code) {
+// 判断编码是否有效, token非空时校验token有效性
+function checkCodeValid($code, $token) {
     if (empty($code)) {
         return false;
     }
@@ -70,7 +70,10 @@ function checkCodeValid($code) {
             continue;
         }
         if ($row[1] === $code) {
-            return $row[2] == '1';
+            if (!empty($token) && $token === $row[2]) {
+                return $row[3] == '1';
+            }
+            return $row[3] == '1';
         }
     }
     return false;
@@ -312,17 +315,24 @@ function handle_options() {
 // 处理GET请求
 function handle_get($path) {
     // 获取配置接口
-    if ($path === '/api/getConfig') {
+    if ($path === '/api/getConfig' || $path === '/api/getAdminConfig') {
         http_response_code(200);
         header('Content-Type: application/json');
         set_cors_headers();
         $code = $_GET['code'] ?? '';
+        $token = $_GET['token'] ?? '';
         $ret = [
             'ret' => 0,
             'errmsg' => '',
             'data' => [],
         ];
-        if (!checkCodeValid($code)) {
+        if ($path === '/api/getAdminConfig' && empty($token)) {
+            $ret['ret'] = 1002;
+            $ret['errmsg'] = '参数错误:' . $code;
+            echo json_encode($ret, JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+        if (!checkCodeValid($code, $token)) {
             $ret['ret'] = 1001;
             $ret['errmsg'] = '授权码错误或已失效:' . $code;
             echo json_encode($ret, JSON_UNESCAPED_UNICODE);
@@ -392,9 +402,19 @@ function handle_post($path) {
         $post_data = file_get_contents('php://input');
         
         try {
-            $config = json_decode($post_data, true);
+            $postData = json_decode($post_data, true);
+            $config = $postData['config'] ?? [];
+            $token = $postData['token'] ?? '';
+            if (empty($token)) {
+                http_response_code(200);
+                header('Content-Type: application/json');
+                set_cors_headers();
+                $response = ["success" => false, "message" => "参数错误"];
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                exit;
+            }
             $code = $config['code'] ?? '';
-            if (!checkCodeValid($code)) {
+            if (!checkCodeValid($code, $token)) {
                 http_response_code(200);
                 header('Content-Type: application/json');
                 set_cors_headers();

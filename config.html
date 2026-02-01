@@ -467,16 +467,6 @@
             4: { name: "想去的地方", desc: "展示想去的地方" }
         };
 
-        // 获取cookie值
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) {
-                return parts.pop().split(';').shift();
-            }
-            return null;
-        }
-
         function getCodeDesc() {
             html = `
                 <div class="alert alert-danger" role="alert">
@@ -502,15 +492,16 @@
         document.addEventListener('DOMContentLoaded', function() {
             // 读取链接参数code或者本地cookie中的code
             const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code') || getCookie('code');
-            if (!code) {
+            const code = urlParams.get('code');
+            const token = urlParams.get('token');
+            if (!code || !token) {
                 showMessage(getCodeDesc(), 'error', 0);
                 return;
             }
             if (code) {
                 currentConfig.code = code;
             }
-            loadConfig(code);
+            loadConfig(code, token);
         });
 
         // 切换标签页
@@ -545,9 +536,9 @@
         }
 
         // 加载配置
-        async function loadConfig(code) {
+        async function loadConfig(code, token) {
             try {
-                const response = await fetch('/api/getConfig?code=' + code);
+                const response = await fetch('/api/getAdminConfig?code=' + code + '&token=' + token);
                 console.log("加载配置响应:", response);
                 if (response.ok) {
                     const data = await response.json();
@@ -1033,7 +1024,10 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(currentConfig)
+                    body: JSON.stringify({
+                        config: currentConfig,
+                        token: urlParams.get('token')
+                    })
                 });
 
                 if (response.ok) {

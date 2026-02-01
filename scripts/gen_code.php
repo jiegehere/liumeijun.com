@@ -35,7 +35,7 @@ if (!$handle) {
 
 $lines = readCsvAllLines($file);
 if (empty($lines)) {
-	fputcsv($handle, ['id', 'code', 'isValid', 'showUrl', 'configUrl']);
+	fputcsv($handle, ['序号', '随机码', 'token', 'isValid', 'showUrl', 'configUrl']);
 } else {
 	$lines = [];
 }
@@ -58,9 +58,10 @@ for ($i = 1; $i <= $number_of_codes; $i++) {
 	if (isset($existCodeMap[$i]) && !empty($existCodeMap[$i]['code'])) {
 		continue;
 	}
+	$token = md5($code . '_' . $i);
 	$showUrl = 'https://love.xiaofs.cn/index.html?code=' . $code;
-	$configUrl = 'https://love.xiaofs.cn/config.html?code=' . $code;
-	fputcsv($handle, [$i, $code, 1, $showUrl, $configUrl]);
+	$configUrl = 'https://love.xiaofs.cn/config.html?code=' . $code . '&token=' . $token;
+	fputcsv($handle, [$i, $code, $token, 1, $showUrl, $configUrl]);
 }
 fclose($handle);
 
