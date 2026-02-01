@@ -199,6 +199,10 @@
         }
 
         .message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             padding: 12px;
             margin-bottom: 20px;
             border-radius: 4px;
@@ -521,13 +525,12 @@
             }
         }
 
-        // 显示消息
+        // 显示消息, 0表示不自动隐藏， 弹窗居中展示
         function showMessage(message, type = 'info', showTime = 3000) {
             const msgEl = document.getElementById('message');
             msgEl.innerHTML = message;
             msgEl.className = 'message ' + type;
-            //滚动到消息位置
-            msgEl.scrollIntoView({ behavior: 'smooth' });
+
             if (showTime > 0) {
                 setTimeout(() => {
                     msgEl.className = 'message';
@@ -759,12 +762,6 @@
                                 <input type="text" class="loc-lat" value="${loc.point?.lat || ''}" placeholder="纬度">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label>显示类型</label>
-                            <select class="loc-showType">
-                                <option value="1" ${loc.showType === 1 ? 'selected' : ''}>标记点</option>
-                            </select>
-                        </div>
                     </div>
                 </div>
             `).join('');
@@ -864,7 +861,8 @@
                 locItems.forEach(locItem => {
                     chapter.locations.push({
                         showText: locItem.querySelector('.loc-showText').value,
-                        showType: parseInt(locItem.querySelector('.loc-showType').value),
+                        // showType: parseInt(locItem.querySelector('.loc-showType').value),
+                        showType: 1, //目前都是1吧
                         showImgUrl: locItem.querySelector('.loc-imgUrl').value,
                         address: locItem.querySelector('.loc-address').value,
                         point: {
@@ -929,7 +927,7 @@
                         clearBtn.style.display = 'inline-block';
                     }
 
-                    showMessage('图片上传成功', 'success');
+                    showMessage('图片上传成功，请注意点击上方的保存按钮，修改的配置才能生效', 'success');
                 } else {
                     showMessage('上传失败: ' + result.message, 'error');
                 }
