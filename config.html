@@ -515,6 +515,10 @@
 
         // 切换标签页
         function switchTab(tabName) {
+            if (!currentConfig.code) {
+                showMessage(getCodeDesc(), 'error', 0);
+                return;
+            }
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             
@@ -531,6 +535,8 @@
             const msgEl = document.getElementById('message');
             msgEl.innerHTML = message;
             msgEl.className = 'message ' + type;
+            //滚动到消息位置
+            msgEl.scrollIntoView({ behavior: 'smooth' });
             if (showTime > 0) {
                 setTimeout(() => {
                     msgEl.className = 'message';
