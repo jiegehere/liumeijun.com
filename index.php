@@ -70,8 +70,8 @@ function checkCodeValid($code, $token) {
             continue;
         }
         if ($row[1] === $code) {
-            if (!empty($token) && $token === $row[2]) {
-                return $row[3] == '1';
+            if (!empty($token)) {
+                return $token == $row[2] && $row[3] == '1';
             }
             return $row[3] == '1';
         }

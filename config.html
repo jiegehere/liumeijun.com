@@ -490,18 +490,7 @@
 
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 读取链接参数code或者本地cookie中的code
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-            const token = urlParams.get('token');
-            if (!code || !token) {
-                showMessage(getCodeDesc(), 'error', 0);
-                return;
-            }
-            if (code) {
-                currentConfig.code = code;
-            }
-            loadConfig(code, token);
+            loadConfig();
         });
 
         // 切换标签页
@@ -536,9 +525,24 @@
         }
 
         // 加载配置
-        async function loadConfig(code, token) {
+        async function loadConfig() {
+            // 读取链接参数code或者本地cookie中的code
+            const urlParams = new URLSearchParams(window.location.search);
+            console.log("xxxxxxxx:", urlParams);
+            const code = urlParams.get('code');
+            const token = urlParams.get('token');
+            console.log("code:", code, ' token:', token);
+            if (!code || !token) {
+                showMessage(getCodeDesc(), 'error', 0);
+                return;
+            }
+            if (code) {
+                currentConfig.code = code;
+            }
             try {
-                const response = await fetch('/api/getAdminConfig?code=' + code + '&token=' + token);
+                var url = '/api/getAdminConfig?code=' + code + '&token=' + token;
+                console.log("加载配置URL:", url);
+                const response = await fetch(url);
                 console.log("加载配置响应:", response);
                 if (response.ok) {
                     const data = await response.json();
@@ -1018,7 +1022,7 @@
                 collectBasicConfig();
                 collectChapters();
                 collectEndConfig();
-
+                const urlParams = new URLSearchParams(window.location.search);
                 const response = await fetch('/api/saveConfig', {
                     method: 'POST',
                     headers: {
