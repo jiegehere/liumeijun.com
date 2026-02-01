@@ -483,7 +483,7 @@
                                 alertDebug('音频初始化超时，继续执行');
                                 resolve();
                             }
-                        }, 5000); // 5秒超时
+                        }, 3000); // 3秒超时
 
                         // 监听音频可以播放事件
                         this.audio.oncanplay = () => {
@@ -518,7 +518,7 @@
 
                         this.audio.load();
                     } catch (error) {
-                        alertDebug('创建音频对象失败:' + error.message);
+                        alertDebug('创建音频对象失败:' + error.message, true);
                         resolve();
                         return;
                     }
@@ -583,7 +583,7 @@
 
                 } catch (error) {
                     console.error('初始化失败:', error);
-                    alert('初始化失败：' + error.message);
+                    alert('初始化失败：' + error.message, true);
                 }
             }
             // 从 后端API 加载配置
@@ -951,11 +951,11 @@
 
         let map;
         let showController;
-        let debugAlert = true;
+        let debugAlert = false;
         let configData = {};
 
-        function alertDebug(msg) {
-            if (debugAlert) {
+        function alertDebug(msg, needAlert = false) {
+            if (debugAlert || needAlert) {
                 console.log(msg);
                 alert(msg);
             } else {
@@ -997,7 +997,7 @@
                 showController.start();
             } catch (error) {
                 console.error('初始化地图失败:', error);
-                alertDebug('初始化地图失败，errr:' + error.message);
+                alertDebug('初始化地图失败，errr:' + error.message, true);
                 return;
             }
         }
@@ -1025,7 +1025,7 @@
                 }
             } catch (error) {
                 // 处理网络错误（如断网、跨域）
-                alertDebug('Error loading config from API:' + error.message);
+                alertDebug('Error loading config from API:' + error.message, true);
             }
             return null;
         }
