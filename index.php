@@ -82,7 +82,7 @@ function checkCodeValid($code, $token) {
 // 读取配置
 function load_config($code = '') {
     try {
-        $file = $code . '_config.json';
+        $file = './config/' . $code . '_config.json';
         if (!file_exists($file)) {
             $file = DEFAULT_CONFIG_FILE;
         }
@@ -97,7 +97,7 @@ function load_config($code = '') {
 // 保存配置
 function save_config($config) {
     try {
-        $result = file_put_contents($config['code'] . '_config.json', json_encode($config, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        $result = file_put_contents('./config/' . $config['code'] . '_config.json', json_encode($config, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return $result !== false;
     } catch (Exception $e) {
         echo "Error saving config: " . $e->getMessage() . "\n";
