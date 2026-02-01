@@ -225,7 +225,8 @@
         // ==================== 地图操作工具类 ====================
 
         class MapUtils {
-            constructor(map) {
+            constructor(map, isMobile = false) {
+                this.isMobile = isMobile;
                 this.map = map;
             }
 
@@ -372,6 +373,28 @@
             }
 
             /**
+             * 自动调整地图视口，使所有点都在屏幕范围内可见
+             * @param {Array} points - 坐标点数组 [{lng, lat}, ...]
+             * @param {Object} options - 选项 {margins: [top, right, bottom, left]}
+             */
+            autoFitView(points, options = {}) {
+                if (!points || points.length === 0) {
+                    return;
+                }
+
+                // 转换为 BMap.Point 数组
+                const bmapPoints = points.map(p => new BMap.Point(p.lng, p.lat));
+
+                // 设置默认边距（移动端需要更大的边距） 
+                const defaultMargins = this.isMobile ? [2,2,2,2] : [100, 100, 100, 100];
+                const margins = options.margins || defaultMargins;
+
+                // 调整视口
+                console.log('调整视口， 边距:', margins);
+                this.map.setViewport(bmapPoints, { margins: margins });
+            }
+
+            /**
              * 绘制驾车路线
              * @param {Object} start - 起点 {lng, lat}
              * @param {Object} end - 终点 {lng, lat}
@@ -436,8 +459,9 @@
         // ==================== 展示控制器 ====================
 
         class ShowController {
-            constructor(map, config) {
-                this.mapUtils = new MapUtils(map);
+            constructor(map, config, isMobile = false) {
+                this.isMobile = isMobile
+                this.mapUtils = new MapUtils(map, isMobile);
                 this.config = config;
                 this.audio = null;
                 this.preloadedImages = {}; // 存储预加载的图片对象
@@ -713,6 +737,9 @@
                     // 隐藏加载层
                     document.getElementById('loading').style.display = 'none';
 
+                    // 调试结束画面使用
+                    // await this.executeEndShow();
+
                     // 按 order 排序 showList
                     const sortedShowList = [...this.config.showList].sort((a, b) => a.order - b.order);
 
@@ -906,19 +933,17 @@
                 // 移动到结束位置
                 await this.mapUtils.panTo(endCfg.endMapCenterPoint, 800, endCfg.endMapCenterAddress);
                 var zoomLevel = endCfg.zoomLevel
-                if (isMobile) {
-                    // 移动端要缩放比例
-                    zoomLevel = 8
-                    console.log('移动端，缩放比例:', zoomLevel);
-                }
                 await this.mapUtils.zoomTo(zoomLevel, 800, endCfg.endMapCenterPoint, endCfg.endMapCenterAddress);
-
 
                 // 切换到卫星图
                 this.mapUtils.setMapType(BMAP_HYBRID_MAP);
 
                 // 随机打乱标记点
                 const shuffledMarkers = shuffleArray(endCfg.markerList);
+
+                // 自动调整地图视口，使所有标记点都在屏幕范围内可见
+                await sleep(500);
+                this.mapUtils.autoFitView(shuffledMarkers);
 
                 // 顺序添加标记点
                 for (const marker of shuffledMarkers) {
@@ -935,7 +960,7 @@
              * 显示结束画面
              */
             async showEndScreen() {
-                await slideDownAnimation('theEnd', 1000);
+                await slideDownAnimation('theEnd', 1500);
                 const theEndText = document.getElementById('theEnd');
                 theEndText.innerHTML = `
                     <div id="theEndText">
@@ -992,7 +1017,7 @@
                 map.disableDragging();
                 map.disableDoubleClickZoom();
                 // 3.初始化展示控制器
-                showController = new ShowController(map, configData);
+                showController = new ShowController(map, configData, isMobile);
                 // 4.开始展示流程
                 showController.start();
             } catch (error) {
