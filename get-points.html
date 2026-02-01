@@ -17,9 +17,13 @@
     <script>
         // 初始化地图
         const map = new BMap.Map("map");
-        map.centerAndZoom(new BMap.Point(82.918, 40.612), 10);
-        map.enableScrollWheelZoom(true);
-        
+        map.centerAndZoom(new BMap.Point(82.918, 40.612), 9);
+		// 设置为卫星图
+        map.setMapType(BMAP_HYBRID_MAP);
+		// 禁止缩放
+        // map.enableScrollWheelZoom(false);
+        map.disableDragging();
+        map.disableDoubleClickZoom();
         // 存储坐标的数组
         const points = [];
 
