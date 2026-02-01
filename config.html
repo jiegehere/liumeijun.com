@@ -306,8 +306,9 @@
             <h2>快速操作</h2>
             <button class="btn" onclick="saveConfig()">保存配置</button>
             <button class="btn btn-secondary" onclick="loadConfig()">重新加载</button>
-            <button class="btn btn-secondary" onclick="exportConfig()">导出JSON</button>
-            <button class="btn btn-secondary" onclick="showJsonEditor()">JSON编辑</button>
+            <button class="btn btn-secondary" onclick="jumpToShowUrl()">查看效果</button>
+            <button class="btn btn-secondary" style="display: none;" onclick="exportConfig()">导出JSON</button>
+            <button class="btn btn-secondary" style="display: none;" onclick="showJsonEditor()">JSON编辑</button>
         </div>
 
         <!-- 标签页 -->
@@ -315,7 +316,7 @@
             <div class="tab active" onclick="switchTab('basic')">基本配置</div>
             <div class="tab" onclick="switchTab('chapters')">章节管理</div>
             <div class="tab" onclick="switchTab('end')">结束画面配置</div>
-            <div class="tab" onclick="switchTab('json')">JSON预览</div>
+            <div class="tab" style="display: none;" onclick="switchTab('json')">JSON预览</div>
         </div>
 
         <!-- 基本配置 -->
@@ -387,7 +388,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>缩放级别</label>
+                    <label>地图缩放级别</label>
                     <select id="endZoomLevel">
                         <option value="3">3 - 展示全国范围（如：中国地图）</option>
                         <option value="4">4 - 展示全国范围（如：中国地图）</option>
@@ -409,7 +410,7 @@
                 <div class="form-group">
                     <label>标记点列表（JSON数组）</label>
                     <textarea id="endMarkerList" class="json-editor" placeholder='[{"lng": 116.135018, "lat": 24.33438}, {"lng": 113.345774, "lat": 23.153356}]'></textarea>
-                    <small style="color: #666;">格式：JSON数组，每个元素包含 lng 和 lat 属性</small>
+                    <small style="color: #666;">格式：JSON数组，每个元素包含 lng 和 lat 属性， 默认标记点组成字是 生日快乐</small>
                 </div>
             </div>
         </div>
@@ -441,6 +442,7 @@
     <script>
         // 当前配置数据
         let currentConfig = {
+            code: "",
             basicCfg: {
                 initMapCenterAddress: "",
                 initMapCenterPoint: { lng: "", lat: "" },
@@ -465,9 +467,50 @@
             4: { name: "想去的地方", desc: "展示想去的地方" }
         };
 
+        // 获取cookie值
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) {
+                return parts.pop().split(';').shift();
+            }
+            return null;
+        }
+
+        function getCodeDesc() {
+            html = `
+                <div class="alert alert-danger" role="alert">
+                    <div style="text-align: center;"> 链接有误，缺失授权码或已失效，可扫码咨询获取 </div>
+                    <div style="text-align: center; margin-top: 10px;">
+                        <img src="./uploads/images/qrcode.png" alt="扫码咨询" style="width: 100px; height: 100px;">
+                    </div>
+                </div>
+            `;
+            return html;
+        }
+
+        // 跳转查看效果
+        function jumpToShowUrl() {
+            if (!currentConfig.code) {
+                showMessage(getCodeDesc(), 'error', 0);
+                return;
+            }
+            window.open('./index.html?code=' + currentConfig.code, '_blank');
+        }
+
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
-            loadConfig();
+            // 读取链接参数code或者本地cookie中的code
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code') || getCookie('code');
+            if (!code) {
+                showMessage(getCodeDesc(), 'error', 0);
+                return;
+            }
+            if (code) {
+                currentConfig.code = code;
+            }
+            loadConfig(code);
         });
 
         // 切换标签页
@@ -484,24 +527,30 @@
         }
 
         // 显示消息
-        function showMessage(message, type = 'info') {
+        function showMessage(message, type = 'info', showTime = 3000) {
             const msgEl = document.getElementById('message');
-            msgEl.textContent = message;
+            msgEl.innerHTML = message;
             msgEl.className = 'message ' + type;
-            setTimeout(() => {
-                msgEl.className = 'message';
-            }, 3000);
+            if (showTime > 0) {
+                setTimeout(() => {
+                    msgEl.className = 'message';
+                }, showTime);
+            }
         }
 
         // 加载配置
-        async function loadConfig() {
+        async function loadConfig(code) {
             try {
-                const response = await fetch('/api/config');
+                const response = await fetch('/api/getConfig?code=' + code);
                 console.log("加载配置响应:", response);
                 if (response.ok) {
                     const data = await response.json();
-                    currentConfig = data;
-                    showMessage('配置加载成功', 'success');
+                    if (data.ret === 0) {
+                        currentConfig = data.data;
+                        currentConfig.code = code; //保证一致
+                    } else {
+                        showMessage(getCodeDesc(), 'error', 0);
+                    }
                 } else {
                     showMessage('使用默认配置', 'info');
                 }
@@ -627,7 +676,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>缩放级别</label>
+                        <label>地图缩放级别</label>
                         <select class="chapter-zoomLevel">
                             <option value="3" ${chapter.zoomLevel === 3 ? 'selected' : ''}>3 - 展示全国范围（如：中国地图）</option>
                             <option value="4" ${chapter.zoomLevel === 4 ? 'selected' : ''}>4 - 展示全国范围（如：中国地图）</option>
@@ -973,7 +1022,7 @@
                 collectChapters();
                 collectEndConfig();
 
-                const response = await fetch('/api/config', {
+                const response = await fetch('/api/saveConfig', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -982,7 +1031,12 @@
                 });
 
                 if (response.ok) {
-                    showMessage('配置保存成功', 'success');
+                    const result = await response.json();
+                    if (result.success) {
+                        showMessage('配置保存成功', 'success');
+                    } else {
+                        throw new Error(result.message || '保存失败');
+                    }   
                 } else {
                     throw new Error('保存失败');
                 }
@@ -1003,7 +1057,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'config-refactored.json';
+            a.download = 'config.json';
             a.click();
             URL.revokeObjectURL(url);
             showMessage('配置已导出', 'success');

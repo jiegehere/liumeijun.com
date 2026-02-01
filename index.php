@@ -15,7 +15,11 @@ if (!file_exists(UPLOAD_DIR)) {
 }
 
 // 加载默认配置
-const DEFAULT_CONFIG_FILE = 'defalut_config.json';
+const DEFAULT_CONFIG_FILE = 'config/defalut_config.json';
+
+// 授权码文件
+const CODE_FILE = 'config/code.csv';
+
 // 加载配置
 $file = CONFIG_FILE;
 if (!file_exists(CONFIG_FILE)) {
@@ -23,11 +27,61 @@ if (!file_exists(CONFIG_FILE)) {
     $file = DEFAULT_CONFIG_FILE;
 }
 
-// 读取配置, 后续再做多版本管理
-function load_config($file, $version = '') {
+function readCsvAllLines($file) {
+    $codes = [];
+    // 1. 尝试打开文件，判断是否打开成功
+    $handle = fopen($file, 'r');
+    if (!$handle) {
+        die("错误：无法打开文件 " . $file . "，请检查路径和读取权限");
+    }
+    // 2. 循环读取每一行，直到文件末尾
+    while (($row = fgetcsv($handle)) !== false) {
+        // 3. 跳过空行（手动实现 FILE_SKIP_EMPTY_LINES 的效果）
+        // 过滤掉所有空元素，判断是否为纯空行
+        $trimmedRow = array_filter($row, function($value) {
+            return !empty(trim($value));
+        });
+        if (empty($trimmedRow)) {
+            continue;
+        }
+        // 4. 移除每行末尾的换行符（手动实现 FILE_IGNORE_NEW_LINES 的效果）
+        $cleanRow = array_map(function($value) {
+            return rtrim($value, "\r\n");
+        }, $row);
+        // 5. 将有效行存入数组
+        $codes[] = $cleanRow;
+    }
+    
+    // 6. 关闭文件句柄，释放资源
+    fclose($handle);
+    
+    return $codes;
+}
+
+// 判断编码是否有效
+function checkCodeValid($code) {
+    if (empty($code)) {
+        return false;
+    }
+    // 从授权码文件中读取
+    $codes = readCsvAllLines(CODE_FILE);
+    foreach ($codes as $index => $row) {
+        if ($index == 0) {
+            continue;
+        }
+        if ($row[1] === $code) {
+            return $row[2] == '1';
+        }
+    }
+    return false;
+}
+
+// 读取配置
+function load_config($code = '') {
     try {
+        $file = $code . '_config.json';
         if (!file_exists($file)) {
-            return [];
+            $file = DEFAULT_CONFIG_FILE;
         }
         $content = file_get_contents($file);
         return json_decode($content, true);
@@ -40,7 +94,7 @@ function load_config($file, $version = '') {
 // 保存配置
 function save_config($config) {
     try {
-        $result = file_put_contents(CONFIG_FILE, json_encode($config, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        $result = file_put_contents($config['code'] . '_config.json', json_encode($config, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return $result !== false;
     } catch (Exception $e) {
         echo "Error saving config: " . $e->getMessage() . "\n";
@@ -258,13 +312,25 @@ function handle_options() {
 // 处理GET请求
 function handle_get($path) {
     // 获取配置接口
-    if ($path === '/api/config') {
+    if ($path === '/api/getConfig') {
         http_response_code(200);
         header('Content-Type: application/json');
         set_cors_headers();
-        $version = $_GET['version'] ?? '';
-        $config = load_config($GLOBALS['file'], $version);
-        echo json_encode($config, JSON_UNESCAPED_UNICODE);
+        $code = $_GET['code'] ?? '';
+        $ret = [
+            'ret' => 0,
+            'errmsg' => '',
+            'data' => [],
+        ];
+        if (!checkCodeValid($code)) {
+            $ret['ret'] = 1001;
+            $ret['errmsg'] = '授权码错误或已失效:' . $code;
+            echo json_encode($ret, JSON_UNESCAPED_UNICODE);
+            exit;
+        } 
+        $config = load_config($code);
+        $ret['data'] = $config;
+        echo json_encode($ret, JSON_UNESCAPED_UNICODE);
         exit;
     }
     
@@ -320,13 +386,22 @@ function handle_get($path) {
 // 处理POST请求
 function handle_post($path) {
     // 保存配置接口
-    if ($path === '/api/config') {
+    if ($path === '/api/saveConfig') {
         // 读取请求体
         $content_length = $_SERVER['CONTENT_LENGTH'] ?? 0;
         $post_data = file_get_contents('php://input');
         
         try {
             $config = json_decode($post_data, true);
+            $code = $config['code'] ?? '';
+            if (!checkCodeValid($code)) {
+                http_response_code(200);
+                header('Content-Type: application/json');
+                set_cors_headers();
+                $response = ["success" => false, "message" => "授权码错误或已失效"];
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                exit;
+            }
             $success = save_config($config);
             
             http_response_code(200);

@@ -768,33 +768,6 @@
                     alert('初始化失败：' + error.message, true);
                 }
             }
-            // 从 后端API 加载配置
-            async loadConfigFromApi() {
-                try {
-                    // 从当前页面url参数获取 配置文件版本
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const configVersion = urlParams.get('version') || '';
-
-                    // 1. 等待 fetch 请求完成，拿到实际的响应对象
-                    const response = await fetch('/api/config?version=' + configVersion);
-                    console.log('请求配置, configVersion: ', configVersion, ' 接口返回: response.ok', response.ok); // 此时才是真正的请求成功状态
-
-                    // 2. 判断响应状态是否正常（HTTP 状态码 200-299）
-                    if (response.ok) {
-                        // 3. 等待 JSON 解析完成，返回配置数据
-                        const configData = await response.json();
-                        console.log('加载API configData', configData);
-                        return configData;
-                    } else {
-                        // 处理 HTTP 错误（如 404/500）
-                        console.error('API 请求失败，状态码：', response.status);
-                    }
-                } catch (error) {
-                    // 处理网络错误（如断网、跨域）
-                    console.error('Error loading config from API:', error);
-                }
-                return null;
-            }
 
             /**
              * 预加载所有图片
@@ -1195,16 +1168,16 @@
             try {
                 // 从当前页面url参数获取 配置文件版本
                 const urlParams = new URLSearchParams(window.location.search);
-                const configVersion = urlParams.get('version') || '';
+                const code = urlParams.get('code') || '';
 
                 // 1. 等待 fetch 请求完成，拿到实际的响应对象
-                const response = await fetch('/api/config?version=' + configVersion);
+                const response = await fetch('/api/getConfig?code=' + code);
                 // 2. 判断响应状态是否正常（HTTP 状态码 200-299）
                 if (response.ok) {
                     // 3. 等待 JSON 解析完成，返回配置数据
                     const configData = await response.json();
                     alertDebug('加载API configData:' + JSON.stringify(configData));
-                    return configData;
+                    return configData.data || {};
                 } else {
                     // 处理 HTTP 错误（如 404/500）
                     alertDebug('API 请求失败，状态码：' + response.status);
