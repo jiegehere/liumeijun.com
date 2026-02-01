@@ -551,7 +551,7 @@
                     await this.initAudio();
 
                     // 4. 显示开始按钮
-                    this.showStartButton();
+                    await this.showStartButton();
 
                 } catch (error) {
                     console.error('初始化失败:', error);
@@ -600,9 +600,8 @@
                         }
                     });
                 });
-                alertDebug('开始预加载图片, 数量:' + imageUrls.length);
                 await this.preloadImages(imageUrls);
-                alertDebug('所有图片预加载完成');
+                alertDebug('所有图片预加载完成, 数量:' + imageUrls.length);
             }
 
             /**
@@ -661,9 +660,9 @@
              * 显示开始按钮
              */
             showStartButton() {
+                alertDebug('显示开始按钮');
                 const loading = document.getElementById('loading');
                 loading.innerHTML = '点击开始';
-                alertDebug('显示开始按钮');
                 loading.onclick = async () => {
                     // 先播放音频（微信浏览器需要用户交互才能播放）
                     this.playAudio();
@@ -970,7 +969,7 @@
                 showController.start();
             } catch (error) {
                 console.error('初始化地图失败:', error);
-                alert('初始化地图失败，errr:' + error.message);
+                alertDebug('初始化地图失败，errr:' + error.message);
                 return;
             }
         }
@@ -986,8 +985,6 @@
 
                 // 1. 等待 fetch 请求完成，拿到实际的响应对象
                 const response = await fetch('/api/config?version=' + configVersion);
-                alertDebug('请求配置, configVersion: ' + configVersion + ' 接口返回: response.ok' + response.ok); // 此时才是真正的请求成功状态
-
                 // 2. 判断响应状态是否正常（HTTP 状态码 200-299）
                 if (response.ok) {
                     // 3. 等待 JSON 解析完成，返回配置数据
