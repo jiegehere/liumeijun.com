@@ -287,6 +287,7 @@
         }
     ],
     "endShowCfg": {
+        "endText": "To my dearest LJ :)",
         "endMapCenterAddress": "新疆维吾尔自治区阿克苏地区沙雅县塔里木盆地",
         "endMapCenterPoint": {
             "lng": 82.013144,

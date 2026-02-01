@@ -368,6 +368,10 @@
                 <h2>结束配置</h2>
                 <div class="grid-2">
                     <div class="form-group">
+                        <label>结束画面文案</label>
+                        <input type="text" id="endText" placeholder="输入结束画面文案">
+                    </div>
+                    <div class="form-group">
                         <label>结束地图中心地址</label>
                         <div class="address-group">
                             <input type="text" id="endMapCenterAddress" placeholder="输入地址">
@@ -445,6 +449,7 @@
             },
             showList: [],
             endShowCfg: {
+                endText: "",
                 endMapCenterAddress: "",
                 endMapCenterPoint: { lng: "", lat: "" },
                 zoomLevel: 9,
@@ -521,6 +526,7 @@
 
         // 渲染结束配置
         function renderEndConfig() {
+            document.getElementById('endText').value = currentConfig.endShowCfg?.endText || '';
             document.getElementById('endMapCenterAddress').value = currentConfig.endShowCfg?.endMapCenterAddress || '';
             document.getElementById('endMapCenterLng').value = currentConfig.endShowCfg?.endMapCenterPoint?.lng || '';
             document.getElementById('endMapCenterLat').value = currentConfig.endShowCfg?.endMapCenterPoint?.lat || '';
@@ -548,6 +554,7 @@
                 const markerList = markerListJson ? JSON.parse(markerListJson) : [];
                 
                 currentConfig.endShowCfg = {
+                    endText: document.getElementById('endText').value,
                     endMapCenterAddress: document.getElementById('endMapCenterAddress').value,
                     endMapCenterPoint: {
                         lng: parseFloat(document.getElementById('endMapCenterLng').value) || 0,
