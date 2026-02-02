@@ -933,7 +933,7 @@
                 } catch (e) {
                     console.error('JSON 解析失败:', e);
                     console.error('响应内容:', responseText);
-                    showMessage('上传失败: 服务器返回格式错误', 'error');
+                    showMessage('上传失败: 服务器返回格式错误, 响应内容：' + responseText, 'error');
                     return;
                 }
 
