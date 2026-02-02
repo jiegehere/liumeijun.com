@@ -2,9 +2,9 @@
 // 配置文件路径
 const CONFIG_FILE = 'config/config.json';
 // 上传图片保存目录
-const UPLOAD_DIR = 'uploads/images/';
+const UPLOAD_DIR = 'uploads/images';
 // 上传音频保存目录
-const AUDIO_UPLOAD_DIR = 'uploads/music/';
+const AUDIO_UPLOAD_DIR = 'uploads/music';
 
 // 确保配置目录存在
 if (!file_exists('config')) {
@@ -302,9 +302,9 @@ function compress_image($source_path, $target_path, $max_size_kb = 200)
     do {
         if ($mime === 'image/png') {
             // PNG 使用质量 0-9，9 是最高压缩
-            imagepng($new_image, $target_path, min(9, intval((100 - $quality) / 11)));
+            @imagepng($new_image, $target_path, min(9, intval((100 - $quality) / 11)));
         } else {
-            imagejpeg($new_image, $target_path, $quality);
+            @imagejpeg($new_image, $target_path, $quality);
         }
 
         $file_size = filesize($target_path) / 1024; // KB
@@ -312,8 +312,8 @@ function compress_image($source_path, $target_path, $max_size_kb = 200)
     } while ($file_size > $max_size_kb && $quality >= 60);
 
     // 清理资源
-    imagedestroy($source_image);
-    imagedestroy($new_image);
+    @imagedestroy($source_image);
+    @imagedestroy($new_image);
 
     return true;
 }
