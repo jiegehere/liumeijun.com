@@ -185,7 +185,20 @@ function fix_image_orientation($image, $orientation)
 // 图片压缩函数
 function compress_image($source_path, $target_path, $max_size_kb = 200)
 {
-    // 获取图片信息
+    $target_dir = dirname($target_path);
+    
+    if (!file_exists($target_dir)) {
+        mkdir($target_dir, 0777, true);
+    }
+    
+    if (!is_writable($target_dir)) {
+        chmod($target_dir, 0777);
+    }
+    
+    if (!is_writable($target_dir)) {
+        return false;
+    }
+    
     $info = getimagesize($source_path);
     if (!$info) {
         return false;
@@ -237,12 +250,12 @@ function compress_image($source_path, $target_path, $max_size_kb = 200)
     // 如果已经小于目标大小，直接保存（保持原尺寸）
     if ($current_size <= $max_size_kb) {
         if ($mime === 'image/png') {
-            imagepng($source_image, $target_path, 6);
+            $result = imagepng($source_image, $target_path, 6);
         } else {
-            imagejpeg($source_image, $target_path, 90);
+            $result = imagejpeg($source_image, $target_path, 90);
         }
         imagedestroy($source_image);
-        return true;
+        return $result !== false;
     }
 
     // 计算需要的压缩比例
@@ -302,11 +315,18 @@ function compress_image($source_path, $target_path, $max_size_kb = 200)
     do {
         if ($mime === 'image/png') {
             // PNG 使用质量 0-9，9 是最高压缩
-            @imagepng($new_image, $target_path, min(9, intval((100 - $quality) / 11)));
+            $result = @imagepng($new_image, $target_path, min(9, intval((100 - $quality) / 11)));
         } else {
-            @imagejpeg($new_image, $target_path, $quality);
+            $result = @imagejpeg($new_image, $target_path, $quality);
         }
 
+        if (!$result) {
+            imagedestroy($source_image);
+            imagedestroy($new_image);
+            return false;
+        }
+
+        clearstatcache(true, $target_path);
         $file_size = filesize($target_path) / 1024; // KB
         $quality -= 5;
     } while ($file_size > $max_size_kb && $quality >= 60);
@@ -501,6 +521,17 @@ function handle_post($path)
             $md5 = md5_file($file['tmp_name']);
             $filename = $md5 . '.jpg';
             $file_path = UPLOAD_DIR . '/' . $filename;
+
+            if (!is_writable(UPLOAD_DIR)) {
+                chmod(UPLOAD_DIR, 0777);
+            }
+
+            if (!is_writable(UPLOAD_DIR)) {
+                http_response_code(500);
+                $response = ["success" => false, "message" => "上传目录不可写，请检查权限"];
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                exit;
+            }
 
             // 压缩图片并保存
             $temp_path = $file['tmp_name'];
