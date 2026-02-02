@@ -5,15 +5,24 @@
     <title>百度地图写字+导出坐标</title>
     <script src="https://api.map.baidu.com/api?v=2.0&ak=EXl1klVct9z0GXE7KAkPUkawwDhDN0h9"></script>
     <style>
-        #map {width:100vw;height:90vh;}
-        button {padding:8px 16px;margin:5px;}
+        #map {width:100vw;height:100vh;}
+        button {padding:8px 16px;margin:5px;font-size: 30px;font-weight: bold;border: 2px solid #000;}
+        .btn_loc {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
     </style>
 </head>
 <body>
     <div id="map"></div>
-    <button onclick="clearPoints()">清空</button>
-    <button onclick="exportPoints()">导出坐标(复制到剪贴板)</button>
-	<button onclick="backToConfig()">返回配置页面</button>
+    <div class="btn_loc">
+        <button onclick="clearPoints(0)">清空所有点</button>
+        <button onclick="clearPoints(1)">清空上一个点</button>
+        <button onclick="exportPoints()">导出坐标(复制到剪贴板)</button>
+        <button onclick="backToConfig()">返回配置页面</button>
+    </div>
+
     <script>
         // 初始化地图
         const map = new BMap.Map("map");
@@ -35,9 +44,16 @@
         });
 
         // 清空所有点
-        function clearPoints() {
-            map.clearOverlays();
-            points.length = 0;
+        function clearPoints(type) {
+            if (type === 0) {
+                map.clearOverlays();
+                points.length = 0;
+            } else if (type === 1) {
+                if (points.length > 0) {
+                    map.removeOverlay(map.getOverlays()[map.getOverlays().length - 1]);
+                    points.pop();
+                }
+            }
         }
 
         // 导出坐标（复制到剪贴板）
