@@ -29,10 +29,16 @@
         map.centerAndZoom(new BMap.Point(82.918, 40.612), 9);
 		// 设置为卫星图
         map.setMapType(BMAP_HYBRID_MAP);
+
+        // 不生效可能是因为地图未加载完成，后续再看是否有需要优化
 		// 禁止缩放
-        // map.enableScrollWheelZoom(false);
+        //map.disableScrollWheelZoom();
+        // 禁止触摸缩放
+        //map.disableTouchZoom();
         map.disableDragging();
         map.disableDoubleClickZoom();
+
+
         // 存储坐标的数组
         const points = [];
 
