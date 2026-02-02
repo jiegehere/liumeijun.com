@@ -350,7 +350,11 @@
                 </div>
                 <div class="form-group">
                     <label>音频文件路径</label>
-                    <input type="text" id="audioUrl" placeholder="./audio.mp3">
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="audioUrl" placeholder="./uploads/music/audio.mp3" readonly>
+                        <input type="file" id="audioFile" accept="audio/*" style="display: none;" onchange="handleAudioUpload(this)">
+                        <button class="btn btn-sm" onclick="document.getElementById('audioFile').click()">上传</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -935,6 +939,53 @@
                 console.error('上传失败:', error);
                 showMessage('上传失败: ' + error.message, 'error');
             }
+        }
+
+        // 处理音频上传
+        async function handleAudioUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // 检查文件类型
+            if (!file.type.startsWith('audio/')) {
+                showMessage('请选择音频文件', 'error');
+                return;
+            }
+
+            // 检查文件大小（限制 10MB）
+            if (file.size > 10 * 1024 * 1024) {
+                showMessage('音频大小不能超过 10MB', 'error');
+                return;
+            }
+
+            showMessage('正在上传音频...', 'info');
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const response = await fetch('/api/uploadAudio', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // 更新音频路径输入框
+                    const audioUrlInput = document.getElementById('audioUrl');
+                    audioUrlInput.value = result.url;
+
+                    showMessage('音频上传成功，请注意点击上方的保存按钮，修改的配置才能生效', 'success');
+                } else {
+                    showMessage('上传失败: ' + result.message, 'error');
+                }
+            } catch (error) {
+                console.error('上传失败:', error);
+                showMessage('上传失败: ' + error.message, 'error');
+            }
+            // 重置为空
+            input.value = '';
         }
 
         // 清除图片

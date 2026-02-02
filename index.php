@@ -3,6 +3,8 @@
 const CONFIG_FILE = 'config/config.json';
 // 上传图片保存目录
 const UPLOAD_DIR = 'uploads/images/';
+// 上传音频保存目录
+const AUDIO_UPLOAD_DIR = 'uploads/music/';
 
 // 确保配置目录存在
 if (!file_exists('config')) {
@@ -12,6 +14,11 @@ if (!file_exists('config')) {
 // 确保上传目录存在
 if (!file_exists(UPLOAD_DIR)) {
     mkdir(UPLOAD_DIR, 0777, true);
+}
+
+// 确保音频上传目录存在
+if (!file_exists(AUDIO_UPLOAD_DIR)) {
+    mkdir(AUDIO_UPLOAD_DIR, 0777, true);
 }
 
 // 加载默认配置
@@ -529,6 +536,104 @@ function handle_post($path)
                 set_cors_headers();
 
                 $response = ["success" => false, "message" => "图片压缩失败"];
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+        } catch (Exception $e) {
+            http_response_code(500);
+            header('Content-Type: application/json');
+            set_cors_headers();
+            $response = ["success" => false, "message" => "上传失败: " . $e->getMessage()];
+            echo json_encode($response, JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+    }
+
+    // 音频上传接口
+    elseif ($path === '/api/uploadAudio') {
+        try {
+            // 检查是否有文件上传
+            if (!isset($_FILES['file'])) {
+                http_response_code(400);
+                header('Content-Type: application/json');
+                set_cors_headers();
+                $response = ["success" => false, "message" => "未选择文件"];
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+
+            $file = $_FILES['file'];
+
+            // 检查上传错误
+            if ($file['error'] !== UPLOAD_ERR_OK) {
+                http_response_code(400);
+                header('Content-Type: application/json');
+                set_cors_headers();
+                $response = [
+                    "success" => false, 
+                    "message" => "文件上传失败，注意不能超过10MB, 错误码 " . $file['error'],
+                ];
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+
+            // 检查文件类型
+            $allowed_types = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/m4a', 'audio/x-m4a'];
+            if (!in_array($file['type'], $allowed_types)) {
+                http_response_code(400);
+                header('Content-Type: application/json');
+                set_cors_headers();
+                $response = ["success" => false, "message" => "不支持的音频格式"];
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+
+            // 检查文件大小（限制 20MB）
+            $max_size = 10 * 1024 * 1024;
+            if ($file['size'] > $max_size) {
+                http_response_code(400);
+                header('Content-Type: application/json');
+                set_cors_headers();
+                $response = ["success" => false, "message" => "音频文件大小不能超过 20MB"];
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+
+            // 生成唯一文件名
+            $md5 = md5_file($file['tmp_name']);
+            $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+            if (empty($ext)) {
+                $ext = 'mp3';
+            }
+            $filename = $md5 . '.' . $ext;
+            $file_path = AUDIO_UPLOAD_DIR . '/' . $filename;
+
+            // 移动上传的文件
+            if (move_uploaded_file($file['tmp_name'], $file_path)) {
+                // 获取文件大小
+                $final_size = round(filesize($file_path) / 1024, 2);
+
+                // 生成文件URL
+                $file_url = '/uploads/music/' . $filename;
+
+                http_response_code(200);
+                header('Content-Type: application/json');
+                set_cors_headers();
+
+                $response = [
+                    "success" => true,
+                    "url" => $file_url,
+                    "message" => "音频上传成功，大小: {$final_size}KB",
+                    "size" => $final_size
+                ];
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                exit;
+            } else {
+                http_response_code(500);
+                header('Content-Type: application/json');
+                set_cors_headers();
+
+                $response = ["success" => false, "message" => "音频保存失败"];
                 echo json_encode($response, JSON_UNESCAPED_UNICODE);
                 exit;
             }
