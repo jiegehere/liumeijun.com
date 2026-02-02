@@ -878,6 +878,12 @@
             });
         }
 
+        // 检测是否为微信浏览器
+        function isWeChatBrowser() {
+            const ua = navigator.userAgent.toLowerCase();
+            return ua.indexOf('micromessenger') !== -1;
+        }
+
         // 处理图片上传
         async function handleImageUpload(input, chapterIndex, locIndex) {
             const file = input.files[0];
@@ -901,12 +907,35 @@
                 const formData = new FormData();
                 formData.append('file', file);
 
-                const response = await fetch('/api/upload', {
+                // 微信浏览器兼容性处理
+                const fetchOptions = {
                     method: 'POST',
                     body: formData
-                });
+                };
 
-                const result = await response.json();
+                if (isWeChatBrowser()) {
+                    // 微信浏览器可能需要设置这些选项
+                    fetchOptions.mode = 'cors';
+                    fetchOptions.credentials = 'same-origin';
+                }
+
+                const response = await fetch('/api/upload', fetchOptions);
+
+                console.log('上传响应状态:', response.status, response.statusText);
+                console.log('上传响应头:', response.headers);
+
+                const responseText = await response.text();
+                console.log('上传响应原文:', responseText);
+
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (e) {
+                    console.error('JSON 解析失败:', e);
+                    console.error('响应内容:', responseText);
+                    showMessage('上传失败: 服务器返回格式错误', 'error');
+                    return;
+                }
 
                 if (result.success) {
                     // 更新图片路径输入框
@@ -964,12 +993,35 @@
                 const formData = new FormData();
                 formData.append('file', file);
 
-                const response = await fetch('/api/uploadAudio', {
+                // 微信浏览器兼容性处理
+                const fetchOptions = {
                     method: 'POST',
                     body: formData
-                });
+                };
 
-                const result = await response.json();
+                if (isWeChatBrowser()) {
+                    // 微信浏览器可能需要设置这些选项
+                    fetchOptions.mode = 'cors';
+                    fetchOptions.credentials = 'same-origin';
+                }
+
+                const response = await fetch('/api/uploadAudio', fetchOptions);
+
+                console.log('音频上传响应状态:', response.status, response.statusText);
+                console.log('音频上传响应头:', response.headers);
+
+                const responseText = await response.text();
+                console.log('音频上传响应原文:', responseText);
+
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (e) {
+                    console.error('JSON 解析失败:', e);
+                    console.error('响应内容:', responseText);
+                    showMessage('上传失败: 服务器返回格式错误', 'error');
+                    return;
+                }
 
                 if (result.success) {
                     // 更新音频路径输入框

@@ -431,6 +431,11 @@ function handle_post($path)
 {
     // 保存配置接口
     if ($path === '/api/saveConfig') {
+        // 先设置 CORS 头
+        http_response_code(200);
+        header('Content-Type: application/json');
+        set_cors_headers();
+
         // 读取请求体
         $content_length = $_SERVER['CONTENT_LENGTH'] ?? 0;
         $post_data = file_get_contents('php://input');
@@ -440,36 +445,25 @@ function handle_post($path)
             $config = $postData['config'] ?? [];
             $token = $postData['token'] ?? '';
             if (empty($token)) {
-                http_response_code(200);
-                header('Content-Type: application/json');
-                set_cors_headers();
+                http_response_code(400);
                 $response = ["success" => false, "message" => "参数错误"];
                 echo json_encode($response, JSON_UNESCAPED_UNICODE);
                 exit;
             }
             $code = $config['code'] ?? '';
             if (!checkCodeValid($code, $token)) {
-                http_response_code(200);
-                header('Content-Type: application/json');
-                set_cors_headers();
+                http_response_code(400);
                 $response = ["success" => false, "message" => "授权码错误或已失效"];
                 echo json_encode($response, JSON_UNESCAPED_UNICODE);
                 exit;
             }
             $success = save_config($config);
 
-            http_response_code(200);
-            header('Content-Type: application/json');
-            set_cors_headers();
-
             $response = ["success" => $success, "message" => $success ? "配置保存成功" : "配置保存失败"];
             echo json_encode($response, JSON_UNESCAPED_UNICODE);
             exit;
         } catch (Exception $e) {
             http_response_code(400);
-            header('Content-Type: application/json');
-            set_cors_headers();
-
             $response = ["success" => false, "message" => "解析配置失败: " . $e->getMessage()];
             echo json_encode($response, JSON_UNESCAPED_UNICODE);
             exit;
@@ -478,12 +472,15 @@ function handle_post($path)
 
     // 图片上传接口
     elseif ($path === '/api/upload') {
+        // 先设置 CORS 头
+        http_response_code(200);
+        header('Content-Type: application/json');
+        set_cors_headers();
+
         try {
             // 检查是否有文件上传
             if (!isset($_FILES['file'])) {
                 http_response_code(400);
-                header('Content-Type: application/json');
-                set_cors_headers();
                 $response = ["success" => false, "message" => "未选择文件"];
                 echo json_encode($response, JSON_UNESCAPED_UNICODE);
                 exit;
@@ -494,8 +491,6 @@ function handle_post($path)
             // 检查上传错误
             if ($file['error'] !== UPLOAD_ERR_OK) {
                 http_response_code(400);
-                header('Content-Type: application/json');
-                set_cors_headers();
                 $response = ["success" => false, "message" => "文件上传失败: 错误码 " . $file['error']];
                 echo json_encode($response, JSON_UNESCAPED_UNICODE);
                 exit;
@@ -518,10 +513,6 @@ function handle_post($path)
                 // 生成文件URL
                 $file_url = '/uploads/images/' . $filename;
 
-                http_response_code(200);
-                header('Content-Type: application/json');
-                set_cors_headers();
-
                 $response = [
                     "success" => true,
                     "url" => $file_url,
@@ -532,17 +523,12 @@ function handle_post($path)
                 exit;
             } else {
                 http_response_code(500);
-                header('Content-Type: application/json');
-                set_cors_headers();
-
                 $response = ["success" => false, "message" => "图片压缩失败"];
                 echo json_encode($response, JSON_UNESCAPED_UNICODE);
                 exit;
             }
         } catch (Exception $e) {
             http_response_code(500);
-            header('Content-Type: application/json');
-            set_cors_headers();
             $response = ["success" => false, "message" => "上传失败: " . $e->getMessage()];
             echo json_encode($response, JSON_UNESCAPED_UNICODE);
             exit;
@@ -551,12 +537,15 @@ function handle_post($path)
 
     // 音频上传接口
     elseif ($path === '/api/uploadAudio') {
+        // 先设置 CORS 头
+        http_response_code(200);
+        header('Content-Type: application/json');
+        set_cors_headers();
+
         try {
             // 检查是否有文件上传
             if (!isset($_FILES['file'])) {
                 http_response_code(400);
-                header('Content-Type: application/json');
-                set_cors_headers();
                 $response = ["success" => false, "message" => "未选择文件"];
                 echo json_encode($response, JSON_UNESCAPED_UNICODE);
                 exit;
@@ -567,8 +556,6 @@ function handle_post($path)
             // 检查上传错误
             if ($file['error'] !== UPLOAD_ERR_OK) {
                 http_response_code(400);
-                header('Content-Type: application/json');
-                set_cors_headers();
                 $response = [
                     "success" => false, 
                     "message" => "文件上传失败，注意不能超过10MB, 错误码 " . $file['error'],
@@ -581,8 +568,6 @@ function handle_post($path)
             $allowed_types = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/m4a', 'audio/x-m4a'];
             if (!in_array($file['type'], $allowed_types)) {
                 http_response_code(400);
-                header('Content-Type: application/json');
-                set_cors_headers();
                 $response = ["success" => false, "message" => "不支持的音频格式"];
                 echo json_encode($response, JSON_UNESCAPED_UNICODE);
                 exit;
@@ -592,8 +577,6 @@ function handle_post($path)
             $max_size = 10 * 1024 * 1024;
             if ($file['size'] > $max_size) {
                 http_response_code(400);
-                header('Content-Type: application/json');
-                set_cors_headers();
                 $response = ["success" => false, "message" => "音频文件大小不能超过 20MB"];
                 echo json_encode($response, JSON_UNESCAPED_UNICODE);
                 exit;
@@ -616,10 +599,6 @@ function handle_post($path)
                 // 生成文件URL
                 $file_url = '/uploads/music/' . $filename;
 
-                http_response_code(200);
-                header('Content-Type: application/json');
-                set_cors_headers();
-
                 $response = [
                     "success" => true,
                     "url" => $file_url,
@@ -630,18 +609,12 @@ function handle_post($path)
                 exit;
             } else {
                 http_response_code(500);
-                header('Content-Type: application/json');
-                set_cors_headers();
-
                 $response = ["success" => false, "message" => "音频保存失败"];
                 echo json_encode($response, JSON_UNESCAPED_UNICODE);
                 exit;
             }
         } catch (Exception $e) {
             http_response_code(500);
-            header('Content-Type: application/json');
-            set_cors_headers();
-
             $response = ["success" => false, "message" => "上传失败: " . $e->getMessage()];
             echo json_encode($response, JSON_UNESCAPED_UNICODE);
             exit;
