@@ -962,11 +962,11 @@
 
                     showMessage('图片上传成功，请注意点击上方的保存按钮，修改的配置才能生效', 'success');
                 } else {
-                    showMessage('上传失败: ' + result.message, 'error');
+                    showMessage('上传失败: ' + result.message + ' result:' + JSON.stringify(result), 'error');
                 }
             } catch (error) {
                 console.error('上传失败:', error);
-                showMessage('上传失败: ' + error.message, 'error');
+                showMessage('请求失败: ' + error.message, 'error');
             }
         }
 
