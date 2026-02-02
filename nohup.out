@@ -1,0 +1,18 @@
+Server running at http://localhost:8000
+API endpoints:
+  GET  /api/config        - 获取配置
+  POST /api/config        - 保存配置
+  POST /api/upload        - 上传图片
+Static files:
+  http://localhost:8000/config-manager.html - 配置管理页面
+  http://localhost:8000/index.html          - 网站首页
+Traceback (most recent call last):
+  File "backend.py", line 234, in <module>
+    run_server()
+  File "backend.py", line 231, in run_server
+    httpd.serve_forever()
+  File "/usr/lib64/python3.6/socketserver.py", line 236, in serve_forever
+    ready = selector.select(poll_interval)
+  File "/usr/lib64/python3.6/selectors.py", line 376, in select
+    fd_event_list = self._poll.poll(timeout)
+KeyboardInterrupt
