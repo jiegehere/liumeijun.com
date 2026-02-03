@@ -1035,7 +1035,7 @@
             async showLocationWindowInfo(location, showTime = 2500) {
                 // 如果有图片或文本，显示信息窗口
                 if (location.showImgUrl || location.showText) {
-                    let content = '<div style="text-align: center;">';
+                    let content = `<div>${location.showText}</div>`;
                     if (location.showImgUrl) {
                         // 使用预加载的图片 data URL
                         const preloadedSrc = this.preloadedImages[location.showImgUrl];
