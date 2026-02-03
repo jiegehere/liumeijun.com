@@ -938,7 +938,7 @@
                     await this.mapUtils.panTo(location.point, 1000, location.address);
                     await this.mapUtils.zoomTo(16, 800, location.point, location.address);
 
-                    await this.showLocationWindowInfo(location, 1000);
+                    await this.showLocationWindowInfo(location, 2000);
 
                     // 添加弹跳标记
                     this.mapUtils.addMarker(location.point, BMAP_ANIMATION_BOUNCE);
@@ -1047,10 +1047,9 @@
                             `;
                     }
                     this.mapUtils.openInfoWindow(content, location.point, location.showText);
+                    // 等待一段时间
+                    await sleep(showTime);
                 }
-
-                // 等待一段时间
-                await sleep(showTime);
 
                 // 关闭信息窗口
                 this.mapUtils.closeInfoWindow();
