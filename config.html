@@ -902,9 +902,15 @@
             }
 
             showMessage('正在上传图片...', 'info');
-
+            
             try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const code = urlParams.get('code') || '';
+                const token = urlParams.get('token') || '';
+
                 const formData = new FormData();
+                formData.append('code', code);
+                formData.append('token', token);
                 formData.append('file', file);
 
                 // 微信浏览器兼容性处理
@@ -919,7 +925,7 @@
                     fetchOptions.credentials = 'same-origin';
                 }
 
-                const response = await fetch('/api/upload', fetchOptions);
+                const response = await fetch('/api/uploadImage', fetchOptions);
 
                 console.log('上传响应状态:', response.status, response.statusText);
                 console.log('上传响应头:', response.headers);

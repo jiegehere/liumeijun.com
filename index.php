@@ -491,7 +491,7 @@ function handle_post($path)
     }
 
     // 图片上传接口
-    elseif ($path === '/api/upload') {
+    elseif ($path === '/api/uploadImage') {
         // 先设置 CORS 头
         http_response_code(200);
         header('Content-Type: application/json');
@@ -502,6 +502,26 @@ function handle_post($path)
             if (!isset($_FILES['file'])) {
                 http_response_code(400);
                 $response = ["success" => false, "message" => "未选择文件"];
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+            $code = $_POST['code'] ?? '';
+            $token = $_POST['token'] ?? '';
+            if (empty($token)) {
+                http_response_code(400);
+                $response = ["success" => false, "message" => "未提供token"];
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+            if (empty($code)) {
+                http_response_code(400);
+                $response = ["success" => false, "message" => "未提供授权码"];
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+            if (!checkCodeValid($code, $token)) {
+                http_response_code(400);
+                $response = ["success" => false, "message" => "授权码错误或已失效"];
                 echo json_encode($response, JSON_UNESCAPED_UNICODE);
                 exit;
             }
@@ -520,19 +540,17 @@ function handle_post($path)
             // 使用原文件的MD5作为文件名，避免文件名冲突
             $md5 = md5_file($file['tmp_name']);
             $filename = $md5 . '.jpg';
-            $file_path = UPLOAD_DIR . '/' . $filename;
-
-            if (!is_writable(UPLOAD_DIR)) {
-                chmod(UPLOAD_DIR, 0777);
-            }
-
+            $fileDir = UPLOAD_DIR . '/' . $code;
+            $file_path = $fileDir . '/' . $filename;
             if (!is_writable(UPLOAD_DIR)) {
                 http_response_code(500);
                 $response = ["success" => false, "message" => "上传目录不可写，请检查权限"];
                 echo json_encode($response, JSON_UNESCAPED_UNICODE);
                 exit;
             }
-
+            if (!is_dir($fileDir)) {
+                mkdir($fileDir, 0777, true);
+            }
             // 压缩图片并保存
             $temp_path = $file['tmp_name'];
             $compressed = compress_image($temp_path, $file_path, 200); // 最大 200KB
@@ -540,13 +558,10 @@ function handle_post($path)
             if ($compressed) {
                 // 获取压缩后的文件大小
                 $final_size = round(filesize($file_path) / 1024, 2);
-
-                // 生成文件URL
-                $file_url = '/uploads/images/' . $filename;
-
                 $response = [
                     "success" => true,
-                    "url" => $file_url,
+                    // /uploads/images/授权码/文件名.jpg
+                    "url" => '/' . $file_path,
                     "message" => "文件上传成功，压缩后大小: {$final_size}KB",
                     "size" => $final_size
                 ];
