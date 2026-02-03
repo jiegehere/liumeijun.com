@@ -1035,7 +1035,7 @@
             async showLocationWindowInfo(location, showTime = 2500) {
                 // 如果有图片或文本，显示信息窗口
                 if (location.showImgUrl || location.showText) {
-                    let content = '';
+                    let content = '<div style="text-align: center;">';
                     if (location.showImgUrl) {
                         // 使用预加载的图片 data URL
                         const preloadedSrc = this.preloadedImages[location.showImgUrl];
@@ -1055,10 +1055,6 @@
                                          style="max-width: 100%; max-height: ${maxHeight}; width: auto; height: auto; object-fit: contain; display: block;" 
                                          alt="${location.showText || 'Image'}" />
                                 </div>
-                            `;
-                    } else {
-                        content = `
-                                <div>${location.showText}</div>
                             `;
                     }
                     this.mapUtils.openInfoWindow(content, location.point, location.showText);
