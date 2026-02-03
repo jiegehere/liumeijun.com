@@ -1036,8 +1036,10 @@
                 // 如果有图片或文本，显示信息窗口
                 if (location.showImgUrl || location.showText) {
                     let content = `<div>${location.showText}</div>`;
+                    let title = location.showText;
                     if (location.showImgUrl) {
                         // 使用预加载的图片 data URL
+                        title = location.showText;
                         const preloadedSrc = this.preloadedImages[location.showImgUrl];
                         console.log('使用预加载图片:', location.showImgUrl);
                         console.log('预加载源:', preloadedSrc ? preloadedSrc.substring(0, 50) + '...' : '未找到');
@@ -1055,8 +1057,10 @@
                                          alt="${location.showText || 'Image'}" />
                                 </div>
                             `;
+                    } else {
+                        title = ''
                     }
-                    this.mapUtils.openInfoWindow(content, location.point, location.showText);
+                    this.mapUtils.openInfoWindow(content, location.point, title);
                     // 等待一段时间
                     await sleep(showTime);
                 }
