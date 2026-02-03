@@ -907,6 +907,16 @@
                 // 重置地图到起点
                 await this.mapUtils.panTo(showItem.startPoint, 1000, showItem.startAddress);
 
+                // 展示章节主题
+                var mockLocation = {
+                    "showText": showItem.chapterName, 
+                    "showImgUrl": "", 
+                    "point": {
+                        "lng": showItem.startPoint.lng,
+                        "lat": showItem.startPoint.lat
+                    }
+                }
+                this.showLocationWindowInfo(mockLocation);
                 // 根据类型执行不同的展示逻辑
                 console.log(' =========== 开始执行展示类型:', showItem.type, " =========== ");
                 switch (showItem.type) {
