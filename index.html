@@ -1036,7 +1036,6 @@
                 // 如果有图片或文本，显示信息窗口
                 if (location.showImgUrl || location.showText) {
                     let content = `<div>${location.showText}</div>`;
-                    let title = location.showText;
                     if (location.showImgUrl) {
                         // 使用预加载的图片 data URL
                         title = location.showText;
@@ -1051,6 +1050,7 @@
                         const imgSrc = preloadedSrc || location.showImgUrl;
 
                         content = `
+                                <div>${location.showText}</div>
                                 <div style="width: 100%; max-height: ${maxHeight}; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f5f5f5;">
                                     <img src="${imgSrc}" 
                                          style="max-width: 100%; max-height: ${maxHeight}; width: auto; height: auto; object-fit: contain; display: block;" 
@@ -1058,7 +1058,7 @@
                                 </div>
                             `;
                     }
-                    this.mapUtils.openInfoWindow(content, location.point, title);
+                    this.mapUtils.openInfoWindow(content, location.point);
                     // 等待一段时间
                     await sleep(showTime);
                 }
