@@ -235,7 +235,7 @@
             display: inline-block;
             padding: 4px 8px;
             border-radius: 4px;
-            font-size: 12px;
+            /* font-size: 12px; */
             font-weight: bold;
         }
 
@@ -648,6 +648,7 @@
                 <div class="chapter-item" style="background: ${chapter.isNew ? '#edcdcd' : '#d1ecf1'}" data-index="${index}">
                     <div class="chapter-header">
                         <div>
+                            <span class="chapter-title">展示序号:${index}</span>
                             <span class="type-badge type-${chapter.type}">类型${chapter.type}: ${chapterTypes[chapter.type]?.name || '未知'}</span>
                         </div>
                         <div class="chapter-actions">
