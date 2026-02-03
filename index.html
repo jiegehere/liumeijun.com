@@ -916,7 +916,7 @@
                         "lat": showItem.startPoint.lat
                     }
                 }
-                this.showLocationWindowInfo(mockLocation);
+                await this.showLocationWindowInfo(mockLocation);
                 // 根据类型执行不同的展示逻辑
                 console.log(' =========== 开始执行展示类型:', showItem.type, " =========== ");
                 switch (showItem.type) {
@@ -1060,10 +1060,9 @@
                     this.mapUtils.openInfoWindow(content, location.point);
                     // 等待一段时间
                     await sleep(showTime);
+                    // 关闭信息窗口
+                    this.mapUtils.closeInfoWindow();
                 }
-
-                // 关闭信息窗口
-                this.mapUtils.closeInfoWindow();
             }
 
             /**
