@@ -1038,7 +1038,6 @@
                     let content = `<div>${location.showText}</div>`;
                     if (location.showImgUrl) {
                         // 使用预加载的图片 data URL
-                        title = location.showText;
                         const preloadedSrc = this.preloadedImages[location.showImgUrl];
                         console.log('使用预加载图片:', location.showImgUrl);
                         console.log('预加载源:', preloadedSrc ? preloadedSrc.substring(0, 50) + '...' : '未找到');
