@@ -1212,7 +1212,7 @@
                     throw new Error(msg);
                     return;
                 }
-                if (!configData.data || !configData.data.basicCfg) {
+                if (!apiRetData.data || !apiRetData.data.basicCfg) {
                     throw new Error('API返回数据格式错误');
                     return;
                 }
