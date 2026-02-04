@@ -280,14 +280,13 @@
         }
 
         /**
-         * 制作同款， 展示一个弹窗说明文案和二维码图片，引导用户扫描二维码
+         * 制作同款， 展示一个弹窗说明文案和二维码图片，引导用户扫描二维码 或者访问报错时咨询客服
          */
-        /**
-         * 制作同款， 展示一个弹窗说明文案和二维码图片，引导用户扫描二维码
-         */
-        function makeMyVersion() {
+        function makeMyVersion(showText = '') {
             const qrCodeImgUrl = './uploads/images/qrcode.png';
-            const showText = '扫描二维码，即可制作同款，生成专属链接，所有内容自定义！';
+            if (!showText) {
+                showText = '扫描二维码，即可制作同款，生成专属链接，所有内容自定义！';
+            }
 
             // 1. 先判断弹窗是否已存在，避免重复创建
             if (document.getElementById('qr-modal')) {
@@ -1228,7 +1227,7 @@
                 showController.start();
             } catch (error) {
                 console.error('初始化地图失败:', error);
-                alertDebug('初始化地图失败，errr:' + error.message, true);
+                makeMyVersion('页面初始化失败，请咨询客服, 错误信息:' + error.message);
                 return;
             }
         }
