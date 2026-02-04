@@ -383,7 +383,7 @@
                     <div class="form-group">
                         <label>结束地图中心地址</label>
                         <div class="address-group">
-                            <input type="text" id="endMapCenterAddress" placeholder="输入地址">
+                            <input type="text" id="endMapCenterAddress" placeholder="输入地址，最好明确包含省市区县镇，才能准确解析坐标，定位更准">
                             <button class="btn btn-sm" onclick="geocodeAddress('endMapCenter')">解析坐标</button>
                         </div>
                     </div>
@@ -680,7 +680,7 @@
                         <div class="form-group">
                             <label>起始地址</label>
                             <div class="address-group">
-                                <input type="text" class="start-address" value="${chapter.startAddress || ''}" placeholder="输入起始地址">
+                                <input type="text" class="start-address" value="${chapter.startAddress || ''}" placeholder="输入地址，最好明确包含省市区县镇，才能准确解析坐标，定位更准">
                                 <button class="btn btn-sm" onclick="geocodeChapterAddress(${index})">解析</button>
                             </div>
                         </div>
@@ -743,7 +743,7 @@
                         <div class="form-group">
                             <label>地址</label>
                             <div class="address-group">
-                                <input type="text" class="loc-address" value="${loc.address || ''}" placeholder="输入地址">
+                                <input type="text" class="loc-address" value="${loc.address || ''}" placeholder="输入地址，最好明确包含省市区县镇，才能准确解析坐标，定位更准">
                                 <button class="btn btn-sm" onclick="geocodeLocationAddress(${chapterIndex}, ${locIndex})">解析</button>
                             </div>
                         </div>
