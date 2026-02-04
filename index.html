@@ -1206,7 +1206,18 @@
                 }
 
                 // 1. 从 API 加载配置
-                configData = await loadConfigFromApi();
+                apiRetData = await loadConfigFromApi();
+                if (apiRetData.ret > 0) {
+                    var msg = ('API返回错误码:' + apiRetData.ret + ' 错误描述: ' + apiRetData.errmsg) || '未知错误';
+                    throw new Error(msg);
+                    return;
+                }
+                if (!configData.data || !configData.data.basicCfg) {
+                    throw new Error('API返回数据格式错误');
+                    return;
+                }
+                configData = apiRetData.data || {};
+
                 // 2. 初始化地图
                 map = new BMap.Map("bdMapContainer");
                 map.setMapType(BMAP_NORMAL_MAP);
@@ -1246,26 +1257,19 @@
                 // 2. 判断响应状态是否正常（HTTP 状态码 200-299）
                 if (response.ok) {
                     // 3. 等待 JSON 解析完成，返回配置数据
-                    const configData = await response.json();
-                    alertDebug('加载API configData:' + JSON.stringify(configData));
-                    if (configData.ret > 0) {
-                        var msg = ('API返回错误码:' + configData.ret + ' 错误描述: ' + configData.errmsg) || '未知错误';
-                        throw new Error(msg);
-                        return {};
-                    }
-                    if (!configData.data || !configData.data.basicCfg) {
-                        throw new Error('API返回数据格式错误');
-                    }
-                    return configData.data || {};
+                    const apiRetData = await response.json();
+                    alertDebug('加载API apiRetData:' + JSON.stringify(apiRetData));
+                    return apiRetData;
                 } else {
                     // 处理 HTTP 错误（如 404/500）
                     alertDebug('API 请求失败，状态码：' + response.status);
+                    return {'ret':2000, 'errmsg':'API 请求失败，状态码：' + response.status, 'data':{}};
                 }
             } catch (error) {
                 // 处理网络错误（如断网、跨域）
-                alertDebug('Error loading config from API:' + error.message, true);
+                alertDebug('Error loading config from API:' + error.message);
+                return {'ret':1000, 'errmsg':'获取配置失败，' + error.message, 'data':{}};
             }
-            return null;
         }
 
         /**
