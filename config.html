@@ -997,9 +997,14 @@
             showMessage('正在上传音频...', 'info');
 
             try {
-                const formData = new FormData();
-                formData.append('file', file);
+                const urlParams = new URLSearchParams(window.location.search);
+                const code = urlParams.get('code') || '';
+                const token = urlParams.get('token') || '';
 
+                const formData = new FormData();
+                formData.append('code', code);
+                formData.append('token', token);
+                formData.append('file', file);
                 // 微信浏览器兼容性处理
                 const fetchOptions = {
                     method: 'POST',

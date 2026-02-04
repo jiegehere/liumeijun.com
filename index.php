@@ -587,7 +587,6 @@ function handle_post($path)
         http_response_code(200);
         header('Content-Type: application/json');
         set_cors_headers();
-
         try {
             // 检查是否有文件上传
             if (!isset($_FILES['file'])) {
@@ -596,7 +595,26 @@ function handle_post($path)
                 echo json_encode($response, JSON_UNESCAPED_UNICODE);
                 exit;
             }
-
+            $code = $_POST['code'] ?? '';
+            $token = $_POST['token'] ?? '';
+            if (empty($token)) {
+                http_response_code(400);
+                $response = ["success" => false, "message" => "未提供token"];
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+            if (empty($code)) {
+                http_response_code(400);
+                $response = ["success" => false, "message" => "未提供授权码"];
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+            if (!checkCodeValid($code, $token)) {
+                http_response_code(400);
+                $response = ["success" => false, "message" => "授权码错误或已失效"];
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                exit;
+            }
             $file = $_FILES['file'];
 
             // 检查上传错误
@@ -635,19 +653,19 @@ function handle_post($path)
                 $ext = 'mp3';
             }
             $filename = $md5 . '.' . $ext;
-            $file_path = AUDIO_UPLOAD_DIR . '/' . $filename;
+            $file_dir = AUDIO_UPLOAD_DIR . '/' . $code;
+            if (!is_dir($file_dir)) {
+                mkdir($file_dir, 0755, true);
+            }
+            $file_path = $file_dir . '/' . $filename;
 
             // 移动上传的文件
             if (move_uploaded_file($file['tmp_name'], $file_path)) {
                 // 获取文件大小
                 $final_size = round(filesize($file_path) / 1024, 2);
-
-                // 生成文件URL
-                $file_url = '/uploads/music/' . $filename;
-
                 $response = [
                     "success" => true,
-                    "url" => $file_url,
+                    "url" => $file_path,
                     "message" => "音频上传成功，大小: {$final_size}KB",
                     "size" => $final_size
                 ];
