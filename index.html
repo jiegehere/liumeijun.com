@@ -1250,7 +1250,7 @@
                     const configData = await response.json();
                     alertDebug('加载API configData:' + JSON.stringify(configData));
                     if (configData.ret > 0) {
-                        alertDebug(configData.errmsg || '未知错误');
+                        alertDebug(configData.errmsg || '未知错误', true);
                         return {};
                     }
                     return configData.data || {};
