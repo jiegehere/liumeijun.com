@@ -285,7 +285,7 @@
         function makeMyVersion(showText = '') {
             const qrCodeImgUrl = './uploads/images/qrcode.png';
             if (!showText) {
-                showText = '扫描二维码，即可制作同款，生成专属链接，所有内容自定义！';
+                showText = '<p>扫描二维码，即可制作同款，生成专属链接，所有内容自定义！</p>';
             }
 
             // 1. 先判断弹窗是否已存在，避免重复创建
@@ -327,8 +327,8 @@
     `;
 
             // 4. 创建文案元素（上方）
-            const modalText = document.createElement('p');
-            modalText.innerText = showText;
+            const modalText = document.createElement('div');
+            modalText.innerHTML = showText;
             modalText.style.cssText = `
         margin: 0 0 20px 0; /* 文案下方留间距，隔开二维码 */
         font-size: 16px;
@@ -1238,7 +1238,8 @@
                 showController.start();
             } catch (error) {
                 console.error('初始化地图失败:', error);
-                makeMyVersion("页面初始化失败，请咨询客服!\r\n错误信息:" + error.message);
+                var msg = `<p style="font-size: 12px;color: gray;">${error.message}</p>`;
+                makeMyVersion("页面初始化失败，请咨询客服!" + msg);
                 return;
             }
         }
