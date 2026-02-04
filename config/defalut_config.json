@@ -24,7 +24,7 @@
                 {
                     "showText": "容县",
                     "showType": 1,
-                    "showImgUrl": "",
+                    "showImgUrl": "\/uploads\/images\/d755dd5d909fee8046574aa0b0296cbc.jpg",
                     "address": "广西省玉林市容县",
                     "point": {
                         "lng": 110.56453,
@@ -34,7 +34,7 @@
                 {
                     "showText": "深圳",
                     "showType": 1,
-                    "showImgUrl": "",
+                    "showImgUrl": "\/uploads\/images\/c157e115bddab8d7ebfcaa4212cfc8f3.jpg",
                     "address": "广东省深圳市宝体地体站",
                     "point": {
                         "lng": 113.890887,
@@ -58,7 +58,7 @@
                 {
                     "showText": "容县 -> 深圳 420KM",
                     "showType": 1,
-                    "showImgUrl": "",
+                    "showImgUrl": "\/uploads\/images\/ca2a6a210e40f28632f071f995421a7d.jpg",
                     "address": "广西省玉林市容县",
                     "point": {
                         "lng": 110.56453,
@@ -81,118 +81,118 @@
             "order": 3,
             "type": 3,
             "typeDesc": "顺序每个地点，可以配置图片和文字说明",
-            "startAddress": "广东省广州市",
+            "startAddress": "广东省惠州市双月湾沙滩",
             "startPoint": {
-                "lng": 113.256838,
-                "lat": 23.157309
+                "lng": 114.901295,
+                "lat": 22.586362
             },
             "zoomLevel": 11,
             "chapterName": "一起去过的地方",
             "locations": [
                 {
-                    "showText": "纪念堂",
+                    "showText": "第一次出去玩，下雨天...",
                     "showType": 1,
-                    "showImgUrl": ".\/uploads\/images\/jiniantang.jpg",
-                    "address": "广东省广州市",
+                    "showImgUrl": "\/uploads\/images\/261300716b6c0249f58c9dd71a91d2b3.jpg",
+                    "address": "广东省惠州市双月湾沙滩",
                     "point": {
-                        "lng": 113.271147,
-                        "lat": 23.139616
+                        "lng": 114.901295,
+                        "lat": 22.586362
                     }
                 },
                 {
-                    "showText": "陈家祠",
+                    "showText": "酒店楼顶，绝美的风景",
                     "showType": 1,
-                    "showImgUrl": ".\/uploads\/images\/chenjiaci.jpg",
-                    "address": "广东省广州市",
+                    "showImgUrl": "\/uploads\/images\/e51af651da597813f96649bdf9e50b9b.jpg",
+                    "address": "广东省惠州市双月湾沙滩",
                     "point": {
-                        "lng": 113.252764,
-                        "lat": 23.131838
+                        "lng": 114.901295,
+                        "lat": 22.586362
                     }
                 },
                 {
-                    "showText": "看电影",
+                    "showText": "美术馆，相约再会",
                     "showType": 1,
-                    "showImgUrl": ".\/uploads\/images\/dianying.jpg",
-                    "address": "广东省广州市",
+                    "showImgUrl": "\/uploads\/images\/b8179e441cdad05df56f0278e8cc2cc4.jpg",
+                    "address": "广东省深圳市美术馆",
                     "point": {
-                        "lng": 113.268865,
-                        "lat": 23.200458
+                        "lng": 113.895034,
+                        "lat": 22.587339
                     }
                 },
                 {
-                    "showText": "",
+                    "showText": "又见面啦，西樵山",
                     "showType": 1,
-                    "showImgUrl": ".\/uploads\/images\/chenjiaci1.jpg",
-                    "address": "",
+                    "showImgUrl": "\/uploads\/images\/750300d1a81b83b7e8b8187bf1ea1ddf.jpg",
+                    "address": "广东省佛山市南海区西樵山风景名胜区",
                     "point": {
-                        "lng": 113.252764,
-                        "lat": 23.131838
+                        "lng": 112.983103,
+                        "lat": 22.929227
                     }
                 },
                 {
-                    "showText": "吃货",
+                    "showText": "阳光正好",
                     "showType": 1,
-                    "showImgUrl": ".\/uploads\/images\/beijingroad.jpg",
-                    "address": "",
+                    "showImgUrl": "\/uploads\/images\/9b6202845d33a12c0bf0d4b84230f552.jpg",
+                    "address": "广东省佛山市南海区西樵山风景名胜区",
                     "point": {
-                        "lng": 113.275619,
-                        "lat": 23.127547
+                        "lng": 112.983103,
+                        "lat": 22.929227
                     }
                 },
                 {
-                    "showText": "",
+                    "showText": "一起看脱口秀",
                     "showType": 1,
-                    "showImgUrl": ".\/uploads\/images\/chenjiaci2.jpg",
-                    "address": "",
+                    "showImgUrl": "\/uploads\/images\/49217ba1206a769a18ee02d78460d709.jpg",
+                    "address": "广东省深圳市福田区摩脱喜剧会展中心店",
                     "point": {
-                        "lng": 113.252764,
-                        "lat": 23.131838
+                        "lng": 114.068627,
+                        "lat": 22.536453
                     }
                 },
                 {
-                    "showText": "臭美中...",
+                    "showText": "刺激的漂流",
                     "showType": 1,
-                    "showImgUrl": ".\/uploads\/images\/dress1.jpg",
-                    "address": "",
+                    "showImgUrl": "\/uploads\/images\/aa311f5e016195d484c7d3921b46cc30.jpg",
+                    "address": "广东省惠州市博罗县平安峡漂流",
                     "point": {
-                        "lng": 113.275619,
-                        "lat": 23.127547
+                        "lng": 114.317543,
+                        "lat": 23.32043
                     }
                 },
                 {
-                    "showText": "臭美中...",
+                    "showText": "大鹏所城，牵手漫步",
                     "showType": 1,
-                    "showImgUrl": ".\/uploads\/images\/dress2.jpg",
-                    "address": "",
+                    "showImgUrl": "\/uploads\/images\/b8778985e1a6198f075ca787bdddc71b.jpg",
+                    "address": "广东省深圳市龙岗区大鹏新区大鹏所城",
                     "point": {
-                        "lng": 113.248583,
-                        "lat": 23.123725
+                        "lng": 114.519394,
+                        "lat": 22.600577
                     }
                 },
                 {
-                    "showText": "",
+                    "showText": "桔钓沙沙滩看日出",
                     "showType": 1,
-                    "showImgUrl": ".\/uploads\/images\/you.jpg",
-                    "address": "",
+                    "showImgUrl": "\/uploads\/images\/189e1869242302f523200ee22fc9ff79.jpg",
+                    "address": "广东省深圳市龙岗区大鹏新区桔钓沙沙滩",
                     "point": {
                         "lng": 113.340995,
                         "lat": 23.106222
                     }
                 },
                 {
-                    "showText": "又是离开，又是不舍...",
+                    "showText": "阿卡娜拉，美美哒",
                     "showType": 1,
-                    "showImgUrl": ".\/uploads\/images\/leave.jpg",
-                    "address": "",
+                    "showImgUrl": "\/uploads\/images\/c3e6df8b4b084391b1bea2f85a342d78.jpg",
+                    "address": "广东省深圳市龙岗区大鹏新区阿卡娜拉琉璃海度假区",
                     "point": {
-                        "lng": 113.358452,
-                        "lat": 23.158306
+                        "lng": 114.422632,
+                        "lat": 22.645334
                     }
                 },
                 {
-                    "showText": "红海湾",
+                    "showText": "快乐回忆",
                     "showType": 1,
-                    "showImgUrl": ".\/uploads\/images\/sea.jpg",
+                    "showImgUrl": "\/uploads\/images\/bae2fb665defc342ea2ced762e5ea3c4.jpg",
                     "address": "",
                     "point": {
                         "lng": 115.573511,
@@ -200,13 +200,13 @@
                     }
                 },
                 {
-                    "showText": "后山",
+                    "showText": "又是离开，又是不舍",
                     "showType": 1,
-                    "showImgUrl": ".\/uploads\/images\/s.jpg",
-                    "address": "",
+                    "showImgUrl": "",
+                    "address": "广东省佛山市顺德区米兰公馆1座",
                     "point": {
-                        "lng": 115.622433,
-                        "lat": 23.184734
+                        "lng": 113.060869,
+                        "lat": 22.880086
                     }
                 }
             ]
@@ -221,7 +221,7 @@
                 "lat": 36.172333
             },
             "zoomLevel": 9,
-            "chapterName": "想去的地方",
+            "chapterName": "还有很多想去的地方，以后一起经历...",
             "locations": [
                 {
                     "showText": "想去的地方",
@@ -968,5 +968,6 @@
                 "lat": 40.313174
             }
         ]
-    }
+    },
+    "code": ""
 }
