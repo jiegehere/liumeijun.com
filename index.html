@@ -1249,8 +1249,12 @@
                     const configData = await response.json();
                     alertDebug('加载API configData:' + JSON.stringify(configData));
                     if (configData.ret > 0) {
-                        alertDebug(configData.errmsg || '未知错误', true);
+                        var msg = ('API返回错误码:' + configData.ret + ' 错误描述: ' + configData.errmsg) || '未知错误';
+                        throw new Error(msg);
                         return {};
+                    }
+                    if (!configData.data || !configData.data.basicCfg) {
+                        throw new Error('API返回数据格式错误');
                     }
                     return configData.data || {};
                 } else {
