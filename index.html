@@ -20,7 +20,7 @@
             font-family: 'Microsoft Yahei', 'Helvetica Neue', Helvetica, Arial, Sans-serif;
         }
 
-        #map {
+        #bdMapContainer {
             height: 100%;
             width: 100%;
         }
@@ -84,13 +84,39 @@
         button:active {
             background-color: #3d8b40;
         }
+        .btn_pasue_play {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            z-index: 999;
+            padding: 12px 32px;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .btn_pasue_play:hover {
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn_pasue_play:active {
+            transform: translateX(-50%) scale(0.98);
+        }
     </style>
 </head>
 
 <body>
     <div id="loading">正在加载...</div>
     <div id="theEnd"></div>
-    <div id="map"></div>
+    <div id="bdMapContainer"></div>
+    <div><button id="pauseBtn" class="btn_pasue_play" onclick="pausePlay()">暂停</button></div>
 
     <script type="text/javascript">
 
@@ -131,6 +157,9 @@
 
             return isMobileDevice;
         })();
+
+        // 判断是否预览模式，url参数中包括preview=1
+        const isPreview = window.location.search.includes('preview=1');
 
         /**
          * 异步延迟函数
@@ -418,6 +447,17 @@
              * @param {string} address - 目标地址（可选）, 仅用于打日志
              */
             async panTo(point, delay = 1000, address = null) {
+               if (isPaused) {
+                    await new Promise(resolve => {
+                        const checkPause = setInterval(() => {
+                            if (!isPaused) {
+                                clearInterval(checkPause);
+                                resolve();
+                            }
+                        }, 100);
+                    });
+                }
+
                 console.log('开始平移动画到地址:', address, ' 延迟:', delay, ' 目标点:', point);
                 this.map.panTo(new BMap.Point(point.lng, point.lat));
                 await sleep(delay);
@@ -855,8 +895,19 @@
                         document.documentElement.requestFullscreen();
                     }
 
+                    // 预览模式，展示暂停按钮
+                    if (isPreview) {
+                        document.getElementById('pauseBtn').style.display = 'block';
+                    } else {
+                        // 非预览模式，隐藏暂停按钮
+                        document.getElementById('pauseBtn').style.display = 'none';
+                    }
+
                     // 开始展示
                     await this.runShowFlow();
+                    
+                    // 最后也隐藏一下
+                    document.getElementById('pauseBtn').style.display = 'none';
                 };
             }
 
@@ -1121,6 +1172,18 @@
         let showController;
         let debugAlert = false;
         let configData = {};
+        let isPaused = false; // 全局变量，用于控制
+
+        function pausePlay() {
+            isPaused = !isPaused;
+            if (isPaused) {
+                showController.pauseAudio();
+                document.getElementById('pauseBtn').innerText = '播放';
+            } else {
+                showController.playAudio();
+                document.getElementById('pauseBtn').innerText = '暂停';
+            }
+        }
 
         function alertDebug(msg, needAlert = false) {
             if (debugAlert || needAlert) {
@@ -1146,7 +1209,7 @@
                 // 1. 从 API 加载配置
                 configData = await loadConfigFromApi();
                 // 2. 初始化地图
-                map = new BMap.Map("map");
+                map = new BMap.Map("bdMapContainer");
                 map.setMapType(BMAP_NORMAL_MAP);
                 const point = new BMap.Point(
                     configData.basicCfg.initMapCenterPoint.lng,
