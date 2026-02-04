@@ -1249,6 +1249,10 @@
                     // 3. 等待 JSON 解析完成，返回配置数据
                     const configData = await response.json();
                     alertDebug('加载API configData:' + JSON.stringify(configData));
+                    if (configData.ret > 0) {
+                        alertDebug(configData.errmsg || '未知错误');
+                        return {};
+                    }
                     return configData.data || {};
                 } else {
                     // 处理 HTTP 错误（如 404/500）
