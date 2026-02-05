@@ -120,7 +120,7 @@
         }
 
         .chapter-item {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             padding: 10px;
             border: 2px solid #ddd;
             border-radius: 8px;
@@ -131,20 +131,48 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
             padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .chapter-header:hover {
+            background-color: #f8f8f8;
         }
 
         .chapter-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #333;
+            flex: 1;
         }
 
         .chapter-actions {
             display: flex;
             gap: 8px;
+            align-items: center;
+        }
+
+        .chapter-toggle {
+            font-size: 20px;
+            color: #666;
+            transition: transform 0.3s;
+            margin-left: 10px;
+        }
+
+        .chapter-toggle.expanded {
+            transform: rotate(180deg);
+        }
+
+        .chapter-content {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .chapter-content.expanded {
+            display: block;
         }
 
         .location-item {
@@ -283,18 +311,115 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+
+            h2 {
+                font-size: 16px;
+                margin-top: 20px;
+                margin-bottom: 10px;
+            }
+
+            h3 {
+                font-size: 14px;
+                margin-top: 15px;
+                margin-bottom: 8px;
+            }
+
+            .section {
+                margin-bottom: 20px;
+                padding: 12px;
+            }
+
             .grid-2, .grid-3 {
                 grid-template-columns: 1fr;
-            }
-            
-            .chapter-header {
-                flex-direction: column;
-                align-items: flex-start;
                 gap: 10px;
             }
-            
+
+            .chapter-item {
+                margin-bottom: 10px;
+                padding: 8px;
+            }
+
+            .chapter-header {
+                flex-wrap: wrap;
+;
+            }
+
+            .chapter-title {
+                font-size: 14px;
+            }
+
+            .chapter-actions {
+                gap: 5px;
+                margin-top: 5px;
+            }
+
+            .btn {
+                padding: 6px 12px;
+                font-size: 12px;
+                margin-right: 5px;
+                margin-bottom: 5px;
+            }
+
+            .btn-sm {
+                padding: 3px 8px;
+                font-size: 11px;
+            }
+
+            .form-group {
+                margin-bottom: 10px;
+            }
+
+            label {
+                font-size: 12px;
+                margin-bottom: 3px;
+            }
+
+            input[type="text"],
+            input[type="number"],
+            textarea,
+            select {
+                padding: 6px;
+                font-size: 13px;
+            }
+
             .address-group {
                 flex-direction: column;
+                gap: 5px;
+            }
+
+            .coordinate-group {
+                gap: 5px;
+            }
+
+            .location-item {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            .location-header {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .type-badge {
+                padding: 2px 6px;
+                font-size: 11px;
+            }
+
+            .chapter-toggle {
+                font-size: 16px;
             }
         }
     </style>
@@ -397,7 +522,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>地图缩放级别</label>
+                    <label>地图缩放级别(建议9)</label>
                     <select id="endZoomLevel">
                         <option value="3">3 - 展示全国范围（如：中国地图）</option>
                         <option value="4">4 - 展示全国范围（如：中国地图）</option>
@@ -417,12 +542,22 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>标记点列表（JSON数组）</label>
+                    <label>结束画面标记点图案配置</label>
                     <div class="form-group">
+                        <label>1.快捷选择</label>
+                        <select id="markerSampleSelect" onchange="updateEndMarkerList()" style="margin-top: 5px;">
+                            <option value="0"> - </option>
+                            <option value="1"> 展示：❤️ 生日快乐</option>
+                            <option value="2">展示：❤️</option>
+                            <option value="3">展示： 天天开心</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>2.需要自定义，点击跳转地图页面拾取坐标后导出坐标粘贴在下方</label>
                         <button class="btn btn-sm" onclick="goToGetPoints()">点击跳转地图页面拾取坐标</button>
                     </div>
+                    <small style="color: #666;">格式：JSON数组，每个元素包含 lng 和 lat 属性, 可以先去【点击跳转地图页面拾取坐标】选取坐标后导出，粘贴在这里， 默认标记点组成字是: ❤️ 生日快乐</small>
                     <textarea id="endMarkerList" class="json-editor" placeholder='[{"lng": 116.135018, "lat": 24.33438}, {"lng": 113.345774, "lat": 23.153356}]'></textarea>
-                    <small style="color: #666;">格式：JSON数组，每个元素包含 lng 和 lat 属性， 默认标记点组成字是 生日快乐</small>
                 </div>
             </div>
         </div>
@@ -524,12 +659,42 @@
             }
         }
 
+        // 跳转坐标拾取页面
         function goToGetPoints()
         {
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
             const token = urlParams.get('token');
             window.open('./get-points.html?code=' + code + '&token=' + token, '_blank');
+        }
+
+        // 快捷选择坐标组
+        function updateEndMarkerList() {
+            const selectedValue = document.getElementById('markerSampleSelect').value;
+      
+            if (selectedValue === '0') {
+                return;
+            }
+            // 都是公用一个地址的，保证效果，设置相同的缩放级别
+            let endMarkerList = [];
+            if (selectedValue === '1') {
+                // 展示：❤️ 生日快乐
+                endMarkerList = [{ "lng": 80.050373, "lat": 39.924749 }, { "lng": 80.064171, "lat": 39.832612 }, { "lng": 80.064171, "lat": 39.747453 }, { "lng": 80.054973, "lat": 39.647966 }, { "lng": 80.031976, "lat": 39.566136 }, { "lng": 80.022777, "lat": 39.469951 }, { "lng": 79.990582, "lat": 39.366491 }, { "lng": 79.93539, "lat": 39.273603 }, { "lng": 79.875599, "lat": 39.216379 }, { "lng": 80.165356, "lat": 39.697727 }, { "lng": 80.289538, "lat": 39.70128 }, { "lng": 80.427518, "lat": 39.708386 }, { "lng": 80.537902, "lat": 39.708386 }, { "lng": 80.666683, "lat": 39.711938 }, { "lng": 80.795464, "lat": 39.715491 }, { "lng": 80.123962, "lat": 39.402184 }, { "lng": 80.271141, "lat": 39.420024 }, { "lng": 80.418319, "lat": 39.423591 }, { "lng": 80.570097, "lat": 39.423591 }, { "lng": 80.726474, "lat": 39.427159 }, { "lng": 80.873652, "lat": 39.434292 }, { "lng": 81.039228, "lat": 39.434292 }, { "lng": 80.501107, "lat": 40.105115 }, { "lng": 80.501107, "lat": 40.01676 }, { "lng": 80.501107, "lat": 39.921207 }, { "lng": 80.501107, "lat": 39.829066 }, { "lng": 80.496508, "lat": 39.623071 }, { "lng": 80.496508, "lat": 39.544773 }, { "lng": 80.491908, "lat": 39.370061 }, { "lng": 80.491908, "lat": 39.255725 }, { "lng": 80.491908, "lat": 39.166269 }, { "lng": 80.491908, "lat": 39.087453 }, { "lng": 79.820407, "lat": 39.015724 }, { "lng": 79.949188, "lat": 39.008548 }, { "lng": 80.100966, "lat": 39.030076 }, { "lng": 80.252744, "lat": 39.030076 }, { "lng": 80.41372, "lat": 39.030076 }, { "lng": 80.611491, "lat": 39.051598 }, { "lng": 80.744871, "lat": 39.05877 }, { "lng": 80.924245, "lat": 39.05877 }, { "lng": 81.089821, "lat": 39.073113 }, { "lng": 81.517558, "lat": 39.775851 }, { "lng": 81.517558, "lat": 39.708386 }, { "lng": 81.512958, "lat": 39.605284 }, { "lng": 81.512958, "lat": 39.480645 }, { "lng": 81.494561, "lat": 39.38434 }, { "lng": 81.494561, "lat": 39.262877 }, { "lng": 81.632541, "lat": 39.81488 }, { "lng": 81.738325, "lat": 39.811332 }, { "lng": 81.867106, "lat": 39.811332 }, { "lng": 82.018884, "lat": 39.804238 }, { "lng": 82.018884, "lat": 39.704833 }, { "lng": 82.023483, "lat": 39.598168 }, { "lng": 82.023483, "lat": 39.502027 }, { "lng": 82.028083, "lat": 39.395047 }, { "lng": 82.023483, "lat": 39.320062 }, { "lng": 82.018884, "lat": 39.24142 }, { "lng": 81.853308, "lat": 39.219957 }, { "lng": 81.696931, "lat": 39.230689 }, { "lng": 81.56815, "lat": 39.234266 }, { "lng": 81.63714, "lat": 39.530527 }, { "lng": 81.765921, "lat": 39.530527 }, { "lng": 81.903901, "lat": 39.530527 }, { "lng": 82.621395, "lat": 40.020297 }, { "lng": 82.621395, "lat": 39.921207 }, { "lng": 82.621395, "lat": 39.811332 }, { "lng": 82.621395, "lat": 39.708386 }, { "lng": 82.616796, "lat": 39.605284 }, { "lng": 82.621395, "lat": 39.459255 }, { "lng": 82.621395, "lat": 39.35935 }, { "lng": 82.607598, "lat": 39.24142 }, { "lng": 82.607598, "lat": 39.159108 }, { "lng": 82.483416, "lat": 39.647966 }, { "lng": 82.446621, "lat": 39.555455 }, { "lng": 82.391429, "lat": 39.469951 }, { "lng": 82.736379, "lat": 39.687067 }, { "lng": 82.79617, "lat": 39.59461 }, { "lng": 82.846762, "lat": 39.519841 }, { "lng": 82.984742, "lat": 39.829066 }, { "lng": 83.122722, "lat": 39.832612 }, { "lng": 83.260702, "lat": 39.836158 }, { "lng": 83.398681, "lat": 39.846795 }, { "lng": 83.486068, "lat": 39.860975 }, { "lng": 83.509065, "lat": 39.775851 }, { "lng": 83.495267, "lat": 39.694174 }, { "lng": 83.47227, "lat": 39.626628 }, { "lng": 82.966345, "lat": 39.544773 }, { "lng": 83.150318, "lat": 39.551895 }, { "lng": 83.283698, "lat": 39.551895 }, { "lng": 83.426277, "lat": 39.559016 }, { "lng": 83.578055, "lat": 39.559016 }, { "lng": 83.711435, "lat": 39.569696 }, { "lng": 83.2699, "lat": 40.140424 }, { "lng": 83.251503, "lat": 40.066253 }, { "lng": 83.237705, "lat": 39.97077 }, { "lng": 83.187112, "lat": 39.754553 }, { "lng": 83.145718, "lat": 39.658632 }, { "lng": 83.095126, "lat": 39.47708 }, { "lng": 83.072129, "lat": 39.337923 }, { "lng": 83.021537, "lat": 39.216379 }, { "lng": 82.99854, "lat": 39.159108 }, { "lng": 83.219308, "lat": 39.47708 }, { "lng": 83.315893, "lat": 39.387909 }, { "lng": 83.380284, "lat": 39.312917 }, { "lng": 83.47687, "lat": 39.259301 }, { "lng": 83.596452, "lat": 39.202065 }, { "lng": 84.714088, "lat": 40.249767 }, { "lng": 84.626701, "lat": 40.228618 }, { "lng": 84.49332, "lat": 40.179244 }, { "lng": 84.364539, "lat": 40.151014 }, { "lng": 84.240358, "lat": 40.112178 }, { "lng": 84.148371, "lat": 40.080387 }, { "lng": 84.111577, "lat": 39.992 }, { "lng": 84.139172, "lat": 39.914124 }, { "lng": 84.198964, "lat": 39.818426 }, { "lng": 84.014991, "lat": 39.690621 }, { "lng": 84.175967, "lat": 39.708386 }, { "lng": 84.318546, "lat": 39.751003 }, { "lng": 84.479522, "lat": 39.743902 }, { "lng": 84.612903, "lat": 39.772302 }, { "lng": 84.810674, "lat": 39.782949 }, { "lng": 84.976249, "lat": 39.807785 }, { "lng": 85.114229, "lat": 39.829066 }, { "lng": 84.589906, "lat": 40.101583 }, { "lng": 84.589906, "lat": 40.009687 }, { "lng": 84.589906, "lat": 39.892869 }, { "lng": 84.580708, "lat": 39.676405 }, { "lng": 84.571509, "lat": 39.519841 }, { "lng": 84.571509, "lat": 39.362921 }, { "lng": 84.576108, "lat": 39.255725 }, { "lng": 84.576108, "lat": 39.166269 }, { "lng": 84.465724, "lat": 39.64441 }, { "lng": 84.350741, "lat": 39.566136 }, { "lng": 84.240358, "lat": 39.480645 }, { "lng": 84.024189, "lat": 39.35578 }, { "lng": 84.139172, "lat": 39.427159 }, { "lng": 84.695691, "lat": 39.694174 }, { "lng": 84.815273, "lat": 39.605284 }, { "lng": 84.916458, "lat": 39.516279 }, { "lng": 85.036041, "lat": 39.452124 }, { "lng": 85.123428, "lat": 39.402184 }, { "lng": 85.224613, "lat": 39.352209 }, { "lng": 85.376391, "lat": 39.298623 }, { "lng": 85.500572, "lat": 39.373631 }, { "lng": 85.51437, "lat": 39.537651 }, { "lng": 85.348795, "lat": 39.555455 }, { "lng": 85.24761, "lat": 39.480645 }, { "lng": 81.407174, "lat": 40.573219 }, { "lng": 81.250797, "lat": 40.618798 }, { "lng": 81.103618, "lat": 40.639824 }, { "lng": 80.95644, "lat": 40.63632 }, { "lng": 80.901248, "lat": 40.562697 }, { "lng": 80.951841, "lat": 40.47143 }, { "lng": 81.057625, "lat": 40.383557 }, { "lng": 81.204804, "lat": 40.327257 }, { "lng": 81.388777, "lat": 40.306132 }, { "lng": 81.526756, "lat": 40.288523 }, { "lng": 81.696931, "lat": 40.277955 }, { "lng": 81.526756, "lat": 40.65734 }, { "lng": 81.563551, "lat": 40.804295 }, { "lng": 81.696931, "lat": 40.846222 }, { "lng": 81.830312, "lat": 40.83225 }, { "lng": 81.922298, "lat": 40.751849 }, { "lng": 81.926898, "lat": 40.653837 }, { "lng": 81.9131, "lat": 40.552172 }, { "lng": 81.885504, "lat": 40.48548 }, { "lng": 81.848709, "lat": 40.387074 }, { "lng": 81.793517, "lat": 40.313174 }];
+            } else if (selectedValue === '2') {
+                // 展示：❤️ 
+                endMarkerList = [{ "lng": 81.377226, "lat": 41.172199 }, { "lng": 81.574997, "lat": 41.11309 }, { "lng": 81.671583, "lat": 41.050445 }, { "lng": 81.772768, "lat": 40.973797 }, { "lng": 81.864755, "lat": 40.924975 }, { "lng": 82.021132, "lat": 40.963338 }, { "lng": 82.223502, "lat": 41.116568 }, { "lng": 82.122317, "lat": 41.074814 }, { "lng": 82.329286, "lat": 41.193048 }, { "lng": 82.485664, "lat": 41.269438 }, { "lng": 82.734027, "lat": 41.252085 }, { "lng": 82.885805, "lat": 41.144389 }, { "lng": 82.927199, "lat": 41.022583 }, { "lng": 81.234647, "lat": 41.099174 }, { "lng": 81.225449, "lat": 41.0191 }, { "lng": 81.096668, "lat": 40.928463 }, { "lng": 80.995482, "lat": 40.753809 }, { "lng": 81.105866, "lat": 40.603236 }, { "lng": 81.207051, "lat": 40.462861 }, { "lng": 81.377226, "lat": 40.392562 }, { "lng": 81.570398, "lat": 40.25879 }, { "lng": 81.469213, "lat": 40.33275 }, { "lng": 81.671583, "lat": 40.227068 }, { "lng": 82.918, "lat": 40.872624 }, { "lng": 82.84901, "lat": 40.73282 }, { "lng": 82.770822, "lat": 40.645291 }, { "lng": 82.683434, "lat": 40.536595 }, { "lng": 82.586849, "lat": 40.413659 }, { "lng": 82.50866, "lat": 40.357385 }, { "lng": 82.393677, "lat": 40.297541 }, { "lng": 82.310889, "lat": 40.276407 }, { "lng": 81.791166, "lat": 40.220017 }, { "lng": 81.919947, "lat": 40.209438 }, { "lng": 82.085522, "lat": 40.212965 }, { "lng": 82.2373, "lat": 40.251742 }, { "lng": 81.036876, "lat": 40.886589 }, { "lng": 81.142661, "lat": 41.036515 }, { "lng": 81.036876, "lat": 40.711823 }, { "lng": 81.161058, "lat": 40.575185 }, { "lng": 81.478412, "lat": 41.20347 }, { "lng": 82.619044, "lat": 41.297194 }];
+            } else if (selectedValue === '3') {
+                // 展示：天天开心
+                endMarkerList = [{ "lng": 81.195553, "lat": 40.400656 }, { "lng": 81.36686, "lat": 40.455779 }, { "lng": 81.610295, "lat": 40.469552 }, { "lng": 81.790618, "lat": 40.538378 }, { "lng": 81.177521, "lat": 40.145121 }, { "lng": 81.348827, "lat": 40.179709 }, { "lng": 81.538166, "lat": 40.235014 }, { "lng": 81.754553, "lat": 40.269557 }, { "lng": 81.934876, "lat": 40.324788 }, { "lng": 81.556198, "lat": 40.421332 }, { "lng": 81.538166, "lat": 40.331688 }, { "lng": 81.538166, "lat": 40.21428 }, { "lng": 81.538166, "lat": 40.117437 }, { "lng": 81.52915, "lat": 40.041248 }, { "lng": 81.502102, "lat": 40.006589 }, { "lng": 81.473339, "lat": 39.951049 }, { "lng": 81.438989, "lat": 39.86419 }, { "lng": 81.679419, "lat": 40.176144 }, { "lng": 81.784607, "lat": 40.089634 }, { "lng": 81.874769, "lat": 40.049225 }, { "lng": 81.934876, "lat": 39.985677 }, { "lng": 82.055091, "lat": 39.962553 }, { "lng": 81.476556, "lat": 40.492395 }, { "lng": 82.295522, "lat": 40.566927 }, { "lng": 82.468331, "lat": 40.612751 }, { "lng": 82.588546, "lat": 40.635651 }, { "lng": 82.746328, "lat": 40.669987 }, { "lng": 82.288008, "lat": 40.383313 }, { "lng": 82.498385, "lat": 40.429264 }, { "lng": 82.66368, "lat": 40.446488 }, { "lng": 82.828976, "lat": 40.475183 }, { "lng": 82.573519, "lat": 40.566927 }, { "lng": 82.566006, "lat": 40.492395 }, { "lng": 82.543465, "lat": 40.394804 }, { "lng": 82.520925, "lat": 40.291317 }, { "lng": 82.498385, "lat": 40.222237 }, { "lng": 82.468331, "lat": 40.17038 }, { "lng": 82.438277, "lat": 40.095405 }, { "lng": 82.393196, "lat": 40.043451 }, { "lng": 82.355629, "lat": 39.997235 }, { "lng": 82.671194, "lat": 40.302823 }, { "lng": 82.761355, "lat": 40.199194 }, { "lng": 82.844003, "lat": 40.14732 }, { "lng": 82.919138, "lat": 40.101175 }, { "lng": 83.039353, "lat": 40.043451 }, { "lng": 81.709473, "lat": 40.544003 }, { "lng": 81.867255, "lat": 40.32008 }, { "lng": 83.122001, "lat": 40.704305 }, { "lng": 83.367493, "lat": 40.797669 }, { "lng": 83.511459, "lat": 40.838685 }, { "lng": 83.178537, "lat": 40.47549 }, { "lng": 83.358495, "lat": 40.496101 }, { "lng": 83.403484, "lat": 40.551034 }, { "lng": 83.54745, "lat": 40.56476 }, { "lng": 83.583442, "lat": 40.599063 }, { "lng": 83.682418, "lat": 40.599063 }, { "lng": 83.765151, "lat": 40.620874 }, { "lng": 83.305329, "lat": 40.689542 }, { "lng": 83.314345, "lat": 40.593386 }, { "lng": 83.350409, "lat": 40.442002 }, { "lng": 83.341393, "lat": 40.345487 }, { "lng": 83.359425, "lat": 40.255742 }, { "lng": 83.330723, "lat": 40.183167 }, { "lng": 83.578666, "lat": 40.774136 }, { "lng": 83.593693, "lat": 40.682679 }, { "lng": 83.63126, "lat": 40.56818 }, { "lng": 83.653801, "lat": 40.464961 }, { "lng": 83.676341, "lat": 40.38457 }, { "lng": 83.698881, "lat": 40.309834 }, { "lng": 83.691368, "lat": 40.223496 }, { "lng": 83.706395, "lat": 40.17164 }, { "lng": 83.578666, "lat": 40.882576 }, { "lng": 83.676341, "lat": 40.89398 }, { "lng": 83.293155, "lat": 40.528058 }, { "lng": 83.248074, "lat": 40.51659 }, { "lng": 83.480991, "lat": 40.608277 }, { "lng": 82.662026, "lat": 40.705555 }, { "lng": 83.458451, "lat": 40.848351 }, { "lng": 83.112832, "lat": 40.493649 }, { "lng": 83.976879, "lat": 40.722707 }, { "lng": 83.969365, "lat": 40.636903 }, { "lng": 83.916771, "lat": 40.550988 }, { "lng": 84.141116, "lat": 40.69658 }, { "lng": 84.182671, "lat": 40.60796 }, { "lng": 84.240847, "lat": 40.531905 }, { "lng": 84.26578, "lat": 40.487499 }, { "lng": 84.390443, "lat": 40.474807 }, { "lng": 84.506796, "lat": 40.443064 }, { "lng": 84.673014, "lat": 40.436714 }, { "lng": 84.756123, "lat": 40.474807 }, { "lng": 84.830922, "lat": 40.506534 }, { "lng": 84.839233, "lat": 40.544587 }, { "lng": 84.889098, "lat": 40.569943 }, { "lng": 84.889098, "lat": 40.702906 }, { "lng": 84.365511, "lat": 40.911307 }, { "lng": 84.440309, "lat": 40.873465 }, { "lng": 84.498485, "lat": 40.835601 }, { "lng": 85.030384, "lat": 40.804031 }, { "lng": 85.071938, "lat": 40.715555 }, { "lng": 84.897409, "lat": 40.6776 }, { "lng": 84.556662, "lat": 40.778764 }, { "lng": 84.839233, "lat": 40.829288 }];
+            } else {
+                alert('未实现的选项');
+                return false;
+            }
+            document.getElementById('endMapCenterAddress').value = '新疆维吾尔自治区阿克苏地区沙雅县塔里木盆地';
+            document.getElementById('endZoomLevel').value = 9;
+            document.getElementById('endMapCenterLng').value = '82.013144';
+            document.getElementById('endMapCenterLat').value = '39.702435';
+            document.getElementById('endMarkerList').value = JSON.stringify(endMarkerList);
         }
 
         // 初始化
@@ -669,83 +834,88 @@
                 return;
             }
 
-            container.innerHTML = currentConfig.showList.map((chapter, index) => `
+            container.innerHTML = currentConfig.showList.map((chapter, index) => {
+                const isExpanded = index === 0 || chapter.isNew;
+                return `
                 <div class="chapter-item" style="background: ${chapter.isNew ? '#edcdcd' : '#d1ecf1'}" data-index="${index}">
-                    <div class="chapter-header">
+                    <div class="chapter-header" onclick="toggleChapter(${index})">
                         <div>
                             <span class="chapter-title">展示序号:${index+1}</span>
                             <span class="type-badge type-${chapter.type}">类型${chapter.type}: ${chapterTypes[chapter.type]?.name || '未知'}</span>
                         </div>
                         <div class="chapter-actions">
-                            <button class="btn btn-sm btn-secondary" style="display: ${chapter.isNew ? 'none' : 'inline-block'}" onclick="moveChapter(${index}, -1)">上移</button>
-                            <button class="btn btn-sm btn-secondary" style="display: ${chapter.isNew ? 'none' : 'inline-block'}" onclick="moveChapter(${index}, 1)">下移</button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteChapter(${index})">删除</button>
+                            <button class="btn btn-sm btn-secondary" style="display: ${chapter.isNew ? 'none' : 'inline-block'}" onclick="event.stopPropagation(); moveChapter(${index}, -1)">上移</button>
+                            <button class="btn btn-sm btn-secondary" style="display: ${chapter.isNew ? 'none' : 'inline-block'}" onclick="event.stopPropagation(); moveChapter(${index}, 1)">下移</button>
+                            <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteChapter(${index})">删除</button>
+                            <span class="chapter-toggle ${isExpanded ? 'expanded' : ''}">▼</span>
                         </div>
                     </div>
                     
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label>章节开始说明弹窗</label>
-                            <input type="text" class="chapter-name" value="${chapter.chapterName || ''}" placeholder="输入章节名称">
+                    <div class="chapter-content ${isExpanded ? 'expanded' : ''}" id="chapter-content-${index}">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>章节开始说明弹窗</label>
+                                <input type="text" class="chapter-name" value="${chapter.chapterName || ''}" placeholder="输入章节名称">
+                            </div>
+                            <div class="form-group">
+                                <label>章节类型</label>
+                                <select class="chapter-type" onchange="onChapterTypeChange(${index}, this.value)">
+                                    ${Object.entries(chapterTypes).map(([type, info]) => `
+                                        <option value="${type}" ${parseInt(type) === chapter.type ? 'selected' : ''}>
+                                            类型${type}: ${info.name}
+                                        </option>
+                                    `).join('')}
+                                </select>
+                                <small style="color: #666; display: block; margin-top: 5px;">${chapterTypes[chapter.type]?.desc || ''}</small>
+                            </div>
                         </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>起始地址</label>
+                                <div class="address-group">
+                                    <input type="text" class="start-address" value="${chapter.startAddress || ''}" placeholder="输入地址，最好明确包含省市区县镇，才能准确解析坐标，定位更准">
+                                    <button class="btn btn-sm" onclick="geocodeChapterAddress(${index})">解析</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>起始坐标</label>
+                                <div class="coordinate-group">
+                                    <input type="text" class="start-lng" value="${chapter.startPoint?.lng || ''}" placeholder="经度">
+                                    <input type="text" class="start-lat" value="${chapter.startPoint?.lat || ''}" placeholder="纬度">
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group">
-                            <label>章节类型</label>
-                            <select class="chapter-type" onchange="onChapterTypeChange(${index}, this.value)">
-                                ${Object.entries(chapterTypes).map(([type, info]) => `
-                                    <option value="${type}" ${parseInt(type) === chapter.type ? 'selected' : ''}>
-                                        类型${type}: ${info.name}
-                                    </option>
-                                `).join('')}
+                            <label>地图缩放级别</label>
+                            <select class="chapter-zoomLevel">
+                                <option value="3" ${chapter.zoomLevel === 3 ? 'selected' : ''}>3 - 展示全国范围（如：中国地图）</option>
+                                <option value="4" ${chapter.zoomLevel === 4 ? 'selected' : ''}>4 - 展示全国范围（如：中国地图）</option>
+                                <option value="5" ${chapter.zoomLevel === 5 ? 'selected' : ''}>5 - 展示省级范围（如：广东省）</option>
+                                <option value="6" ${chapter.zoomLevel === 6 ? 'selected' : ''}>6 - 展示省级范围（如：广东省）</option>
+                                <option value="7" ${chapter.zoomLevel === 7 ? 'selected' : ''}>7 - 展示省级范围（如：广东省）</option>
+                                <option value="8" ${chapter.zoomLevel === 8 ? 'selected' : ''}>8 - 展示城市范围（如：梅州、广州）</option>
+                                <option value="9" ${chapter.zoomLevel === 9 ? 'selected' : ''}>9 - 展示城市范围（如：梅州、广州）</option>
+                                <option value="10" ${chapter.zoomLevel === 10 ? 'selected' : ''}>10 - 展示城市范围（如：梅州、广州）</option>
+                                <option value="11" ${chapter.zoomLevel === 11 ? 'selected' : ''}>11 - 展示城市范围（如：梅州、广州）</option>
+                                <option value="12" ${chapter.zoomLevel === 12 ? 'selected' : ''}>12 - 展示街道级视图</option>
+                                <option value="13" ${chapter.zoomLevel === 13 ? 'selected' : ''}>13 - 展示路线（如：两地之间的路线）</option>
+                                <option value="14" ${chapter.zoomLevel === 14 ? 'selected' : ''}>14 - 展示路线（如：两地之间的路线）</option>
+                                <option value="15" ${chapter.zoomLevel === 15 ? 'selected' : ''}>15 - 展示具体地点（如：纪念馆、祠堂）</option>
+                                <option value="16" ${chapter.zoomLevel === 16 ? 'selected' : ''}>16 - 展示具体地点（如：纪念馆、祠堂）</option>
+                                <option value="17" ${chapter.zoomLevel === 17 ? 'selected' : ''}>17 - 展示具体地点（如：纪念馆、祠堂）</option>
                             </select>
-                            <small style="color: #666; display: block; margin-top: 5px;">${chapterTypes[chapter.type]?.desc || ''}</small>
                         </div>
-                    </div>
 
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label>起始地址</label>
-                            <div class="address-group">
-                                <input type="text" class="start-address" value="${chapter.startAddress || ''}" placeholder="输入地址，最好明确包含省市区县镇，才能准确解析坐标，定位更准">
-                                <button class="btn btn-sm" onclick="geocodeChapterAddress(${index})">解析</button>
-                            </div>
+                        <h3>地点列表 (${chapter.locations?.length || 0}个)</h3>
+                        <button class="btn btn-sm" onclick="addLocation(${index})">添加地点</button>
+                        <div class="locations-list" style="margin-top: 10px;">
+                            ${renderLocations(chapter.locations || [], index)}
                         </div>
-                        <div class="form-group">
-                            <label>起始坐标</label>
-                            <div class="coordinate-group">
-                                <input type="text" class="start-lng" value="${chapter.startPoint?.lng || ''}" placeholder="经度">
-                                <input type="text" class="start-lat" value="${chapter.startPoint?.lat || ''}" placeholder="纬度">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>地图缩放级别</label>
-                        <select class="chapter-zoomLevel">
-                            <option value="3" ${chapter.zoomLevel === 3 ? 'selected' : ''}>3 - 展示全国范围（如：中国地图）</option>
-                            <option value="4" ${chapter.zoomLevel === 4 ? 'selected' : ''}>4 - 展示全国范围（如：中国地图）</option>
-                            <option value="5" ${chapter.zoomLevel === 5 ? 'selected' : ''}>5 - 展示省级范围（如：广东省）</option>
-                            <option value="6" ${chapter.zoomLevel === 6 ? 'selected' : ''}>6 - 展示省级范围（如：广东省）</option>
-                            <option value="7" ${chapter.zoomLevel === 7 ? 'selected' : ''}>7 - 展示省级范围（如：广东省）</option>
-                            <option value="8" ${chapter.zoomLevel === 8 ? 'selected' : ''}>8 - 展示城市范围（如：梅州、广州）</option>
-                            <option value="9" ${chapter.zoomLevel === 9 ? 'selected' : ''}>9 - 展示城市范围（如：梅州、广州）</option>
-                            <option value="10" ${chapter.zoomLevel === 10 ? 'selected' : ''}>10 - 展示城市范围（如：梅州、广州）</option>
-                            <option value="11" ${chapter.zoomLevel === 11 ? 'selected' : ''}>11 - 展示城市范围（如：梅州、广州）</option>
-                            <option value="12" ${chapter.zoomLevel === 12 ? 'selected' : ''}>12 - 展示街道级视图</option>
-                            <option value="13" ${chapter.zoomLevel === 13 ? 'selected' : ''}>13 - 展示路线（如：两地之间的路线）</option>
-                            <option value="14" ${chapter.zoomLevel === 14 ? 'selected' : ''}>14 - 展示路线（如：两地之间的路线）</option>
-                            <option value="15" ${chapter.zoomLevel === 15 ? 'selected' : ''}>15 - 展示具体地点（如：纪念馆、祠堂）</option>
-                            <option value="16" ${chapter.zoomLevel === 16 ? 'selected' : ''}>16 - 展示具体地点（如：纪念馆、祠堂）</option>
-                            <option value="17" ${chapter.zoomLevel === 17 ? 'selected' : ''}>17 - 展示具体地点（如：纪念馆、祠堂）</option>
-                        </select>
-                    </div>
-
-                    <h3>地点列表 (${chapter.locations?.length || 0}个)</h3>
-                    <button class="btn btn-sm" onclick="addLocation(${index})">添加地点</button>
-                    <div class="locations-list" style="margin-top: 10px;">
-                        ${renderLocations(chapter.locations || [], index)}
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         // 渲染地点列表
@@ -794,6 +964,21 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        // 切换章节展开/收起
+        function toggleChapter(index) {
+            const chapterItem = document.querySelectorAll('.chapter-item')[index];
+            const content = chapterItem.querySelector('.chapter-content');
+            const toggle = chapterItem.querySelector('.chapter-toggle');
+            
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                toggle.classList.remove('expanded');
+            } else {
+                content.classList.add('expanded');
+                toggle.classList.add('expanded');
+            }
         }
 
         // 添加章节
