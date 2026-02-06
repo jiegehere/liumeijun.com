@@ -993,7 +993,7 @@
                         break;
                     
                     case 4: // 想去的地方
-                        await this.showType3(showItem);
+                        await this.showType4(showItem);
                         break;
                     default:
                         console.warn('未知的展示类型:', showItem.type);
@@ -1081,27 +1081,31 @@
              */
             async showType3(showItem) {
                 this.mapUtils.clearOverlays();
-                var speed = showItem?.zoomSpeed || this.config.basicCfg.globalZoomSpeed;
-                var bigLevelSpeed = parseInt(speed * 0.4); 
-                var bigLevel = (showItem.zoomLevel - 2) > 0 ? showItem.zoomLevel - 2 : 1;
-
                 for (const location of showItem.locations) {
-                    /*
-                    // 旧版
                     await this.mapUtils.panTo(location.point, 1000, location.address);
                     await this.mapUtils.zoomTo(15, 800, location.point, location.address);
                     await this.showLocationWindowInfo(location);
-                    */
+                }
+            }
 
-                    // 新版
+            /**
+             * 展示类型4：想去的地方
+             * @param {Object} showItem - 展示项配置
+             */
+            async showType4(showItem) {
+                this.mapUtils.clearOverlays();
+                var speed = showItem?.zoomSpeed || this.config.basicCfg.globalZoomSpeed;
+                var bigLevelSpeed = parseInt(speed * 0.4); 
+                var bigLevel = (showItem.zoomLevel - 2) > 0 ? showItem.zoomLevel - 2 : 1;
+                for (const location of showItem.locations) {
                     await this.mapUtils.zoomTo(bigLevel, bigLevelSpeed, showItem.startPoint, showItem.startAddress);
                     await this.mapUtils.panTo(location.point, speed, location.address);
-                    //await this.mapUtils.zoomTo(15, 800, location.point, location.address);
                     await this.mapUtils.zoomTo(showItem.zoomLevel, speed, location.point, location.address);
                     await this.showLocationWindowInfo(location);
                 }
             }
 
+            
             /**
              * 展示地点信息窗口
              * @param {Object} location - 地点配置
