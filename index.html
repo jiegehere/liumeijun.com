@@ -936,6 +936,9 @@
 
                     //顺序执行每个展示项
                     for (const showItem of sortedShowList) {
+                        // if (showItem.type == 1 || showItem.type == 2) {
+                        //     continue;
+                        // }
                         await this.executeShowItem(showItem);
                     }
 
@@ -982,13 +985,14 @@
                     case 1:
                         await this.showType1(showItem);
                         break;
-                    case 2:
+                    case 2: // 路线展示
                         await this.showType2(showItem);
                         break;
-                    case 3:
+                    case 3: // 一起去过的地方
                         await this.showType3(showItem);
                         break;
-                    case 4:
+                    
+                    case 4: // 想去的地方
                         await this.showType3(showItem);
                         break;
                     default:
@@ -1030,7 +1034,7 @@
                     console.error('类型2需要恰好2个地点');
                     return;
                 }
-
+                 
                 const [loc1, loc2] = showItem.locations;
                 console.log('地点1:', loc1, '地点2:', loc2);
                 /*
@@ -1077,11 +1081,23 @@
              */
             async showType3(showItem) {
                 this.mapUtils.clearOverlays();
+                var speed = showItem?.zoomSpeed || this.config.basicCfg.globalZoomSpeed;
+                var bigLevelSpeed = parseInt(speed * 0.4); 
+                var bigLevel = (showItem.zoomLevel - 2) > 0 ? showItem.zoomLevel - 2 : 1;
 
                 for (const location of showItem.locations) {
-                    // 移动到地点
+                    /*
+                    // 旧版
                     await this.mapUtils.panTo(location.point, 1000, location.address);
                     await this.mapUtils.zoomTo(15, 800, location.point, location.address);
+                    await this.showLocationWindowInfo(location);
+                    */
+
+                    // 新版
+                    await this.mapUtils.zoomTo(bigLevel, bigLevelSpeed, showItem.startPoint, showItem.startAddress);
+                    await this.mapUtils.panTo(location.point, speed, location.address);
+                    //await this.mapUtils.zoomTo(15, 800, location.point, location.address);
+                    await this.mapUtils.zoomTo(showItem.zoomLevel, speed, location.point, location.address);
                     await this.showLocationWindowInfo(location);
                 }
             }
