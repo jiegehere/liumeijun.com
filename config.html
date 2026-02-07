@@ -954,7 +954,7 @@
                         <div class="form-group">
                             <label>图片</label>
                             <div class="image-upload-group">
-                                <input type="text" class="loc-imgUrl" value="${loc.showImgUrl || ''}" placeholder="./uploads/images/xxx.jpg" readonly>
+                                <input type="text" class="loc-imgUrl" value="${loc.showImgUrl || ''}" placeholder="./uploads/images/xxx.jpg">
                                 <input type="file" class="loc-imgFile" id="file-${chapterIndex}-${locIndex}" accept="image/*" style="display: none;" onchange="handleImageUpload(this, ${chapterIndex}, ${locIndex})">
                                 <button class="btn btn-sm" onclick="document.getElementById('file-${chapterIndex}-${locIndex}').click()">上传</button>
                                 <button class="btn btn-sm btn-danger" onclick="clearImage(${chapterIndex}, ${locIndex})" ${loc.showImgUrl ? '' : 'style="display: none;"'}>清除</button>
