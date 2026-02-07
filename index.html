@@ -936,9 +936,9 @@
 
                     //顺序执行每个展示项
                     for (const showItem of sortedShowList) {
-                        // if (showItem.type != 3) {
-                        //     continue;
-                        // }
+                        if (showItem.type != 3) {
+                            // continue;
+                        }
                         await this.executeShowItem(showItem);
                     }
 
