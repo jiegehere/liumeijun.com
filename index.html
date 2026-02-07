@@ -936,7 +936,7 @@
 
                     //顺序执行每个展示项
                     for (const showItem of sortedShowList) {
-                        // if (showItem.type == 1 || showItem.type == 2) {
+                        // if (showItem.type != 3) {
                         //     continue;
                         // }
                         await this.executeShowItem(showItem);
@@ -1076,14 +1076,19 @@
             }
 
             /**
-             * 展示类型3：展示一起去过的地方，顺序展示location位置，不用标记点弹跳效果
+             * 展示类型3：展示一起去过的地方，顺序展示location位置
+             * 因为是具体地点，缩放搞快点
              * @param {Object} showItem - 展示项配置
              */
             async showType3(showItem) {
                 this.mapUtils.clearOverlays();
+                var speed = showItem?.zoomSpeed || this.config.basicCfg.globalZoomSpeed;
+                var bigLevelSpeed = parseInt(speed * 0.15); 
+                var bigLevel = (showItem.zoomLevel - 4) > 0 ? showItem.zoomLevel - 4 : 1;
                 for (const location of showItem.locations) {
-                    await this.mapUtils.panTo(location.point, 1000, location.address);
-                    await this.mapUtils.zoomTo(15, 800, location.point, location.address);
+                    await this.mapUtils.zoomTo(bigLevel, bigLevelSpeed, showItem.startPoint, showItem.startAddress);
+                    await this.mapUtils.panTo(location.point, speed, location.address);
+                    await this.mapUtils.zoomTo(showItem.zoomLevel, speed, location.point, location.address);
                     await this.showLocationWindowInfo(location);
                 }
             }
