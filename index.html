@@ -167,8 +167,10 @@
             return isMobileDevice;
         })();
 
-        // 判断是否预览模式，url参数中包括preview=1
-        const isPreview = window.location.search.includes('preview=1');
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code') || '2D1705E90D';
+        const testType = urlParams.get('testType') || 0;
+        const isPreview = (urlParams.get('preview') || 0 ) === 1;
 
         /**
          * 异步延迟函数
@@ -927,16 +929,13 @@
                     // 隐藏加载层
                     document.getElementById('loading').style.display = 'none';
 
-                    // url支持测试参数
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const testType = urlParams.get('testType') || 0;
-
                     // 按 order 排序 showList
                     const sortedShowList = [...this.config.showList].sort((a, b) => a.order - b.order);
 
                     //顺序执行每个展示项
                     for (const showItem of sortedShowList) {
                         if (testType > 0 && showItem.type != testType) {
+                            // url支持测试参数
                             continue;
                         }
                         await this.executeShowItem(showItem);
@@ -1283,10 +1282,6 @@
          */
         async function loadConfigFromApi() {
             try {
-                // 从当前页面url参数获取 配置文件版本
-                const urlParams = new URLSearchParams(window.location.search);
-                const code = urlParams.get('code') || '';
-
                 // 1. 等待 fetch 请求完成，拿到实际的响应对象
                 const response = await fetch('/api/getConfig?code=' + code);
                 // 2. 判断响应状态是否正常（HTTP 状态码 200-299）
