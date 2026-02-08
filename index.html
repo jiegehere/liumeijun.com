@@ -927,17 +927,17 @@
                     // 隐藏加载层
                     document.getElementById('loading').style.display = 'none';
 
-                    // // 调试结束画面使用
-                    // await this.showEndScreen();
-                    // await this.executeEndShow();
+                    // url支持测试参数
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const testType = urlParams.get('testType') || 0;
 
                     // 按 order 排序 showList
                     const sortedShowList = [...this.config.showList].sort((a, b) => a.order - b.order);
 
                     //顺序执行每个展示项
                     for (const showItem of sortedShowList) {
-                        if (showItem.type != 3) {
-                            // continue;
+                        if (testType > 0 && showItem.type != testType) {
+                            continue;
                         }
                         await this.executeShowItem(showItem);
                     }
