@@ -1088,7 +1088,7 @@
                     await this.mapUtils.zoomTo(showItem.zoomLevel, speed, location.point, location.address);
                     await this.showLocationWindowInfo(location);
                 }
-                var bigLevelSpeed = parseInt(speed * 0.15); 
+                var bigLevelSpeed = parseInt(speed * 0.7); 
                 var bigLevel = (showItem.zoomLevel - 4) > 0 ? showItem.zoomLevel - 4 : 1;
                 await this.mapUtils.zoomTo(bigLevel, bigLevelSpeed, showItem.startPoint, showItem.startAddress);
             }
