@@ -1083,14 +1083,14 @@
             async showType3(showItem) {
                 this.mapUtils.clearOverlays();
                 var speed = showItem?.zoomSpeed || this.config.basicCfg.globalZoomSpeed;
-                var bigLevelSpeed = parseInt(speed * 0.15); 
-                var bigLevel = (showItem.zoomLevel - 4) > 0 ? showItem.zoomLevel - 4 : 1;
                 for (const location of showItem.locations) {
-                    await this.mapUtils.zoomTo(bigLevel, bigLevelSpeed, showItem.startPoint, showItem.startAddress);
                     await this.mapUtils.panTo(location.point, speed, location.address);
                     await this.mapUtils.zoomTo(showItem.zoomLevel, speed, location.point, location.address);
                     await this.showLocationWindowInfo(location);
                 }
+                var bigLevelSpeed = parseInt(speed * 0.15); 
+                var bigLevel = (showItem.zoomLevel - 4) > 0 ? showItem.zoomLevel - 4 : 1;
+                await this.mapUtils.zoomTo(bigLevel, bigLevelSpeed, showItem.startPoint, showItem.startAddress);
             }
 
             /**
@@ -1100,10 +1100,10 @@
             async showType4(showItem) {
                 this.mapUtils.clearOverlays();
                 var speed = showItem?.zoomSpeed || this.config.basicCfg.globalZoomSpeed;
-                var bigLevelSpeed = parseInt(speed * 0.4); 
-                var bigLevel = (showItem.zoomLevel - 2) > 0 ? showItem.zoomLevel - 2 : 1;
+                // var bigLevelSpeed = parseInt(speed * 0.4); 
+                // var bigLevel = (showItem.zoomLevel - 2) > 0 ? showItem.zoomLevel - 2 : 1;
                 for (const location of showItem.locations) {
-                    await this.mapUtils.zoomTo(bigLevel, bigLevelSpeed, showItem.startPoint, showItem.startAddress);
+                    // await this.mapUtils.zoomTo(bigLevel, bigLevelSpeed, showItem.startPoint, showItem.startAddress);
                     await this.mapUtils.panTo(location.point, speed, location.address);
                     await this.mapUtils.zoomTo(showItem.zoomLevel, speed, location.point, location.address);
                     await this.showLocationWindowInfo(location);
